@@ -296,7 +296,7 @@ const NewsPage = () => {
             </Link>
             
             <Link 
-              to="/history" 
+              to="/heritage" 
               className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 hover:scale-105 group"
             >
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">

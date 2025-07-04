@@ -51,7 +51,7 @@ function Navigation() {
               About
             </Link>
             <Link 
-              to="/history" 
+              to="/heritage" 
               className="text-slate-700 hover:text-blue-600 transition-colors font-medium flex items-center gap-2"
             >
               <i className="fas fa-scroll"></i>
@@ -158,9 +158,9 @@ function Navigation() {
               </Link>
 
               <Link
-                to="/history"
+                to="/heritage"
                 className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  isActive('/history') 
+                  isActive('/heritage') 
                     ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' 
                     : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
