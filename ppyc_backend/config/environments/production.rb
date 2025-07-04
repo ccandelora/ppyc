@@ -59,16 +59,12 @@ Rails.application.configure do
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Use a different cache store in production.
-  config.cache_store = :redis_cache_store, {
-    url: ENV.fetch("REDIS_URL", "redis://localhost:6379/1"),
-    reconnect_attempts: 1,
-    error_handler: -> (method:, returning:, exception:) {
-      Rails.logger.error("Redis cache error: #{exception.message}")
-    }
-  }
+  # Using solid_cache (database-backed) instead of Redis for simpler deployment
+  config.cache_store = :solid_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  config.active_job.queue_adapter = :sidekiq
+  # Using solid_queue (database-backed) instead of sidekiq for simpler deployment
+  config.active_job.queue_adapter = :solid_queue
   config.active_job.queue_name_prefix = "ppyc_backend_production"
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
