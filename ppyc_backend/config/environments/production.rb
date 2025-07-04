@@ -131,11 +131,11 @@ Rails.application.configure do
   # Enable caching
   config.action_controller.perform_caching = true
 
-  # Cache API responses
-  config.middleware.use Rack::Cache,
-    verbose: false,
-    metastore: ENV.fetch("REDIS_URL", "redis://localhost:6379/2"),
-    entitystore: ENV.fetch("REDIS_URL", "redis://localhost:6379/2")
+  # Cache API responses - using Redis cache store instead of Rack::Cache
+  # config.middleware.use Rack::Cache,
+  #   verbose: false,
+  #   metastore: ENV.fetch("REDIS_URL", "redis://localhost:6379/2"),
+  #   entitystore: ENV.fetch("REDIS_URL", "redis://localhost:6379/2")
 
   # Enable gzip compression
   config.middleware.use Rack::Deflater
