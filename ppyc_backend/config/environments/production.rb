@@ -196,7 +196,7 @@ Rails.application.configure do
   # ==========================
 
   # Configure health check endpoint
-  config.middleware.insert_after ActionDispatch::Static, Proc.new { |env|
+  config.middleware.use Proc.new { |env|
     if env['PATH_INFO'] == '/health'
       [200, {'Content-Type' => 'application/json'}, ['{"status":"ok","timestamp":"' + Time.current.iso8601 + '"}']]
     else
