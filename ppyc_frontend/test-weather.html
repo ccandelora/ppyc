@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather API Test - Backend</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Weather API Test - Secure Backend</h1>
+    <div id="weather-data"></div>
+    <div id="marine-data"></div>
+    <div id="forecast-data"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api/v1';
+        
+        async function testWeatherAPI() {
+            try {
+                // Test current weather via backend
+                const currentResponse = await axios.get(`${API_BASE_URL}/weather/current?location=Boston,MA`);
+                console.log('Current Weather:', currentResponse.data);
+                document.getElementById('weather-data').innerHTML = `
+                    <h2>Current Weather in ${currentResponse.data.location.name}</h2>
+                    <p>Temperature: ${currentResponse.data.current.temp_f}°F (feels like ${currentResponse.data.current.feelslike_f}°F)</p>
+                    <p>Condition: ${currentResponse.data.current.condition.text}</p>
+                    <p>Wind: ${currentResponse.data.current.wind_mph} mph ${currentResponse.data.current.wind_dir}</p>
+                    <p>Humidity: ${currentResponse.data.current.humidity}%</p>
+                    <p>Visibility: ${currentResponse.data.current.vis_miles} miles</p>
+                `;
+
+                // Test marine data via backend
+                const marineResponse = await axios.get(`${API_BASE_URL}/weather/marine?location=Boston,MA&days=1`);
+                console.log('Marine Data:', marineResponse.data);
+                if (marineResponse.data.forecast && marineResponse.data.forecast.forecastday[0]) {
+                    const marine = marineResponse.data.forecast.forecastday[0];
+                    document.getElementById('marine-data').innerHTML = `
+                        <h2>Marine Conditions</h2>
+                        <p>Max Wave Height: ${marine.day.maxwave_height_mt || 'N/A'}m</p>
+                        <p>Water Temperature: ${marine.day.avgtemp_f || 'N/A'}°F</p>
+                        <p>Max Wind Speed: ${marine.day.maxwind_mph || 'N/A'} mph</p>
+                    `;
+                } else {
+                    document.getElementById('marine-data').innerHTML = `
+                        <h2>Marine Conditions</h2>
+                        <p>Marine data not available for this location</p>
+                    `;
+                }
+
+                // Test forecast data via backend
+                const forecastResponse = await axios.get(`${API_BASE_URL}/weather/forecast?location=Boston,MA&days=3`);
+                console.log('Forecast Data:', forecastResponse.data);
+                if (forecastResponse.data.forecast) {
+                    let forecastHTML = '<h2>3-Day Forecast</h2>';
+                    forecastResponse.data.forecast.forecastday.forEach((day, index) => {
+                        const date = new Date(day.date).toLocaleDateString();
+                        forecastHTML += `
+                            <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
+                                <h3>${index === 0 ? 'Today' : date}</h3>
+                                <p>High: ${day.day.maxtemp_f}°F | Low: ${day.day.mintemp_f}°F</p>
+                                <p>Condition: ${day.day.condition.text}</p>
+                                <p>Rain Chance: ${day.day.daily_chance_of_rain}%</p>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('forecast-data').innerHTML = forecastHTML;
+                }
+            } catch (error) {
+                console.error('Weather API Error:', error);
+                document.getElementById('weather-data').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                document.getElementById('marine-data').innerHTML = `<p style="color: red;">Make sure the Rails backend is running on localhost:3000</p>`;
+            }
+        }
+
+        testWeatherAPI();
+    </script>
+</body>
+</html> 

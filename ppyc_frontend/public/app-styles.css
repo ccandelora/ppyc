@@ -1,0 +1,46 @@
+/* App-specific styles for PPYC website */
+
+/* Component styles */
+.card {
+  @apply bg-white rounded-lg shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-200;
+}
+
+.btn-primary {
+  @apply bg-yacht-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-yacht-blue-700 transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply border-2 border-yacht-blue-600 text-yacht-blue-600 font-semibold py-3 px-6 rounded-lg hover:bg-yacht-blue-600 hover:text-white transition-colors duration-200;
+}
+
+/* Smooth transitions for TV display slides */
+.tv-display-slide-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.tv-display-slide-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+  transition: opacity 500ms, transform 500ms;
+}
+
+.tv-display-slide-exit {
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.tv-display-slide-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 500ms, transform 500ms;
+}
+
+/* Additional custom styles for yacht club theme */
+.yacht-gradient {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+}
+
+.maritime-shadow {
+  box-shadow: 0 10px 25px rgba(30, 64, 175, 0.3);
+} 

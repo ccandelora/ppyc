@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Component styles */
+@layer components {
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6 border border-gray-100;
+  }
+  
+  .btn-primary {
+    @apply bg-yacht-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-yacht-blue-700 transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply border-2 border-yacht-blue-600 text-yacht-blue-600 font-semibold py-3 px-6 rounded-lg hover:bg-yacht-blue-600 hover:text-white transition-colors duration-200;
+  }
+} 

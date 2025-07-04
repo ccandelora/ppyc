@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 100" aria-labelledby="title_corrected" role="img">
+    <title id="title_corrected">Pleasant Park Yacht Club Header Logo</title>
+    
+    <!-- Burgee Group: Scaled and positioned to the left -->
+    <!-- The transform attribute scales the burgee down and centers it vertically -->
+    <g transform="translate(0, 15.5) scale(0.46)">
+        <path d="M0 0 L300 75 L0 150 Z" fill="#0D2D5E" />
+        <path d="M0 0 L140 70 L140 80 L0 150 Z" fill="#D82C3C" />
+        <polygon points="70,55 78,72 97,72 82,85 87,102 70,92 53,102 58,85 43,72 62,72" fill="white"/>
+        <path d="M 210 50 C 225 75, 225 75, 210 100 C 200 87, 200 63, 210 50 Z" fill="white"/>
+    </g>
+    
+    <!-- Text Group: Positioned to the right of the burgee -->
+    <g transform="translate(150, 0)">
+        <text x="0" y="32" font-family="Georgia, serif" font-size="28" fill="#0D2D5E" font-weight="600">Pleasant Park Yacht</text>
+        <text x="0" y="68" font-family="Georgia, serif" font-size="36" fill="#0D2D5E" font-weight="bold">Club</text>
+        <text x="0" y="88" font-family="Georgia, serif" font-size="18" fill="#555555">Est. 1910</text>
+    </g>
+</svg>

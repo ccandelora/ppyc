@@ -1,0 +1,94 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# Large video files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wmv
+*.flv
+*.webm
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Rails
+*/log/*
+*/tmp/*
+!*/log/.keep
+!*/tmp/.keep
+*/storage/*
+!*/storage/.keep
+*/tmp/storage/*
+!*/tmp/storage/.keep
+*/tmp/pids/*
+!*/tmp/pids/.keep
+
+# Ignore master key for decrypting credentials
+*/config/master.key
+
+# Ignore uploaded files in development
+*/storage/
+*/tmp/storage/
+
+# Ignore Byebug command history file
+.byebug_history
+
+# Ignore test coverage
+coverage/
+
+# Ignore precompiled assets
+*/public/assets/
+*/public/packs/
+*/public/packs-test/
+
+# Ignore yarn files
+yarn-error.log
+yarn.lock
+
+# Ignore npm files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Logs
+logs
+*.log
+
+# Temp files
+tmp/
+temp/ 

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <!-- Main blue triangular burgee -->
+  <path d="M0 0 L600 150 L0 300 Z" fill="#0D2D5E" />
+  
+  <!-- Red section on the left -->
+  <path d="M0 0 L280 140 L280 160 L0 300 Z" fill="#D82C3C" />
+  
+  <!-- White star -->
+  <polygon points="140,110 156,144 194,144 164,170 174,204 140,184 106,204 116,170 86,144 124,144" fill="white"/>
+  
+  <!-- White crescent moon -->
+  <path d="M 420 100 C 450 150, 450 150, 420 200 C 400 174, 400 126, 420 100 Z" fill="white"/>
+</svg> 

@@ -1,0 +1,74 @@
+# Use Ruby 3.3.5 Alpine for smaller image size
+FROM ruby:3.3.5-alpine AS base
+
+# Install system dependencies
+RUN apk add --no-cache \
+    build-base \
+    postgresql-dev \
+    imagemagick \
+    imagemagick-dev \
+    tzdata \
+    curl \
+    bash \
+    git \
+    nodejs \
+    npm
+
+# Set working directory
+WORKDIR /app
+
+# Create non-root user for security
+RUN addgroup -g 1000 ppyc && \
+    adduser -D -s /bin/bash -u 1000 -G ppyc ppyc
+
+# Install bundler
+RUN gem install bundler:2.5.0
+
+# Copy Gemfile and Gemfile.lock
+COPY Gemfile Gemfile.lock ./
+
+# Install gems
+RUN bundle config set --local deployment 'true' && \
+    bundle config set --local without 'development test' && \
+    bundle install --jobs 4 --retry 3
+
+# Copy application code
+COPY . .
+
+# Create directories and set permissions
+RUN mkdir -p tmp/pids tmp/cache tmp/sockets log storage && \
+    chown -R ppyc:ppyc /app
+
+# Remove build dependencies to reduce image size
+RUN apk del build-base git
+
+# Production build stage
+FROM base AS production
+
+# Set environment variables
+ENV RAILS_ENV=production
+ENV RAILS_SERVE_STATIC_FILES=true
+ENV RAILS_LOG_TO_STDOUT=true
+ENV BUNDLE_WITHOUT="development:test"
+
+# Switch to non-root user
+USER ppyc
+
+# Precompile assets (if any)
+RUN bundle exec rails assets:precompile || true
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000/up || exit 1
+
+# Expose port
+EXPOSE 3000
+
+# Create entrypoint script
+COPY --chown=ppyc:ppyc docker-entrypoint.sh /usr/local/bin/
+USER root
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+USER ppyc
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"] 
