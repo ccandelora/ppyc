@@ -173,9 +173,6 @@ Rails.application.configure do
   # Database Configuration
   # ======================
 
-  # Database connection pool
-  config.active_record.database_tasks = false
-
   # Query optimization
   config.active_record.strict_loading_by_default = true
   config.active_record.warn_on_records_fetched_greater_than = 1000
