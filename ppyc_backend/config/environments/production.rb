@@ -175,7 +175,6 @@ Rails.application.configure do
 
   # Query optimization
   config.active_record.strict_loading_by_default = true
-  config.active_record.warn_on_records_fetched_greater_than = 1000
 
   # Active Storage Configuration
   # ============================
