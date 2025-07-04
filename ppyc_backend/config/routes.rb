@@ -6,8 +6,9 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Defines the root path route ("/").
+  # This serves the main index.html file for your React application.
+  root 'static#index'
 
   namespace :api do
     namespace :v1 do
@@ -56,4 +57,10 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # This is a "catch-all" route.
+  # It sends any other non-API requests to the React app's entry point.
+  # This allows React Router to handle front-end routing for things like
+  # /login or /about, even on a page refresh.
+  get '*path', to: 'static#index', constraints: ->(req) { !req.xhr? && req.format.html? }
 end
