@@ -195,14 +195,8 @@ Rails.application.configure do
   # Health Check Configuration
   # ==========================
 
-  # Configure health check endpoint
-  config.middleware.use Proc.new { |env|
-    if env['PATH_INFO'] == '/health'
-      [200, {'Content-Type' => 'application/json'}, ['{"status":"ok","timestamp":"' + Time.current.iso8601 + '"}']]
-    else
-      [404, {'Content-Type' => 'text/plain'}, ['Not Found']]
-    end
-  }
+  # Rails 8 provides a built-in health check endpoint at /up
+  # No custom middleware needed
 
   # Monitoring and Observability
   # ============================
