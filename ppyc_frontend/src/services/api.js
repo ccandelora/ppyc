@@ -1,6 +1,23 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api/v1';
+// Determine the API base URL based on the environment
+const getApiBaseUrl = () => {
+  // Check if we're in production environment
+  if (import.meta.env.PROD) {
+    // In production, check if there's a custom API URL set
+    if (import.meta.env.VITE_API_URL) {
+      return import.meta.env.VITE_API_URL;
+    }
+    // Default production behavior - use same domain with port 3000
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    return `${protocol}//${hostname}:3000/api/v1`;
+  }
+  // In development, use localhost
+  return 'http://localhost:3000/api/v1';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,

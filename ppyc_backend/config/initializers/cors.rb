@@ -7,7 +7,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins /\Ahttp:\/\/localhost:\d+\z/, 'http://localhost:3000' # Allow any localhost port for development
+    origins /\Ahttp:\/\/localhost:\d+\z/, 'http://localhost:3000', 'http://srv894370.hstgr.cloud' # Allow localhost for development and production domain
     resource '*',
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
