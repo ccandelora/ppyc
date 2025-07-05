@@ -8,9 +8,12 @@ const getApiBaseUrl = () => {
     if (import.meta.env.VITE_API_URL) {
       return import.meta.env.VITE_API_URL;
     }
-    // Force HTTP protocol in production to avoid SSL issues
+    // In production, use the same protocol and host as the current page
+    // This allows nginx to handle the proxy to the Rails backend
+    const protocol = window.location.protocol;
     const hostname = window.location.hostname;
-    return `http://${hostname}:3000/api/v1`;
+    const port = window.location.port ? `:${window.location.port}` : '';
+    return `${protocol}//${hostname}${port}/api/v1`;
   }
   // In development, use localhost
   return 'http://localhost:3000/api/v1';
