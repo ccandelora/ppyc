@@ -34,8 +34,6 @@ app_root = File.expand_path("..", __dir__)
 if ENV["RAILS_ENV"] == "production"
   # Configure Unix socket for nginx
   bind "unix://#{app_root}/tmp/sockets/puma.sock"
-  # Set proper permissions for the socket
-  socket_mode 0o777
   # Daemonize the process (run in background)
   daemonize true
   # Set stdout and stderr for logging
@@ -44,8 +42,6 @@ if ENV["RAILS_ENV"] == "production"
   pidfile "#{app_root}/tmp/pids/puma.pid"
   # State file for puma control
   state_path "#{app_root}/tmp/pids/puma.state"
-  # Restart command
-  restart_command "bundle exec puma"
 else
   # Development configuration
   port ENV.fetch("PORT", 3000)
