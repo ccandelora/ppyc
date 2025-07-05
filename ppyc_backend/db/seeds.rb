@@ -9,14 +9,9 @@
 #   end
 
 # Create admin user
-admin = User.create!(
-  email: 'admin@ppyc.org',
-  password: 'password123',
-  password_confirmation: 'password123',
-  role: 'admin'
-)
+admin = User.find_by(email: 'admin@ppyc.org')
 
-puts "Created admin user: #{admin.email}"
+puts "Found admin user: #{admin.email}"
 
 # Create sample posts based on real PPYC content
 posts = [
