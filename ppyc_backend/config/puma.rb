@@ -27,20 +27,23 @@
 threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
+# Get the application root directory
+app_root = File.expand_path("..", __dir__)
+
 # In production, use Unix socket for nginx communication
 if ENV["RAILS_ENV"] == "production"
   # Configure Unix socket for nginx
-  bind "unix://#{Rails.root}/tmp/sockets/puma.sock"
+  bind "unix://#{app_root}/tmp/sockets/puma.sock"
   # Set proper permissions for the socket
   socket_mode 0o777
   # Daemonize the process (run in background)
   daemonize true
   # Set stdout and stderr for logging
-  stdout_redirect "#{Rails.root}/log/puma.stdout.log", "#{Rails.root}/log/puma.stderr.log", true
+  stdout_redirect "#{app_root}/log/puma.stdout.log", "#{app_root}/log/puma.stderr.log", true
   # PID file location
-  pidfile "#{Rails.root}/tmp/pids/puma.pid"
+  pidfile "#{app_root}/tmp/pids/puma.pid"
   # State file for puma control
-  state_path "#{Rails.root}/tmp/pids/puma.state"
+  state_path "#{app_root}/tmp/pids/puma.state"
   # Restart command
   restart_command "bundle exec puma"
 else
