@@ -34,8 +34,6 @@ app_root = File.expand_path("..", __dir__)
 if ENV["RAILS_ENV"] == "production"
   # Configure Unix socket for nginx
   bind "unix://#{app_root}/tmp/sockets/puma.sock"
-  # Daemonize the process (run in background)
-  daemonize true
   # Set stdout and stderr for logging
   stdout_redirect "#{app_root}/log/puma.stdout.log", "#{app_root}/log/puma.stderr.log", true
   # PID file location
