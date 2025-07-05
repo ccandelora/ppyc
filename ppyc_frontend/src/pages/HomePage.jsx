@@ -54,7 +54,7 @@ function HomePage() {
             playsInline
             className="w-full h-full object-cover"
           >
-            <source src="/assets/images/videos/13974154_3840_2160_50fps.mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/dqb8hp68j/video/upload/v1751693180/ppyc/ppyc/slides/videos/cloudinaryfile_wttzjq.mp4" type="video/mp4" />
             {/* Fallback for browsers that don't support video */}
             Your browser does not support the video tag.
           </video>
