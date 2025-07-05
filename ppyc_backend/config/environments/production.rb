@@ -180,6 +180,7 @@ Rails.application.configure do
   # ============================
 
   # Use Cloudinary for file storage in production
+  config.active_storage.service = :cloudinary
   config.active_storage.variant_processor = :mini_magick
   config.active_storage.analyzers = [
     ActiveStorage::Analyzer::ImageAnalyzer::Vips,
