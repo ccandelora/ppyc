@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { authAPI } from '../services/api';
 
 const AuthContext = createContext();
@@ -13,27 +13,33 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // Check if user is authenticated on app start
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
   const checkAuth = async () => {
+    if (hasCheckedAuth && !user) {
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await authAPI.getCurrentUser();
       if (response.data.success) {
         setUser(response.data.data.user);
       }
-    } catch (error) {
-      // User is not authenticated
-      console.error('Auth check failed:', error);
+    } catch {
+      console.log('Auth check: User not authenticated (normal for public pages)');
       setUser(null);
     } finally {
       setLoading(false);
+      setHasCheckedAuth(true);
+    }
+  };
+
+  const ensureAuthChecked = async () => {
+    if (!hasCheckedAuth) {
+      await checkAuth();
     }
   };
 
@@ -46,6 +52,7 @@ const AuthProvider = ({ children }) => {
       
       if (response.data.success) {
         setUser(response.data.data.user);
+        setHasCheckedAuth(true);
         return { success: true };
       } else {
         throw new Error(response.data.error || 'Login failed');
@@ -67,10 +74,10 @@ const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       setError(null);
+      setHasCheckedAuth(true);
     }
   };
 
-  // Permission checking helpers
   const hasRole = (role) => {
     return user?.role === role;
   };
@@ -98,6 +105,7 @@ const AuthProvider = ({ children }) => {
     login,
     logout,
     checkAuth,
+    ensureAuthChecked,
     isAuthenticated: !!user,
     hasRole,
     canViewAdmin,

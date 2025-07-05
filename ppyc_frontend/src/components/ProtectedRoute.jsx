@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const ProtectedRoute = ({ children, requirePermission = null }) => {
-  const { isAuthenticated, loading, user, canViewAdmin, canEditContent, canManageUsers, canManageMedia } = useAuth();
+  const { isAuthenticated, loading, user, canViewAdmin, canEditContent, canManageUsers, canManageMedia, ensureAuthChecked } = useAuth();
   const location = useLocation();
+
+  // Ensure auth is checked when accessing protected routes
+  useEffect(() => {
+    ensureAuthChecked();
+  }, [ensureAuthChecked]);
 
   // Show loading while checking authentication
   if (loading) {
