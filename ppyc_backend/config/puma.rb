@@ -27,8 +27,26 @@
 threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
-# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port ENV.fetch("PORT", 3000)
+# In production, use Unix socket for nginx communication
+if ENV["RAILS_ENV"] == "production"
+  # Configure Unix socket for nginx
+  bind "unix://#{Rails.root}/tmp/sockets/puma.sock"
+  # Set proper permissions for the socket
+  socket_mode 0o777
+  # Daemonize the process (run in background)
+  daemonize true
+  # Set stdout and stderr for logging
+  stdout_redirect "#{Rails.root}/log/puma.stdout.log", "#{Rails.root}/log/puma.stderr.log", true
+  # PID file location
+  pidfile "#{Rails.root}/tmp/pids/puma.pid"
+  # State file for puma control
+  state_path "#{Rails.root}/tmp/pids/puma.state"
+  # Restart command
+  restart_command "bundle exec puma"
+else
+  # Development configuration
+  port ENV.fetch("PORT", 3000)
+end
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
