@@ -8,10 +8,9 @@ const getApiBaseUrl = () => {
     if (import.meta.env.VITE_API_URL) {
       return import.meta.env.VITE_API_URL;
     }
-    // Default production behavior - use same domain with port 3000
-    const protocol = window.location.protocol;
+    // Force HTTP protocol in production to avoid SSL issues
     const hostname = window.location.hostname;
-    return `${protocol}//${hostname}:3000/api/v1`;
+    return `http://${hostname}:3000/api/v1`;
   }
   // In development, use localhost
   return 'http://localhost:3000/api/v1';
