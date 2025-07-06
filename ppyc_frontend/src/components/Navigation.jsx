@@ -21,6 +21,22 @@ function Navigation() {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
+  // Handle smooth scrolling for anchor links
+  const handleLinkClick = (e) => {
+    // Close mobile menu
+    setIsMenuOpen(false);
+    
+    // Handle anchor links within the same page
+    const href = e.target.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -80,6 +96,7 @@ function Navigation() {
                       ? 'bg-blue-600 text-white shadow-lg'
                       : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'
                   }`}
+                  onClick={handleLinkClick}
                 >
                   <i className={`${item.icon} text-sm`}></i>
                   <span className="text-sm">{item.label}</span>
@@ -89,6 +106,7 @@ function Navigation() {
               <Link
                 to="/membership"
                 className="ml-4 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 hover:scale-105 shadow-lg hover:shadow-xl"
+                onClick={handleLinkClick}
               >
                 <i className="fas fa-users text-sm"></i>
                 <span className="text-sm">Membership</span>
@@ -98,6 +116,7 @@ function Navigation() {
                 to="/tv-display"
                 className="ml-2 px-4 py-2.5 border border-slate-300 text-slate-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200 flex items-center gap-2 hover:scale-105"
                 title="TV Display"
+                onClick={handleLinkClick}
               >
                 <i className="fas fa-tv text-sm"></i>
                 <span className="text-sm">TV</span>
@@ -186,7 +205,7 @@ function Navigation() {
                       ? 'bg-blue-600 text-white shadow-lg'
                       : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={handleLinkClick}
                 >
                   <i className={`${item.icon} text-lg w-5 text-center`}></i>
                   <span className="text-base">{item.label}</span>
@@ -199,7 +218,7 @@ function Navigation() {
               <Link
                 to="/membership"
                 className="flex items-center justify-center gap-3 w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 hover:from-blue-700 hover:to-blue-800 shadow-lg"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleLinkClick}
               >
                 <i className="fas fa-users text-lg"></i>
                 <span>Join Our Community</span>
@@ -208,7 +227,7 @@ function Navigation() {
               <Link
                 to="/tv-display"
                 className="flex items-center justify-center gap-3 w-full px-6 py-4 border border-slate-300 text-slate-600 font-medium rounded-xl hover:bg-slate-50 transition-all duration-200"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleLinkClick}
               >
                 <i className="fas fa-tv text-lg"></i>
                 <span>TV Display</span>

@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './contexts/AuthContext';
 
 // Lazy load components for better performance
@@ -86,6 +87,7 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <Router>
+          <ScrollToTop />
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               {/* TV Display Route - Full Screen */}
