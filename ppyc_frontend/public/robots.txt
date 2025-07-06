@@ -1,0 +1,76 @@
+# Robots.txt for Pleasant Park Yacht Club
+# This file guides search engines on what to crawl and what to avoid
+
+# Allow all search engines to access public content
+User-agent: *
+
+# Allow public pages
+Allow: /
+Allow: /about
+Allow: /heritage
+Allow: /events
+Allow: /news
+Allow: /marina
+Allow: /membership
+Allow: /pages/
+
+# Disallow admin and sensitive areas
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /api/
+Disallow: /login
+Disallow: /_admin
+Disallow: /cms/
+Disallow: /dashboard/
+Disallow: /wp-admin/
+Disallow: /backend/
+
+# Disallow TV display (not meant for public search)
+Disallow: /tv-display
+
+# Disallow common technical files
+Disallow: /*.json$
+Disallow: /*.js$
+Disallow: /*.css$
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /dist/
+Disallow: /.git/
+Disallow: /.env
+
+# Allow specific file types that are good for SEO
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.svg$
+Allow: /*.pdf$
+
+# Set crawl delay (be respectful)
+Crawl-delay: 1
+
+# Sitemap location (we'll create this next)
+Sitemap: https://srv894370.hstgr.cloud/sitemap.xml
+
+# Additional directives for specific bots
+
+# Google-specific directives
+User-agent: Googlebot
+Disallow: /admin/
+Disallow: /api/
+Allow: /
+
+# Bing-specific directives  
+User-agent: bingbot
+Disallow: /admin/
+Disallow: /api/
+Allow: /
+
+# Block malicious bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: / 

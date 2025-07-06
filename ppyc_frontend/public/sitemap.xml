@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage - Highest Priority -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://srv894370.hstgr.cloud/assets/images/ppyc-images/ppyc-hero.png</image:loc>
+      <image:title>Pleasant Park Yacht Club Marina</image:title>
+      <image:caption>Beautiful waterfront view of PPYC marina and clubhouse</image:caption>
+    </image:image>
+  </url>
+
+  <!-- About Page -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/about</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Heritage Page -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/heritage</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://srv894370.hstgr.cloud/assets/images/ppyc-images/ppyc1951.jpg</image:loc>
+      <image:title>PPYC Historical Photo</image:title>
+      <image:caption>Historical photograph of Pleasant Park Yacht Club from 1951</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Events Page -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/events</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- News Page -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/news</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Marina Services Page -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/marina</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://srv894370.hstgr.cloud/assets/images/ppyc-images/dinghy.jpg</image:loc>
+      <image:title>PPYC Marina Services</image:title>
+      <image:caption>Full-service marina with modern facilities</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Membership Page -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/membership</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Static Pages -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/pages/marina-services</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://srv894370.hstgr.cloud/pages/membership-information</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://srv894370.hstgr.cloud/pages/events-activities</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://srv894370.hstgr.cloud/pages/dining-catering</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://srv894370.hstgr.cloud/pages/youth-programs</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://srv894370.hstgr.cloud/pages/hall-rentals</loc>
+    <lastmod>2025-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Sample News Articles (these would be dynamically generated in a real implementation) -->
+  <url>
+    <loc>https://srv894370.hstgr.cloud/news/4th-of-july-party</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://srv894370.hstgr.cloud/news/neighborhood-dog-band</loc>
+    <lastmod>2025-01-05</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://srv894370.hstgr.cloud/news/welcome-to-the-2025-sailing-season</loc>
+    <lastmod>2024-12-30</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset> 

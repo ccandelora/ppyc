@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
+import AdminProtection from './components/AdminProtection';
+import SEOHelmet from './components/SEOHelmet';
 import { AuthProvider } from './contexts/AuthContext';
 
 // Lazy load components for better performance
@@ -88,6 +90,8 @@ function App() {
       <AuthProvider>
         <Router>
           <ScrollToTop />
+          <AdminProtection />
+          <SEOHelmet />
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               {/* TV Display Route - Full Screen */}

@@ -21,6 +21,18 @@ function Navigation() {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
+  // Add keyboard navigation support
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMenuOpen]);
+
   // Handle smooth scrolling for anchor links
   const handleLinkClick = (e) => {
     // Close mobile menu
@@ -57,11 +69,15 @@ function Navigation() {
 
   return (
     <>
-      <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/50' 
-          : 'bg-white/90 backdrop-blur-sm shadow-sm'
-      }`}>
+      <nav 
+        className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+          scrolled 
+            ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/50' 
+            : 'bg-white/90 backdrop-blur-sm shadow-sm'
+        }`}
+        role="navigation"
+        aria-label="Main navigation"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             
@@ -86,7 +102,7 @@ function Navigation() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-1">
+            <div className="hidden lg:flex items-center space-x-1" role="menubar" aria-label="Main menu">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
@@ -97,8 +113,11 @@ function Navigation() {
                       : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'
                   }`}
                   onClick={handleLinkClick}
+                  role="menuitem"
+                  aria-current={isActive(item.path) ? 'page' : undefined}
+                  aria-label={`Navigate to ${item.label} page`}
                 >
-                  <i className={`${item.icon} text-sm`}></i>
+                  <i className={`${item.icon} text-sm`} aria-hidden="true"></i>
                   <span className="text-sm">{item.label}</span>
                 </Link>
               ))}
@@ -107,18 +126,21 @@ function Navigation() {
                 to="/membership"
                 className="ml-4 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 hover:scale-105 shadow-lg hover:shadow-xl"
                 onClick={handleLinkClick}
+                role="menuitem"
+                aria-label="Join our yacht club membership"
               >
-                <i className="fas fa-users text-sm"></i>
+                <i className="fas fa-users text-sm" aria-hidden="true"></i>
                 <span className="text-sm">Membership</span>
               </Link>
               
               <Link
                 to="/tv-display"
                 className="ml-2 px-4 py-2.5 border border-slate-300 text-slate-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200 flex items-center gap-2 hover:scale-105"
-                title="TV Display"
                 onClick={handleLinkClick}
+                role="menuitem"
+                aria-label="View club TV display"
               >
-                <i className="fas fa-tv text-sm"></i>
+                <i className="fas fa-tv text-sm" aria-hidden="true"></i>
                 <span className="text-sm">TV</span>
               </Link>
             </div>
@@ -162,13 +184,21 @@ function Navigation() {
         <div 
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsMenuOpen(false)}
+          role="presentation"
+          aria-hidden="true"
         />
       )}
 
       {/* Mobile Navigation Menu */}
-      <div className={`fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 z-50 lg:hidden ${
-        isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-      }`}>
+      <div 
+        className={`fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 z-50 lg:hidden ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation menu"
+        aria-hidden={!isMenuOpen}
+      >
         <div className="flex flex-col h-full">
           
           {/* Mobile Header */}
@@ -194,7 +224,7 @@ function Navigation() {
           </div>
 
           {/* Mobile Navigation Links */}
-          <div className="flex-1 overflow-y-auto py-6">
+          <div className="flex-1 overflow-y-auto py-6" role="menu" aria-label="Mobile navigation links">
             <div className="px-6 space-y-2">
               {navItems.map((item) => (
                 <Link
@@ -206,8 +236,11 @@ function Navigation() {
                       : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'
                   }`}
                   onClick={handleLinkClick}
+                  role="menuitem"
+                  aria-current={isActive(item.path) ? 'page' : undefined}
+                  aria-label={`Navigate to ${item.label} page`}
                 >
-                  <i className={`${item.icon} text-lg w-5 text-center`}></i>
+                  <i className={`${item.icon} text-lg w-5 text-center`} aria-hidden="true"></i>
                   <span className="text-base">{item.label}</span>
                 </Link>
               ))}
@@ -219,8 +252,10 @@ function Navigation() {
                 to="/membership"
                 className="flex items-center justify-center gap-3 w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 hover:from-blue-700 hover:to-blue-800 shadow-lg"
                 onClick={handleLinkClick}
+                role="menuitem"
+                aria-label="Join our yacht club membership"
               >
-                <i className="fas fa-users text-lg"></i>
+                <i className="fas fa-users text-lg" aria-hidden="true"></i>
                 <span>Join Our Community</span>
               </Link>
               
@@ -228,8 +263,10 @@ function Navigation() {
                 to="/tv-display"
                 className="flex items-center justify-center gap-3 w-full px-6 py-4 border border-slate-300 text-slate-600 font-medium rounded-xl hover:bg-slate-50 transition-all duration-200"
                 onClick={handleLinkClick}
+                role="menuitem"
+                aria-label="View club TV display"
               >
-                <i className="fas fa-tv text-lg"></i>
+                <i className="fas fa-tv text-lg" aria-hidden="true"></i>
                 <span>TV Display</span>
               </Link>
             </div>
@@ -241,14 +278,26 @@ function Navigation() {
               <p className="text-sm font-medium">Pleasant Park Yacht Club</p>
               <p className="text-xs text-slate-500 mt-1">Excellence since 1910</p>
               <div className="flex justify-center gap-4 mt-4">
-                <a href="#" className="text-slate-400 hover:text-blue-600 transition-colors">
-                  <i className="fab fa-facebook-f text-lg"></i>
+                <a 
+                  href="#" 
+                  className="text-slate-400 hover:text-blue-600 transition-colors"
+                  aria-label="Visit our Facebook page"
+                >
+                  <i className="fab fa-facebook-f text-lg" aria-hidden="true"></i>
                 </a>
-                <a href="#" className="text-slate-400 hover:text-blue-600 transition-colors">
-                  <i className="fab fa-instagram text-lg"></i>
+                <a 
+                  href="#" 
+                  className="text-slate-400 hover:text-blue-600 transition-colors"
+                  aria-label="Follow us on Instagram"
+                >
+                  <i className="fab fa-instagram text-lg" aria-hidden="true"></i>
                 </a>
-                <a href="#" className="text-slate-400 hover:text-blue-600 transition-colors">
-                  <i className="fab fa-twitter text-lg"></i>
+                <a 
+                  href="#" 
+                  className="text-slate-400 hover:text-blue-600 transition-colors"
+                  aria-label="Follow us on Twitter"
+                >
+                  <i className="fab fa-twitter text-lg" aria-hidden="true"></i>
                 </a>
               </div>
             </div>
