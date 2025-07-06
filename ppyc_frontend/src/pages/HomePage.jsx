@@ -28,14 +28,20 @@ function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-slate-100">
         <div className="text-center">
-          <img 
-            src="/assets/images/file.svg" 
-            alt="Pleasant Park Yacht Club" 
-            className="w-16 h-16 mx-auto mb-4 animate-pulse"
-          />
-          <p className="text-gray-600">Loading...</p>
+          <div className="relative">
+            <img 
+              src="/assets/images/file.svg" 
+              alt="Pleasant Park Yacht Club" 
+              className="w-20 h-20 mx-auto mb-6 animate-pulse"
+            />
+            <div className="absolute inset-0 rounded-full bg-blue-600/20 animate-ping"></div>
+          </div>
+          <p className="text-slate-600 text-lg font-medium">Loading...</p>
+          <div className="mt-4 w-48 h-2 bg-slate-200 rounded-full mx-auto overflow-hidden">
+            <div className="h-full bg-blue-600 rounded-full animate-pulse"></div>
+          </div>
         </div>
       </div>
     );
@@ -58,45 +64,50 @@ function HomePage() {
             {/* Fallback for browsers that don't support video */}
             Your browser does not support the video tag.
           </video>
-          {/* Overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-blue-900/70 to-slate-800/80"></div>
+          {/* Enhanced Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-blue-900/75 to-slate-800/85"></div>
         </div>
         
         {/* Hero Content */}
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
-          <div className="mb-8">
-            <img 
-              src="/assets/images/file.svg" 
-              alt="Pleasant Park Yacht Club" 
-              className="w-24 h-24 mx-auto mb-6 opacity-90"
-            />
+        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 animate-fade-in-up">
+            <div className="relative inline-block">
+              <img 
+                src="/assets/images/file.svg" 
+                alt="Pleasant Park Yacht Club" 
+                className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 mx-auto mb-6 opacity-95 drop-shadow-lg"
+              />
+              <div className="absolute inset-0 rounded-full bg-white/20 scale-150 blur-xl"></div>
+            </div>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up animation-delay-200">
             Pleasant Park
-            <span className="block text-4xl md:text-6xl font-light text-blue-200">Yacht Club</span>
+            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-blue-200 mt-2">
+              Yacht Club
+            </span>
           </h1>
           
-          <div className="w-24 h-1 bg-gold-400 mx-auto mb-8"></div>
+          <div className="w-16 sm:w-20 lg:w-24 h-1 bg-blue-400 mx-auto mb-8 animate-fade-in-up animation-delay-400"></div>
           
-          <p className="text-xl md:text-2xl font-light mb-4 leading-relaxed">
-            Est. 1910
+          <p className="text-lg sm:text-xl lg:text-2xl font-light mb-4 animate-fade-in-up animation-delay-600">
+            Established 1910
           </p>
           
-          <p className="text-lg md:text-xl font-light mb-12 max-w-2xl mx-auto leading-relaxed opacity-90">
+          <p className="text-base sm:text-lg lg:text-xl font-light mb-12 max-w-3xl mx-auto leading-relaxed opacity-95 animate-fade-in-up animation-delay-800">
             A tradition of excellence in navigation, seamanship, and fellowship on the Great Lakes
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-1000">
             <Link 
               to="/about" 
-              className="px-8 py-4 bg-white text-slate-900 font-semibold rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+              className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl min-w-[200px] text-center"
             >
               Discover Our Heritage
             </Link>
             <Link 
               to="/membership" 
-              className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-slate-900 transition-all duration-300"
+              className="w-full sm:w-auto px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-slate-900 transition-all duration-300 transform hover:scale-105 min-w-[200px] text-center"
             >
               Join Our Community
             </Link>
@@ -104,54 +115,55 @@ function HomePage() {
         </div>
         
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce hidden md:block">
           <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
             <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
           </div>
+          <p className="text-xs mt-2 text-white/80">Scroll</p>
         </div>
       </section>
 
       {/* Heritage Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+      <section className="py-16 lg:py-24 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16 lg:mb-20">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
               Over a Century of Excellence
             </h2>
-            <div className="w-24 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <div className="w-20 lg:w-24 h-1 bg-blue-600 mx-auto mb-8"></div>
+            <p className="text-lg lg:text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
               Since 1910, Pleasant Park Yacht Club has been a beacon for those who share our passion for 
               the water, fine seamanship, and lifelong friendships.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="fas fa-compass text-3xl text-blue-600"></i>
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+            <div className="text-center group">
+              <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                <i className="fas fa-compass text-3xl lg:text-4xl text-blue-600"></i>
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Navigation Excellence</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-4">Navigation Excellence</h3>
+              <p className="text-slate-600 leading-relaxed">
                 Promoting the highest standards of seamanship and navigation on the Great Lakes.
               </p>
             </div>
             
-            <div className="text-center">
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="fas fa-anchor text-3xl text-blue-600"></i>
+            <div className="text-center group">
+              <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                <i className="fas fa-anchor text-3xl lg:text-4xl text-blue-600"></i>
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Maritime Community</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-4">Maritime Community</h3>
+              <p className="text-slate-600 leading-relaxed">
                 Building lasting friendships through shared adventures on the water.
               </p>
             </div>
             
-            <div className="text-center">
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="fas fa-trophy text-3xl text-blue-600"></i>
+            <div className="text-center group">
+              <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                <i className="fas fa-trophy text-3xl lg:text-4xl text-blue-600"></i>
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Proud Tradition</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-4">Proud Tradition</h3>
+              <p className="text-slate-600 leading-relaxed">
                 Honoring our maritime heritage while embracing the future of yachting.
               </p>
             </div>
@@ -159,109 +171,54 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Historical Photos Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
-              A Rich Heritage
-            </h2>
-            <div className="w-24 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              From our founding in 1910 to today, Pleasant Park Yacht Club has been a cornerstone 
-              of maritime excellence and community fellowship.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <img 
-                  src="/assets/images/ppyc-images/ppyc-1919a-768x603.jpg" 
-                  alt="PPYC 1919" 
-                  className="w-full h-64 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">Early Days - 1919</h3>
-                  <p className="text-gray-600">Our club in its formative years, establishing traditions that continue today.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <img 
-                  src="/assets/images/ppyc-images/ppyc1951.jpg" 
-                  alt="PPYC 1920" 
-                  className="w-full h-64 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">Growing Community - 1920</h3>
-                  <p className="text-gray-600">The spirit of fellowship and maritime excellence taking root.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <img 
-                  src="/assets/images/ppyc-images/ppyc1951_men_at_bar-768x563.jpg" 
-                  alt="PPYC 1951 Social Life" 
-                  className="w-full h-64 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">Social Traditions - 1951</h3>
-                  <p className="text-gray-600">The clubhouse has always been the heart of our community.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Upcoming Events */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex justify-between items-center mb-12">
-            <div>
-              <h2 className="text-4xl font-bold text-slate-800 mb-4">Upcoming Events</h2>
-              <div className="w-16 h-1 bg-blue-600"></div>
+      {/* Events Section */}
+      <section className="py-16 lg:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-12 lg:mb-16">
+            <div className="mb-6 sm:mb-0">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-4">
+                Upcoming Events
+              </h2>
+              <div className="w-20 h-1 bg-blue-600"></div>
             </div>
             <Link 
               to="/events" 
-              className="text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-2 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
             >
-              <span>View All Events</span>
-              <i className="fas fa-arrow-right"></i>
+              View All Events
+              <i className="fas fa-arrow-right text-sm"></i>
             </Link>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {events.map((event) => (
-              <div key={event.id} className="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-                {event.image_url && (
-                  <img 
-                    src={event.image_url} 
-                    alt={event.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <div className="p-6">
-                  <div className="text-blue-600 font-semibold text-sm mb-2">
-                    {new Date(event.start_time).toLocaleDateString('en-US', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">{event.title}</h3>
-                  <p className="text-gray-600 leading-relaxed line-clamp-3">{event.description}</p>
-                  {event.location && (
-                    <div className="mt-4 text-sm text-gray-500">
-                      📍 {event.location}
+              <div key={event.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:scale-105">
+                <div className="p-6 lg:p-8">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                      <i className="fas fa-calendar text-white text-lg"></i>
                     </div>
-                  )}
+                    <div className="flex-1">
+                      <h3 className="text-lg lg:text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
+                        {event.title}
+                      </h3>
+                      <p className="text-slate-600 text-sm lg:text-base line-clamp-3">
+                        {event.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-blue-600 font-medium">
+                      {new Date(event.event_date).toLocaleDateString()}
+                    </span>
+                    <Link 
+                      to={`/events`}
+                      className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all"
+                    >
+                      Learn More
+                      <i className="fas fa-arrow-right text-xs"></i>
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
@@ -269,54 +226,53 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Latest News */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex justify-between items-center mb-12">
-            <div>
-              <h2 className="text-4xl font-bold text-slate-800 mb-4">Club News</h2>
-              <div className="w-16 h-1 bg-blue-600"></div>
+      {/* News Section */}
+      <section className="py-16 lg:py-24 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-12 lg:mb-16">
+            <div className="mb-6 sm:mb-0">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-4">
+                Latest News
+              </h2>
+              <div className="w-20 h-1 bg-blue-600"></div>
             </div>
             <Link 
               to="/news" 
-              className="text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-2 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
             >
-              <span>View All News</span>
-              <i className="fas fa-arrow-right"></i>
+              View All News
+              <i className="fas fa-arrow-right text-sm"></i>
             </Link>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {posts.map((post) => (
-              <article key={post.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-                {post.featured_image_url && (
-                  <img 
-                    src={post.featured_image_url} 
-                    alt={post.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <div className="p-6">
-                  <div className="text-gray-500 text-sm mb-2">
-                    {new Date(post.published_at).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
+              <article key={post.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:scale-105">
+                <div className="p-6 lg:p-8">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                      <i className="fas fa-newspaper text-white text-lg"></i>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg lg:text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
+                        {post.title}
+                      </h3>
+                      <p className="text-slate-600 text-sm lg:text-base line-clamp-3">
+                        {post.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3 leading-tight">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-blue-600 font-medium">
+                      {new Date(post.created_at).toLocaleDateString()}
+                    </span>
                     <Link 
-                      to={`/news/${post.slug}`} 
-                      className="hover:text-blue-600 transition-colors"
+                      to={`/news/${post.id}`}
+                      className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all"
                     >
-                      {post.title}
+                      Read More
+                      <i className="fas fa-arrow-right text-xs"></i>
                     </Link>
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed line-clamp-3">
-                    {post.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
-                  </p>
-                  <div className="mt-4 text-sm text-gray-500">
-                    By {post.author?.email || 'PPYC Staff'}
                   </div>
                 </div>
               </article>
@@ -325,29 +281,28 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Membership CTA */}
-      <section className="py-20 bg-slate-900 text-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Join Our Maritime Community
+      {/* Call to Action Section */}
+      <section className="py-16 lg:py-24 bg-gradient-to-r from-blue-600 to-blue-800 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Ready to Join Our Maritime Family?
           </h2>
-          <div className="w-24 h-1 bg-blue-400 mx-auto mb-8"></div>
-          <p className="text-xl font-light leading-relaxed mb-12 opacity-90">
-            Experience the camaraderie, tradition, and adventure that has defined Pleasant Park Yacht Club 
-            for over a century. From seasoned mariners to those new to the water, all are welcome.
+          <p className="text-lg lg:text-xl text-blue-100 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Experience the camaraderie, expertise, and adventure that has defined Pleasant Park Yacht Club for over a century.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link 
               to="/membership" 
-              className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+              className="w-full sm:w-auto px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl min-w-[200px] text-center"
             >
-              Learn About Membership
+              Apply for Membership
             </Link>
             <Link 
-              to="/contact" 
-              className="px-8 py-4 border-2 border-blue-400 text-blue-400 font-semibold rounded-lg hover:bg-blue-400 hover:text-white transition-all duration-300"
+              to="/about" 
+              className="w-full sm:w-auto px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105 min-w-[200px] text-center"
             >
-              Contact Us
+              Learn More About Us
             </Link>
           </div>
         </div>
