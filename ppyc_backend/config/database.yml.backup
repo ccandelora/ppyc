@@ -80,7 +80,6 @@ test:
 #
 production:
   primary: &primary_production
-    host: localhost
     <<: *default
     username: ppyc_user
     database: ppyc_production
