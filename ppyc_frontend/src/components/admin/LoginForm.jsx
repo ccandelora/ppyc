@@ -47,10 +47,10 @@ const LoginForm = () => {
         {/* Header */}
         <div className="text-center">
           <div className="mx-auto h-20 w-20 bg-white rounded-full flex items-center justify-center mb-6">
-            <img 
-              src="/assets/images/file.svg" 
-              alt="PPYC Logo" 
-              className="h-12 w-12"
+            <img
+              className="mx-auto h-16 w-auto"
+              src="/assets/images/ppyc-logo.svg"
+              alt="Pleasant Park Yacht Club"
             />
           </div>
           <h2 className="text-3xl font-bold text-white">Admin Login</h2>

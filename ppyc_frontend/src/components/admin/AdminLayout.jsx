@@ -45,10 +45,10 @@ const AdminLayout = () => {
       current: location.pathname === '/admin'
     },
     {
-      name: 'Posts',
-      href: '/admin/posts',
+      name: 'News',
+      href: '/admin/news',
       icon: 'fas fa-newspaper',
-      current: location.pathname.startsWith('/admin/posts')
+      current: location.pathname.startsWith('/admin/news')
     },
     {
       name: 'Events',
@@ -95,7 +95,7 @@ const AdminLayout = () => {
           
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
-              <img className="h-8 w-auto" src="/assets/images/file.svg" alt="PPYC" />
+              <img className="h-8 w-auto" src="/assets/images/ppyc-logo.svg" alt="PPYC" />
               <span className="ml-2 text-xl font-bold text-gray-900">PPYC Admin</span>
             </div>
             <nav className="mt-5 px-2 space-y-1">
@@ -124,7 +124,7 @@ const AdminLayout = () => {
           <div className="flex flex-col h-0 flex-1 bg-white shadow">
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
               <div className="flex items-center flex-shrink-0 px-4">
-                <img className="h-8 w-auto" src="/assets/images/file.svg" alt="PPYC" />
+                <img className="h-8 w-auto" src="/assets/images/ppyc-logo.svg" alt="PPYC" />
                 <span className="ml-2 text-xl font-bold text-gray-900">PPYC Admin</span>
               </div>
               <nav className="mt-5 flex-1 px-2 space-y-1">

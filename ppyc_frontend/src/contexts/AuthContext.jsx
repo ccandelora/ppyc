@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api';
 
 const AuthContext = createContext();
@@ -17,6 +17,20 @@ const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
+  // Initialize user from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        localStorage.removeItem('currentUser');
+      }
+    }
+    setHasCheckedAuth(true);
+  }, []);
+
   const checkAuth = async () => {
     if (hasCheckedAuth && !user) {
       return;
@@ -24,13 +38,16 @@ const AuthProvider = ({ children }) => {
 
     try {
       setLoading(true);
-      const response = await authAPI.getCurrentUser();
+      const response = await authAPI.me();
       if (response.data.success) {
-        setUser(response.data.data.user);
+        const userData = response.data.data.user;
+        setUser(userData);
+        localStorage.setItem('currentUser', JSON.stringify(userData));
       }
     } catch {
       console.log('Auth check: User not authenticated (normal for public pages)');
       setUser(null);
+      localStorage.removeItem('currentUser');
     } finally {
       setLoading(false);
       setHasCheckedAuth(true);
@@ -48,10 +65,12 @@ const AuthProvider = ({ children }) => {
       setError(null);
       setLoading(true);
       
-      const response = await authAPI.login(email, password);
+      const response = await authAPI.login({ email, password });
       
       if (response.data.success) {
-        setUser(response.data.data.user);
+        const userData = response.data.data.user;
+        setUser(userData);
+        localStorage.setItem('currentUser', JSON.stringify(userData));
         setHasCheckedAuth(true);
         return { success: true };
       } else {
@@ -75,6 +94,7 @@ const AuthProvider = ({ children }) => {
       setUser(null);
       setError(null);
       setHasCheckedAuth(true);
+      localStorage.removeItem('currentUser');
     }
   };
 
@@ -83,11 +103,11 @@ const AuthProvider = ({ children }) => {
   };
 
   const canViewAdmin = () => {
-    return user && ['superuser', 'admin', 'editor'].includes(user.role);
+    return user && ['superuser', 'admin', 'editor', 'member'].includes(user.role);
   };
 
   const canEditContent = () => {
-    return user && ['superuser', 'admin', 'editor'].includes(user.role);
+    return user && ['superuser', 'admin', 'editor', 'member'].includes(user.role);
   };
 
   const canManageUsers = () => {
@@ -95,7 +115,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const canManageMedia = () => {
-    return user && ['superuser', 'admin', 'editor'].includes(user.role);
+    return user && ['superuser', 'admin', 'editor', 'member'].includes(user.role);
   };
 
   const value = {

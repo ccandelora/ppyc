@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cloudinaryConfig } from '../../config/cloudinary';
 import { adminAPI } from '../../services/api';
+import { loadScript } from '../../utils/scriptLoader';
 
 const MediaLibrary = () => {
   const [selectedImages, setSelectedImages] = useState([]);
@@ -20,16 +21,19 @@ const MediaLibrary = () => {
     if (!useCloudinaryWidget) {
       fetchAllImages();
     } else {
-      // Load Cloudinary widget
+      // Load Cloudinary widget with optimized loader
       if (!window.cloudinary) {
-        const script = document.createElement('script');
-        script.src = 'https://media-library.cloudinary.com/global/all.js';
-        script.async = true;
-        script.onload = () => {
+        loadScript('https://media-library.cloudinary.com/global/all.js', {
+          async: true,
+          timeout: 15000
+        }).then(() => {
           setIsLoading(false);
           initializeWidget();
-        };
-        document.body.appendChild(script);
+        }).catch((error) => {
+          console.error('Failed to load Cloudinary widget:', error);
+          setError('Failed to load media library widget');
+          setIsLoading(false);
+        });
       } else {
         setIsLoading(false);
         initializeWidget();

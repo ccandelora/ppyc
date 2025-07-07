@@ -17,6 +17,13 @@ admin = User.find_or_create_by(email: 'admin@ppyc.org') do |user|
   puts "Created admin user: admin@ppyc.org"
 end
 
+# Create Chris's user account
+chris = User.find_or_create_by(email: 'chris.candelora@gmail.com') do |user|
+  user.password = 'Bytes1010'
+  user.password_confirmation = 'Bytes1010'
+  puts "Created user: chris.candelora@gmail.com"
+end
+
 # Create additional staff/member users
 commodore = User.find_or_create_by(email: 'commodore@ppyc.org') do |user|
   user.password = 'password123'

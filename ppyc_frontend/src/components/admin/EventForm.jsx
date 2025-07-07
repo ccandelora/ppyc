@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import WYSIWYGEditor from './WYSIWYGEditor';
+import ImageUpload from '../ImageUpload';
 import { adminAPI } from '../../services/api';
 
 const EventForm = () => {
@@ -14,7 +15,7 @@ const EventForm = () => {
     start_time: '',
     end_time: '',
     location: '',
-    image: null
+    image: null // Will be handled by ImageUpload component
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -64,11 +65,10 @@ const EventForm = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleImageUpload = (uploadData) => {
     setFormData(prev => ({
       ...prev,
-      image: file
+      image: uploadData // This will contain the Cloudinary upload response
     }));
   };
 
@@ -86,8 +86,8 @@ const EventForm = () => {
       submitData.append('event[end_time]', formData.end_time);
       submitData.append('event[location]', formData.location);
       
-      if (formData.image) {
-        submitData.append('event[image]', formData.image);
+      if (formData.image && formData.image.secure_url) {
+        submitData.append('event[image_url]', formData.image.secure_url);
       }
 
       if (isEditing) {
@@ -248,17 +248,15 @@ const EventForm = () => {
 
         {/* Event Image */}
         <div>
-          <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             <i className="fas fa-image mr-2 text-gray-400"></i>
             Event Image
           </label>
-          <input
-            type="file"
-            id="image"
-            name="image"
-            onChange={handleFileChange}
-            accept="image/*"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          <ImageUpload 
+            onUploadSuccess={handleImageUpload}
+            onUploadError={(error) => setError(`Image upload failed: ${error}`)}
+            folder="events"
+            allowLibraryBrowse={true}
           />
           <p className="text-sm text-gray-500 mt-1">
             Upload an image to represent this event (optional)

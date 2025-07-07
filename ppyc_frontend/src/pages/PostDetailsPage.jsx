@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { postsAPI } from '../services/api';
+import { newsAPI } from '../services/api';
 
 const PostDetailsPage = () => {
   const { slug } = useParams();
@@ -12,7 +12,7 @@ const PostDetailsPage = () => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const response = await postsAPI.getBySlug(slug);
+        const response = await newsAPI.getBySlug(slug);
         setPost(response.data);
       } catch (err) {
         setError('Article not found');

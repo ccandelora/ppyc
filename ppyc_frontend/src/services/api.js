@@ -1,45 +1,34 @@
 import axios from 'axios';
 
-// Determine the API base URL based on the environment
-const getApiBaseUrl = () => {
-  // Check if we're in production environment
-  if (import.meta.env.PROD) {
-    // In production, check if there's a custom API URL set
-    if (import.meta.env.VITE_API_URL) {
-      return import.meta.env.VITE_API_URL;
-    }
-    // In production, use the same protocol and host as the current page
-    // This allows nginx to handle the proxy to the Rails backend
-    const protocol = window.location.protocol;
-    const hostname = window.location.hostname;
-    const port = window.location.port ? `:${window.location.port}` : '';
-    return `${protocol}//${hostname}${port}/api/v1`;
-  }
-  // In development, use localhost
-  return 'http://localhost:3000/api/v1';
-};
-
-const API_BASE_URL = getApiBaseUrl();
-
+// Create axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
-  withCredentials: true, // Important for session cookies
+  withCredentials: true, // This ensures cookies are sent with requests
 });
 
-// Authentication API calls
-export const authAPI = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
-  logout: () => api.delete('/auth/logout'),
-  getCurrentUser: () => api.get('/auth/me'),
-};
+// Add response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear any stored user data and redirect to login
+      localStorage.removeItem('currentUser');
+      window.location.href = '/admin/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
 
 // Public API calls
-export const postsAPI = {
-  getAll: () => api.get('/posts'),
-  getBySlug: (slug) => api.get(`/posts/${slug}`),
+export const newsAPI = {
+  getAll: () => api.get('/news'),
+  getBySlug: (slug) => api.get(`/news/${slug}`),
 };
 
 export const eventsAPI = {
@@ -55,35 +44,35 @@ export const slidesAPI = {
   getAll: () => api.get('/slides'),
 };
 
-// Weather API service - now calls our secure backend API
 export const weatherAPI = {
-  current: (location) => {
-    return api.get('/weather/current', { params: { location } });
-  },
-  forecast: (location, days = 3) => {
-    return api.get('/weather/forecast', { params: { location, days } });
-  },
-  marine: (location, days = 3) => {
-    return api.get('/weather/marine', { params: { location, days } });
-  }
+  getCurrent: () => api.get('/weather/current'),
+  getForecast: () => api.get('/weather/forecast'),
+  getMarine: () => api.get('/weather/marine'),
+};
+
+// Authentication API
+export const authAPI = {
+  login: (credentials) => api.post('/auth/login', credentials),
+  logout: () => api.delete('/auth/logout'),
+  me: () => api.get('/auth/me'),
 };
 
 // Admin API calls (will require authentication)
 export const adminAPI = {
-  posts: {
-    getAll: () => api.get('/admin/posts'),
-    getById: (id) => api.get(`/admin/posts/${id}`),
-    create: (data) => api.post('/admin/posts', data, {
+  news: {
+    getAll: () => api.get('/admin/news'),
+    getById: (id) => api.get(`/admin/news/${id}`),
+    create: (data) => api.post('/admin/news', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     }),
-    update: (id, data) => api.put(`/admin/posts/${id}`, data, {
+    update: (id, data) => api.put(`/admin/news/${id}`, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     }),
-    delete: (id) => api.delete(`/admin/posts/${id}`),
+    delete: (id) => api.delete(`/admin/news/${id}`),
   },
   events: {
     getAll: () => api.get('/admin/events'),
@@ -126,38 +115,18 @@ export const adminAPI = {
   users: {
     getAll: () => api.get('/admin/users'),
     getById: (id) => api.get(`/admin/users/${id}`),
-    create: (data) => api.post('/admin/users', { user: data }),
-    update: (id, data) => api.put(`/admin/users/${id}`, { user: data }),
+    create: (data) => api.post('/admin/users', data),
+    update: (id, data) => api.put(`/admin/users/${id}`, data),
     delete: (id) => api.delete(`/admin/users/${id}`),
   },
   images: {
-    getAll: (params = {}) => api.get('/admin/images', { params }),
-    search: (params = {}) => api.get('/admin/images/search', { params }),
-    upload: (file, folder = 'general') => {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folder', folder);
-      return api.post('/admin/images', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    },
-    uploadMultiple: (files, folder = 'general') => {
-      const promises = files.map(file => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('folder', folder);
-        return api.post('/admin/images', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-      });
-      return Promise.all(promises);
-    },
-    delete: (publicId) => api.delete(`/admin/images/${encodeURIComponent(publicId)}`),
+    getAll: () => api.get('/admin/images'),
+    upload: (data) => api.post('/admin/images', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+    delete: (id) => api.delete(`/admin/images/${id}`),
+    search: (query) => api.get(`/admin/images/search?q=${encodeURIComponent(query)}`),
   },
-};
-
-export default api; 
+}; 

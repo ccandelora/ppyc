@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { sanitizeHtml } from '../utils/htmlUtils';
 
 function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -27,11 +28,11 @@ function EventsPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <img 
-            src="/assets/images/file.svg" 
-            alt="Pleasant Park Yacht Club" 
-            className="w-16 h-16 mx-auto mb-4 animate-pulse opacity-70"
+            src="/assets/images/ppyc-logo.svg" 
+            alt="PPYC" 
+            className="w-16 h-16 mx-auto mb-6 opacity-80" 
           />
-          <p className="text-gray-600">Loading events...</p>
+          <p className="text-blue-100 text-lg">Loading events...</p>
         </div>
       </div>
     );
@@ -179,7 +180,14 @@ function EventsPage() {
                           </div>
 
                           <h3 className="text-xl font-bold text-slate-800 mb-3">{event.title}</h3>
-                          <p className="text-gray-600 leading-relaxed mb-4">{event.description}</p>
+                          
+                          {/* Render HTML content properly */}
+                          {event.description && (
+                            <div 
+                              className="text-gray-600 leading-relaxed mb-4 prose-event"
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
+                            />
+                          )}
                           
                           {event.location && (
                             <div className="flex items-center gap-2 text-sm text-gray-500">

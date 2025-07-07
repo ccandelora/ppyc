@@ -4,7 +4,7 @@ import ImageUpload from '../ImageUpload';
 import WYSIWYGEditor from './WYSIWYGEditor';
 import { adminAPI } from '../../services/api';
 
-const PostForm = () => {
+const NewsForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
@@ -21,25 +21,25 @@ const PostForm = () => {
 
   useEffect(() => {
     if (isEditing) {
-      fetchPost();
+      fetchNewsArticle();
     }
   }, [id, isEditing]);
 
-  const fetchPost = async () => {
+  const fetchNewsArticle = async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.posts.getById(id);
-      const post = response.data;
+      const response = await adminAPI.news.getById(id);
+      const newsArticle = response.data;
       
       setFormData({
-        title: post.title || '',
-        content: post.content || '',
-        published_at: post.published_at ? new Date(post.published_at).toISOString().slice(0, 16) : '',
+        title: newsArticle.title || '',
+        content: newsArticle.content || '',
+        published_at: newsArticle.published_at ? new Date(newsArticle.published_at).toISOString().slice(0, 16) : '',
         featured_image: null // Will be handled by ImageUpload component
       });
     } catch (err) {
-      setError('Failed to fetch post');
-      console.error('Error fetching post:', err);
+      setError('Failed to fetch news article');
+      console.error('Error fetching news article:', err);
     } finally {
       setLoading(false);
     }
@@ -76,36 +76,36 @@ const PostForm = () => {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('post[title]', formData.title);
-      formDataToSend.append('post[content]', formData.content);
+      formDataToSend.append('news[title]', formData.title);
+      formDataToSend.append('news[content]', formData.content);
       
       if (formData.published_at) {
-        formDataToSend.append('post[published_at]', formData.published_at);
+        formDataToSend.append('news[published_at]', formData.published_at);
       }
       
       if (formData.featured_image && formData.featured_image.secure_url) {
-        formDataToSend.append('post[featured_image_url]', formData.featured_image.secure_url);
+        formDataToSend.append('news[featured_image_url]', formData.featured_image.secure_url);
       }
 
       if (isEditing) {
-        await adminAPI.posts.update(id, formDataToSend);
+        await adminAPI.news.update(id, formDataToSend);
       } else {
-        await adminAPI.posts.create(formDataToSend);
+        await adminAPI.news.create(formDataToSend);
       }
 
-      setSuccess(`Post ${isEditing ? 'updated' : 'created'} successfully!`);
+      setSuccess(`News article ${isEditing ? 'updated' : 'created'} successfully!`);
       setTimeout(() => {
-        navigate('/admin/posts');
+        navigate('/admin/news');
       }, 2000);
     } catch (err) {
-      setError(err.message || `Failed to ${isEditing ? 'update' : 'create'} post`);
+      setError(err.message || `Failed to ${isEditing ? 'update' : 'create'} news article`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
-    navigate('/admin/posts');
+    navigate('/admin/news');
   };
 
   if (loading && isEditing) {
@@ -123,11 +123,11 @@ const PostForm = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
-              <i className="fas fa-edit mr-2 text-blue-500"></i>
-              {isEditing ? 'Edit Post' : 'Create New Post'}
+              <i className="fas fa-newspaper mr-2 text-blue-500"></i>
+              {isEditing ? 'Edit News Article' : 'Create New News Article'}
             </h2>
             <p className="text-sm text-gray-600 mt-1">
-              {isEditing ? 'Update your existing post' : 'Create a new blog post or news article'}
+              {isEditing ? 'Update your news article' : 'Write a new article for the club'}
             </p>
           </div>
           <button
@@ -161,7 +161,7 @@ const PostForm = () => {
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
             <i className="fas fa-heading mr-2 text-gray-400"></i>
-            Title *
+            Article Title *
           </label>
           <input
             type="text"
@@ -171,7 +171,22 @@ const PostForm = () => {
             onChange={handleInputChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter post title..."
+            placeholder="Enter article title..."
+          />
+        </div>
+
+        {/* Content */}
+        <div>
+          <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+            <i className="fas fa-align-left mr-2 text-gray-400"></i>
+            Article Content *
+          </label>
+          <WYSIWYGEditor
+            value={formData.content}
+            onChange={handleContentChange}
+            placeholder="Write your news article content..."
+            height={400}
+            disabled={loading}
           />
         </div>
 
@@ -184,32 +199,19 @@ const PostForm = () => {
           <ImageUpload 
             onUploadSuccess={handleImageUpload}
             onUploadError={(error) => setError(`Image upload failed: ${error}`)}
-            folder="posts"
+            folder="news"
             allowLibraryBrowse={true}
           />
+          <p className="text-sm text-gray-500 mt-1">
+            Upload a featured image for this article (optional)
+          </p>
         </div>
 
-        {/* Content - WYSIWYG Editor */}
-        <div>
-          <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-align-left mr-2 text-gray-400"></i>
-            Content *
-          </label>
-          
-          <WYSIWYGEditor
-            value={formData.content}
-            onChange={handleContentChange}
-            placeholder="Write your post content here..."
-            height={400}
-            disabled={loading}
-          />
-        </div>
-
-        {/* Publish Date */}
+        {/* Publication Date */}
         <div>
           <label htmlFor="published_at" className="block text-sm font-medium text-gray-700 mb-2">
             <i className="fas fa-calendar mr-2 text-gray-400"></i>
-            Publish Date & Time
+            Publication Date
           </label>
           <input
             type="datetime-local"
@@ -219,36 +221,35 @@ const PostForm = () => {
             onChange={handleInputChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Leave empty to save as draft. Set a future date to schedule publication.
+          <p className="text-sm text-gray-500 mt-1">
+            Leave empty to save as draft. Set future date to schedule publication.
           </p>
         </div>
 
-        {/* Actions */}
+        {/* Action Buttons */}
         <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
           <button
             type="button"
             onClick={handleCancel}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <i className="fas fa-times mr-2"></i>
             Cancel
           </button>
-          
           <button
             type="submit"
-            disabled={loading || !formData.title.trim() || !formData.content.trim()}
-            className="px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white rounded-lg transition-colors flex items-center space-x-2"
+            disabled={loading}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>
-                <i className="fas fa-spinner fa-spin"></i>
-                <span>Saving...</span>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                {isEditing ? 'Updating...' : 'Creating...'}
               </>
             ) : (
               <>
-                <i className="fas fa-save"></i>
-                <span>{isEditing ? 'Update Post' : 'Create Post'}</span>
+                <i className="fas fa-save mr-2"></i>
+                {isEditing ? 'Update Article' : 'Create Article'}
               </>
             )}
           </button>
@@ -258,4 +259,4 @@ const PostForm = () => {
   );
 };
 
-export default PostForm; 
+export default NewsForm; 

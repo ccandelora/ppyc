@@ -1,15 +1,14 @@
 import React from 'react';
 import { AdvancedImage } from '@cloudinary/react';
 import { Cloudinary } from '@cloudinary/url-gen';
-import { auto } from '@cloudinary/url-gen/actions/resize';
-import { auto as autoFormat } from '@cloudinary/url-gen/actions/delivery';
-import { quality } from '@cloudinary/url-gen/actions/delivery';
-import { cloudinaryConfig } from '../config/cloudinary';
+import { fill } from '@cloudinary/url-gen/actions/resize';
+import { format, quality } from '@cloudinary/url-gen/actions/delivery';
+import CLOUDINARY_CONFIG from '../config/cloudinary';
 
 // Create Cloudinary instance
 const cld = new Cloudinary({
   cloud: {
-    cloudName: cloudinaryConfig.cloudName
+    cloudName: CLOUDINARY_CONFIG.cloudName
   }
 });
 
@@ -21,6 +20,8 @@ const CloudinaryImage = ({
   className = '',
   crop = 'fill',
   quality: imageQuality = 'auto',
+  priority = false,
+  useAdvancedImage = false, // Option to use Cloudinary's advanced features
   ...props 
 }) => {
   if (!publicId) {
@@ -36,21 +37,38 @@ const CloudinaryImage = ({
   
   // Apply automatic optimizations
   myImage
-    .delivery(autoFormat()) // Automatic format selection (WebP, AVIF, etc.)
-    .delivery(quality(imageQuality)); // Automatic quality optimization
+    .delivery(format('auto')) // Automatic format selection (WebP, AVIF, etc.)
+    .delivery(quality(imageQuality)); // Quality optimization
   
   // Apply resize if dimensions provided
   if (width || height) {
     if (crop === 'fill') {
-      myImage.resize(auto().width(width).height(height));
+      myImage.resize(fill().width(width).height(height));
     }
   }
 
+  // Use AdvancedImage for complex transformations, simple img for performance
+  if (useAdvancedImage) {
+    return (
+      <AdvancedImage 
+        cldImg={myImage} 
+        alt={alt}
+        className={className}
+        {...props}
+      />
+    );
+  }
+
+  // Use simple img tag for best performance
   return (
-    <AdvancedImage 
-      cldImg={myImage} 
+    <img 
+      src={myImage.toURL()}
       alt={alt}
+      width={width}
+      height={height}
       className={className}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
       {...props}
     />
   );

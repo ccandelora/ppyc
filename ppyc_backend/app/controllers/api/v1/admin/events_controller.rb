@@ -13,6 +13,11 @@ class Api::V1::Admin::EventsController < Api::V1::Admin::BaseController
   def create
     event = Event.new(event_params)
 
+    # Handle Cloudinary image URL if provided
+    if params[:event][:image_url].present?
+      event.image_url = params[:event][:image_url]
+    end
+
     if event.save
       render_success(admin_event_json(event), :created)
     else
@@ -21,6 +26,11 @@ class Api::V1::Admin::EventsController < Api::V1::Admin::BaseController
   end
 
   def update
+    # Handle Cloudinary image URL if provided
+    if params[:event][:image_url].present?
+      @event.image_url = params[:event][:image_url]
+    end
+
     if @event.update(event_params)
       render_success(admin_event_json(@event))
     else
@@ -42,7 +52,7 @@ class Api::V1::Admin::EventsController < Api::V1::Admin::BaseController
   end
 
   def event_params
-    params.require(:event).permit(:title, :description, :start_time, :end_time, :location, :image)
+    params.require(:event).permit(:title, :description, :start_time, :end_time, :location, :image, :image_url)
   end
 
   def admin_event_json(event)
@@ -53,7 +63,7 @@ class Api::V1::Admin::EventsController < Api::V1::Admin::BaseController
       start_time: event.start_time,
       end_time: event.end_time,
       location: event.location,
-      image_url: event.image.attached? ? event.image.url : nil,
+      image_url: event.image_url.presence || (event.image.attached? ? event.image.url : nil),
       created_at: event.created_at,
       updated_at: event.updated_at
     }

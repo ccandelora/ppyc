@@ -2,39 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
 
-const PostsList = () => {
-  const [posts, setPosts] = useState([]);
+const NewsList = () => {
+  const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchPosts();
+    fetchNews();
   }, []);
 
-  const fetchPosts = async () => {
+  const fetchNews = async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.posts.getAll();
-      setPosts(response.data);
+      const response = await adminAPI.news.getAll();
+      setNews(response.data);
     } catch (err) {
-      setError('Failed to fetch posts');
-      console.error('Error fetching posts:', err);
+      setError('Failed to fetch news');
+      console.error('Error fetching news:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) {
+  const handleDelete = async (newsId) => {
+    if (!window.confirm('Are you sure you want to delete this news article?')) {
       return;
     }
 
     try {
-      await adminAPI.posts.delete(postId);
-      setPosts(posts.filter(post => post.id !== postId));
+      await adminAPI.news.delete(newsId);
+      setNews(news.filter(item => item.id !== newsId));
     } catch (err) {
-      setError('Failed to delete post');
-      console.error('Error deleting post:', err);
+      setError('Failed to delete news article');
+      console.error('Error deleting news:', err);
     }
   };
 
@@ -63,18 +63,18 @@ const PostsList = () => {
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
               <i className="fas fa-newspaper mr-2 text-blue-500"></i>
-              Posts Management
+              News Management
             </h2>
             <p className="text-sm text-gray-600 mt-1">
-              Manage your blog posts and news articles
+              Manage your news articles and announcements
             </p>
           </div>
           <Link 
-            to="/admin/posts/new"
+            to="/admin/news/new"
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
           >
             <i className="fas fa-plus"></i>
-            <span>New Post</span>
+            <span>New Article</span>
           </Link>
         </div>
       </div>
@@ -87,13 +87,13 @@ const PostsList = () => {
         </div>
       )}
 
-      {/* Posts Table */}
+      {/* News Table */}
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
+                Article
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Author
@@ -110,61 +110,61 @@ const PostsList = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {posts.length === 0 ? (
+            {news.length === 0 ? (
               <tr>
                 <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
                   <i className="fas fa-newspaper text-4xl mb-2 opacity-30"></i>
-                  <p>No posts found. Create your first post!</p>
+                  <p>No news articles found. Create your first article!</p>
                 </td>
               </tr>
             ) : (
-              posts.map((post) => (
-                <tr key={post.id} className="hover:bg-gray-50">
+              news.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      {post.featured_image_url && (
+                      {item.featured_image_url && (
                         <img 
-                          src={post.featured_image_url} 
-                          alt={post.title}
+                          src={item.featured_image_url} 
+                          alt={item.title}
                           className="w-10 h-10 rounded-lg object-cover mr-3"
                         />
                       )}
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {post.title}
+                          {item.title}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {post.slug}
+                          {item.slug}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {post.author?.email || 'Unknown'}
+                    {item.author?.email || 'Unknown'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      post.published_at 
+                      item.published_at 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {post.published_at ? 'Published' : 'Draft'}
+                      {item.published_at ? 'Published' : 'Draft'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(post.published_at)}
+                    {formatDate(item.published_at)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
                       <Link
-                        to={`/admin/posts/${post.id}/edit`}
+                        to={`/admin/news/${item.id}/edit`}
                         className="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg transition-colors"
                       >
                         <i className="fas fa-edit mr-1"></i>
                         Edit
                       </Link>
                       <button
-                        onClick={() => handleDelete(post.id)}
+                        onClick={() => handleDelete(item.id)}
                         className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors"
                       >
                         <i className="fas fa-trash mr-1"></i>
@@ -182,4 +182,4 @@ const PostsList = () => {
   );
 };
 
-export default PostsList; 
+export default NewsList; 

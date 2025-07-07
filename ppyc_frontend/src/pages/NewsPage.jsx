@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { postsAPI } from '../services/api';
+import { newsAPI } from '../services/api';
 
 const NewsPage = () => {
   const [posts, setPosts] = useState([]);
@@ -11,7 +11,7 @@ const NewsPage = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await postsAPI.getAll();
+        const response = await newsAPI.getAll();
         setPosts(response.data);
       } catch (err) {
         setError('Failed to load news posts');

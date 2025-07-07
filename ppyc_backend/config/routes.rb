@@ -18,8 +18,8 @@ Rails.application.routes.draw do
       delete 'auth/logout', to: 'auth#destroy'
 
       # Public endpoints (no authentication required)
-      resources :posts, only: [:index], param: :slug
-      get 'posts/:slug', to: 'posts#show'
+      resources :news, only: [:index], param: :slug
+      get 'news/:slug', to: 'news#show'
 
       resources :events, only: [:index, :show]
 
@@ -36,7 +36,7 @@ Rails.application.routes.draw do
 
       # Admin endpoints (authentication required)
       namespace :admin do
-        resources :posts
+        resources :news
         resources :events
         resources :pages
         resources :slides do
@@ -62,5 +62,7 @@ Rails.application.routes.draw do
   # It sends any other non-API requests to the React app's entry point.
   # This allows React Router to handle front-end routing for things like
   # /login or /about, even on a page refresh.
-  get '*path', to: 'static#index', constraints: ->(req) { !req.xhr? && req.format.html? }
+  get '*path', to: 'static#index', constraints: ->(request) do
+    !request.xhr? && request.format.html?
+  end
 end

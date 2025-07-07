@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_NAMES } from '../../config/fontawesome';
 import { adminAPI } from '../../services/api';
+import { truncateText } from '../../utils/htmlUtils';
 
 const EventsList = () => {
   const [events, setEvents] = useState([]);
@@ -47,7 +50,10 @@ const EventsList = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <i className="fas fa-anchor fa-spin text-blue-600 text-2xl"></i>
+        <div className="text-blue-600 text-2xl">
+          <FontAwesomeIcon icon={ICON_NAMES.HOME} className="mr-2" />
+          Loading...
+        </div>
       </div>
     );
   }
@@ -56,7 +62,7 @@ const EventsList = () => {
     return (
       <div className="bg-red-50 border border-red-200 rounded-md p-4">
         <div className="flex">
-          <i className="fas fa-exclamation-circle text-red-500 mr-2"></i>
+          <FontAwesomeIcon icon={ICON_NAMES.HOME} className="text-red-500 mr-2" />
           <span className="text-red-700">{error}</span>
         </div>
       </div>
@@ -70,7 +76,7 @@ const EventsList = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-800">
-              <i className="fas fa-calendar-alt mr-2 text-green-500"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="mr-2 text-green-500" />
               Events Management
             </h1>
             <p className="text-sm text-gray-600 mt-1">
@@ -79,9 +85,9 @@ const EventsList = () => {
           </div>
           <Link
             to="/admin/events/new"
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
           >
-            <i className="fas fa-plus mr-2"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.ADD} className="mr-2" />
             Add New Event
           </Link>
         </div>
@@ -91,7 +97,9 @@ const EventsList = () => {
       <div className="p-6">
         {events.length === 0 ? (
           <div className="text-center py-12">
-            <i className="fas fa-calendar-times text-gray-400 text-4xl mb-4"></i>
+            <div className="text-gray-400 text-4xl mb-4">
+              <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} />
+            </div>
             <p className="text-gray-500 mb-4">No events created yet.</p>
             <Link
               to="/admin/events/new"
@@ -105,7 +113,7 @@ const EventsList = () => {
             {events.map((event) => (
               <div
                 key={event.id}
-                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4">
@@ -118,7 +126,7 @@ const EventsList = () => {
                         />
                       ) : (
                         <div className="h-16 w-16 rounded-lg bg-gray-200 flex items-center justify-center">
-                          <i className="fas fa-calendar-alt text-gray-400 text-xl"></i>
+                          <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-gray-400 text-xl" />
                         </div>
                       )}
                     </div>
@@ -135,24 +143,22 @@ const EventsList = () => {
                       </div>
                       <div className="text-sm text-gray-600 space-y-1">
                         <div className="flex items-center">
-                          <i className="fas fa-clock mr-2 text-gray-400"></i>
+                          <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="mr-2 text-gray-400" />
                           <span>
                             {formatDateTime(event.start_time)} - {formatDateTime(event.end_time)}
                           </span>
                         </div>
                         {event.location && (
                           <div className="flex items-center">
-                            <i className="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                            <FontAwesomeIcon icon={ICON_NAMES.HOME} className="mr-2 text-gray-400" />
                             <span>{event.location}</span>
                           </div>
                         )}
                         {event.description && (
                           <div className="flex items-start">
-                            <i className="fas fa-align-left mr-2 text-gray-400 mt-0.5"></i>
+                            <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="mr-2 text-gray-400 mt-0.5" />
                             <span className="line-clamp-2">
-                              {event.description.length > 100 
-                                ? `${event.description.substring(0, 100)}...` 
-                                : event.description}
+                              {truncateText(event.description, 100)}
                             </span>
                           </div>
                         )}
@@ -162,17 +168,19 @@ const EventsList = () => {
                   <div className="flex items-center space-x-2">
                     <Link
                       to={`/admin/events/${event.id}/edit`}
-                      className="text-blue-600 hover:text-blue-800 p-2"
+                      className="bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded-lg text-sm font-medium flex items-center"
                       title="Edit Event"
                     >
-                      <i className="fas fa-edit"></i>
+                      <FontAwesomeIcon icon={ICON_NAMES.EDIT} className="mr-1" />
+                      Edit
                     </Link>
                     <button
                       onClick={() => handleDelete(event.id)}
-                      className="text-red-600 hover:text-red-800 p-2"
+                      className="bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded-lg text-sm font-medium flex items-center"
                       title="Delete Event"
                     >
-                      <i className="fas fa-trash"></i>
+                      <FontAwesomeIcon icon={ICON_NAMES.DELETE} className="mr-1" />
+                      Delete
                     </button>
                   </div>
                 </div>

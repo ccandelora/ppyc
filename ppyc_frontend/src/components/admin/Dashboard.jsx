@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { postsAPI, eventsAPI, slidesAPI } from '../../services/api';
+import { newsAPI, eventsAPI, slidesAPI } from '../../services/api';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
-    posts: 0,
+    news: 0,
     events: 0,
     slides: 0,
     pages: 4 // Static pages count
   });
-  const [recentPosts, setRecentPosts] = useState([]);
+  const [recentNews, setRecentNews] = useState([]);
   const [recentEvents, setRecentEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,21 +21,21 @@ const Dashboard = () => {
     try {
       setLoading(true);
       
-      // Fetch posts, events, and slides from public API using proper imports
-      const [postsResponse, eventsResponse, slidesResponse] = await Promise.all([
-        postsAPI.getAll(),
+      // Fetch news, events, and slides from public API using proper imports
+      const [newsResponse, eventsResponse, slidesResponse] = await Promise.all([
+        newsAPI.getAll(),
         eventsAPI.getAll(),
         slidesAPI.getAll()
       ]);
 
       setStats(prev => ({
         ...prev,
-        posts: postsResponse.data.length,
+        news: newsResponse.data.length,
         events: eventsResponse.data.length,
         slides: slidesResponse.data.length
       }));
 
-      setRecentPosts(postsResponse.data.slice(0, 5));
+      setRecentNews(newsResponse.data.slice(0, 5));
       setRecentEvents(eventsResponse.data.slice(0, 5));
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -46,10 +46,10 @@ const Dashboard = () => {
 
   const quickActions = [
     {
-      title: 'Create New Post',
-      description: 'Write a new blog post or announcement',
+      title: 'Create News Article',
+      description: 'Write a new news article or announcement',
       icon: 'fas fa-plus-circle',
-      link: '/admin/posts/new',
+      link: '/admin/news/new',
       color: 'bg-blue-500 hover:bg-blue-600'
     },
     {
@@ -77,11 +77,11 @@ const Dashboard = () => {
 
   const statCards = [
     {
-      title: 'Blog Posts',
-      count: stats.posts,
+      title: 'News Articles',
+      count: stats.news,
       icon: 'fas fa-newspaper',
       color: 'bg-blue-500',
-      link: '/admin/posts'
+      link: '/admin/news'
     },
     {
       title: 'Events',
@@ -166,17 +166,17 @@ const Dashboard = () => {
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Posts */}
+        {/* Recent News */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Recent Posts</h2>
-            <Link to="/admin/posts" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            <h2 className="text-xl font-semibold text-gray-900">Recent News</h2>
+            <Link to="/admin/news" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
               View all <i className="fas fa-arrow-right ml-1"></i>
             </Link>
           </div>
-          {recentPosts.length > 0 ? (
+          {recentNews.length > 0 ? (
             <div className="space-y-3">
-              {recentPosts.map((post) => (
+              {recentNews.map((post) => (
                 <div key={post.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
                   <div className="bg-blue-100 rounded-lg p-2 text-blue-600">
                     <i className="fas fa-newspaper"></i>
@@ -191,7 +191,7 @@ const Dashboard = () => {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-4">No posts yet</p>
+            <p className="text-gray-500 text-center py-4">No news yet</p>
           )}
         </div>
 

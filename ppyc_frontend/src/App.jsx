@@ -7,6 +7,9 @@ import AdminProtection from './components/AdminProtection';
 import SEOHelmet from './components/SEOHelmet';
 import { AuthProvider } from './contexts/AuthContext';
 
+// Development-only performance monitoring
+const PerformanceMonitor = lazy(() => import('./components/PerformanceMonitor'));
+
 // Lazy load components for better performance
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
@@ -23,8 +26,8 @@ const TVDisplay = lazy(() => import('./components/TVDisplay'));
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 const LoginForm = lazy(() => import('./components/admin/LoginForm'));
 const Dashboard = lazy(() => import('./components/admin/Dashboard'));
-const PostsList = lazy(() => import('./components/admin/PostsList'));
-const PostForm = lazy(() => import('./components/admin/PostForm'));
+const NewsList = lazy(() => import('./components/admin/NewsList'));
+const NewsForm = lazy(() => import('./components/admin/NewsForm'));
 const EventsList = lazy(() => import('./components/admin/EventsList'));
 const EventForm = lazy(() => import('./components/admin/EventForm'));
 const SlidesList = lazy(() => import('./components/admin/SlidesList'));
@@ -37,7 +40,7 @@ const SettingsPanel = lazy(() => import('./components/admin/SettingsPanel'));
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-screen">
     <div className="text-center">
-      <i className="fas fa-anchor fa-spin text-4xl text-blue-500 mb-4"></i>
+      <span className="text-4xl text-blue-500 mb-4 animate-spin inline-block">⌛</span>
       <p className="text-gray-600">Loading...</p>
     </div>
   </div>
@@ -64,7 +67,7 @@ class ErrorBoundary extends React.Component {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="text-center p-8">
-            <i className="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
+            <span className="text-6xl text-red-500 mb-4 block">⚠️</span>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
             <p className="text-gray-600 mb-4">
               We're sorry, but something unexpected happened. Please try refreshing the page.
@@ -73,7 +76,7 @@ class ErrorBoundary extends React.Component {
               onClick={() => window.location.reload()} 
               className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             >
-              <i className="fas fa-redo mr-2"></i>
+              <span className="mr-2">🔄</span>
               Refresh Page
             </button>
           </div>
@@ -107,9 +110,9 @@ function App() {
                 <Route index element={<Dashboard />} />
                 
                 {/* Posts Management */}
-                <Route path="posts" element={<PostsList />} />
-                <Route path="posts/new" element={<PostForm />} />
-                <Route path="posts/:id/edit" element={<PostForm />} />
+                <Route path="news" element={<NewsList />} />
+                <Route path="news/new" element={<NewsForm />} />
+                <Route path="news/:id/edit" element={<NewsForm />} />
                 
                 {/* Events Management */}
                 <Route path="events" element={<EventsList />} />
@@ -146,7 +149,7 @@ function App() {
               <Route path="*" element={
                 <div className="min-h-screen flex items-center justify-center bg-gray-50">
                   <div className="text-center">
-                    <i className="fas fa-compass text-6xl text-blue-500 mb-4"></i>
+                    <span className="text-6xl text-blue-500 mb-4 block">🧭</span>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Page Not Found</h1>
                     <p className="text-gray-600 mb-4">
                       The page you're looking for doesn't exist.
@@ -155,7 +158,7 @@ function App() {
                       href="/" 
                       className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors inline-block"
                     >
-                      <i className="fas fa-home mr-2"></i>
+                      <span className="mr-2">⚓</span>
                       Return Home
                     </a>
                   </div>
@@ -163,6 +166,13 @@ function App() {
               } />
             </Routes>
           </Suspense>
+          
+          {/* Performance Monitor - Development Only */}
+          {import.meta.env.DEV && (
+            <Suspense fallback={null}>
+              <PerformanceMonitor />
+            </Suspense>
+          )}
         </Router>
       </AuthProvider>
     </ErrorBoundary>

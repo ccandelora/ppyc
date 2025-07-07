@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     
+    <!-- Professional Typography - Performance Optimized -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Basic SEO Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pleasant Park Yacht Club - Premier Boston Marina & Sailing Community Est. 1910</title>
@@ -36,7 +41,7 @@
     <meta name="msapplication-TileColor" content="#2563eb" />
     <meta name="application-name" content="Pleasant Park Yacht Club" />
     <meta name="apple-mobile-web-app-title" content="PPYC" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     
     <!-- Favicons and Icons -->
@@ -44,76 +49,214 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/ppyc-logo.svg" />
     <link rel="mask-icon" href="/assets/images/ppyc-logo.svg" color="#2563eb" />
     
-    <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    <!-- Resource hints for better performance -->
+    <link rel="preload" href="/assets/images/ppyc-logo.svg" as="image" />
+    <link rel="preload" href="/assets/images/file.svg" as="image" />
+    <link rel="preload" href="/app-styles.css" as="style" />
+    <link rel="preload" href="/src/main.jsx" as="script" />
     
-    <!-- FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+    <link rel="dns-prefetch" href="https://api.openweathermap.org" />
+    <link rel="dns-prefetch" href="https://media-library.cloudinary.com" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     
-    <!-- Styles -->
-    <link rel="stylesheet" href="/app-styles.css" />
+    <!-- Preconnect for critical external resources -->
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
     
-    <!-- Structured Data (JSON-LD) -->
+    <!-- Prefetch for likely navigation -->
+    <link rel="prefetch" href="/news" />
+    <link rel="prefetch" href="/events" />
+    <link rel="prefetch" href="/about" />
+    
+    <!-- Critical CSS - Enhanced with Professional Typography -->
+    <style>
+      /* Professional Typography */
+      :root {
+        --font-display: 'Playfair Display', Georgia, serif;
+        --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+        --font-mono: 'SF Mono', Monaco, monospace;
+        
+        /* Professional Color Palette */
+        --color-primary: #1e3a8a;
+        --color-primary-light: #3b82f6;
+        --color-primary-dark: #1e40af;
+        --color-secondary: #0f172a;
+        --color-accent: #f59e0b;
+        --color-accent-light: #fbbf24;
+        
+        /* Professional Gradients */
+        --gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb 50%, #1e40af 75%, #1e3a8a 100%);
+        --gradient-overlay: linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(30, 64, 175, 0.9) 50%, rgba(30, 58, 138, 0.95) 100%);
+        
+        /* Professional Shadows */
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      
+      /* Critical CSS for initial render */
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; font-family: var(--font-body); }
+      #root { min-height: 100vh; }
+      .min-h-screen { min-height: 100vh; }
+      .flex { display: flex; }
+      .items-center { align-items: center; }
+      .justify-center { justify-content: center; }
+      .text-center { text-align: center; }
+      .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+      
+      /* Professional Background Gradients */
+      .bg-gradient-to-br { background-image: var(--gradient-primary); }
+      .from-blue-50 { --tw-gradient-from: #eff6ff; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgb(239 246 255 / 0)); }
+      .to-slate-100 { --tw-gradient-to: #f1f5f9; }
+      .from-blue-900 { --tw-gradient-from: var(--color-primary); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(30, 58, 138, 0)); }
+      .via-blue-800 { --tw-gradient-stops: var(--tw-gradient-from), var(--color-primary-dark), var(--tw-gradient-to, rgba(30, 64, 175, 0)); }
+      .to-blue-900 { --tw-gradient-to: var(--color-primary); }
+      
+      /* AGGRESSIVE LAYOUT SHIFT PREVENTION */
+      .hero-logo-container { 
+        height: 7rem; 
+        width: 7rem; 
+        margin: 0 auto 1.5rem auto; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        contain: layout; /* Strict containment */
+      }
+      .hero-content { 
+        contain: layout style; /* Prevent any layout shifts */
+        transform: translateZ(0); 
+        will-change: auto;
+      }
+      .hero-background {
+        contain: layout style paint;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: var(--gradient-overlay);
+      }
+      
+      /* NO ANIMATIONS - COMPLETELY STATIC */
+      .animate-fade-in-up { 
+        opacity: 1; 
+        transform: none;
+      }
+      
+      /* Fixed section dimensions */
+      section { 
+        contain: layout;
+      }
+      
+      /* Professional Typography Styles */
+      .font-display { font-family: var(--font-display); }
+      .font-body { font-family: var(--font-body); }
+      .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); }
+      
+      /* Core text styles for immediate rendering */
+      .text-white { color: #ffffff; }
+      .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+      .font-bold { font-weight: 700; }
+      .leading-tight { line-height: 1.25; }
+      .text-slate-600 { color: #475569; }
+      .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+      .font-medium { font-weight: 500; }
+      .mb-6 { margin-bottom: 1.5rem; }
+      .w-20 { width: 5rem; }
+      .h-20 { height: 5rem; }
+      .opacity-95 { opacity: 0.95; }
+      .relative { position: relative; }
+      .z-10 { z-index: 10; }
+      .mx-auto { margin-left: auto; margin-right: auto; }
+      .px-4 { padding-left: 1rem; padding-right: 1rem; }
+      
+      /* Professional Button Styles */
+      .btn-primary {
+        background: var(--color-accent);
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-md);
+      }
+      .btn-primary:hover {
+        background: var(--color-accent-light);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+      
+      /* Professional Card Styles */
+      .card {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+    </style>
+    
+    <!-- Main styles - loaded asynchronously to prevent render blocking -->
+    <link rel="preload" href="/app-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/app-styles.css"></noscript>
+    
+    <!-- Structured Data (JSON-LD) - Optimized -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "YachtClub",
-      "name": "Pleasant Park Yacht Club",
-      "description": "Premier yacht club and marina established in 1910, offering sailing instruction, marina services, and waterfront dining in Boston.",
-      "url": "https://srv894370.hstgr.cloud",
-      "logo": "https://srv894370.hstgr.cloud/assets/images/ppyc-logo.svg",
-      "image": "https://srv894370.hstgr.cloud/assets/images/ppyc-images/ppyc-hero.png",
-      "foundingDate": "1910",
-      "telephone": "+1-XXX-XXX-XXXX",
-      "email": "info@ppyc.org",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Pleasant Park Marina",
-        "addressLocality": "Boston",
-        "addressRegion": "MA",
-        "postalCode": "02101",
-        "addressCountry": "US"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 42.3601,
-        "longitude": -71.0589
-      },
-      "openingHours": "Mo-Su 06:00-22:00",
-      "priceRange": "$$$",
-      "amenityFeature": [
-        {
-          "@type": "LocationFeatureSpecification",
-          "name": "Marina Services",
-          "value": "200 boat slips, fuel dock, pump-out station"
-        },
-        {
-          "@type": "LocationFeatureSpecification", 
-          "name": "Dining",
-          "value": "Waterfront restaurant and bar"
-        },
-        {
-          "@type": "LocationFeatureSpecification",
-          "name": "Sailing Instruction",
-          "value": "Youth and adult sailing programs"
-        },
-        {
-          "@type": "LocationFeatureSpecification",
-          "name": "Events",
-          "value": "Private events, weddings, corporate functions"
-        }
-      ],
-      "sameAs": [
-        "https://www.facebook.com/pleasantparkyachtclub",
-        "https://www.instagram.com/ppyc_boston"
-      ]
-    }
+    {"@context":"https://schema.org","@type":"YachtClub","name":"Pleasant Park Yacht Club","description":"Premier yacht club and marina established in 1910, offering sailing instruction, marina services, and waterfront dining in Boston.","url":"https://srv894370.hstgr.cloud","logo":"https://srv894370.hstgr.cloud/assets/images/ppyc-logo.svg","image":"https://srv894370.hstgr.cloud/assets/images/ppyc-images/ppyc-hero.png","foundingDate":"1910","telephone":"+1-XXX-XXX-XXXX","email":"info@ppyc.org","address":{"@type":"PostalAddress","streetAddress":"Pleasant Park Marina","addressLocality":"Boston","addressRegion":"MA","postalCode":"02101","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":42.3601,"longitude":-71.0589},"openingHours":"Mo-Su 06:00-22:00","priceRange":"$$$","amenityFeature":[{"@type":"LocationFeatureSpecification","name":"Marina Services","value":"200 boat slips, fuel dock, pump-out station"},{"@type":"LocationFeatureSpecification","name":"Dining","value":"Waterfront restaurant and bar"},{"@type":"LocationFeatureSpecification","name":"Sailing Instruction","value":"Youth and adult sailing programs"},{"@type":"LocationFeatureSpecification","name":"Events","value":"Private events, weddings, corporate functions"}],"sameAs":["https://www.facebook.com/pleasantparkyachtclub","https://www.instagram.com/ppyc_boston"]}
     </script>
   </head>
   <body>
+    <!-- Professional Inline Hero Section for Instant LCP -->
+    <div id="hero-skeleton" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--gradient-overlay); display: flex; align-items: center; justify-content: center; z-index: 1000; font-family: var(--font-body);">
+      <div style="text-align: center; color: white; max-width: 80rem; margin: 0 auto; padding: 0 1rem;">
+        <div style="height: 7rem; width: 7rem; margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center;">
+          <img src="/assets/images/ppyc-logo.svg" alt="Pleasant Park Yacht Club" style="width: 5rem; height: 5rem; opacity: 0.95; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));" width="80" height="80" />
+        </div>
+        <h1 style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.2; color: white; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+          Pleasant Park
+          <span style="display: block; font-size: 2rem; font-weight: 400; color: #bfdbfe; margin-top: 0.5rem;">
+            Yacht Club
+          </span>
+        </h1>
+        <div style="width: 4rem; height: 4px; background: var(--color-accent); margin: 0 auto 2rem auto; border-radius: 2px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);"></div>
+        <p style="font-size: 1.125rem; font-weight: 300; margin-bottom: 1rem; color: #e2e8f0; letter-spacing: 0.05em;">
+          Established 1910
+        </p>
+        <p style="font-size: 1.1rem; font-weight: 300; margin-bottom: 3rem; max-width: 48rem; margin-left: auto; margin-right: auto; line-height: 1.6; opacity: 0.95; color: #f8fafc;">
+          A tradition of excellence in navigation, seamanship, and fellowship on the Great Lakes
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="/about" style="background: var(--color-accent); color: white; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; display: inline-block; box-shadow: var(--shadow-md); transition: all 0.3s ease;">
+            Discover Our Heritage
+          </a>
+          <a href="/membership" style="background: transparent; color: white; padding: 0.75rem 2rem; border: 2px solid white; border-radius: 0.5rem; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s ease;">
+            Join Our Community
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Script to remove skeleton when React loads -->
+    <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const skeleton = document.getElementById('hero-skeleton');
+          if (skeleton) {
+            skeleton.style.opacity = '0';
+            skeleton.style.transition = 'opacity 0.5s ease-out';
+            setTimeout(() => skeleton.remove(), 500);
+          }
+        }, 100);
+      });
+    </script>
+    
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
