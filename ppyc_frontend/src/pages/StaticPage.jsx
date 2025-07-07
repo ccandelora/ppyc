@@ -1,31 +1,33 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { pagesAPI } from '../services/api';
+import { useApiCache } from '../hooks/useApiCache';
 
 const StaticPage = ({ slug }) => {
   const [page, setPage] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchPage = async () => {
-      try {
-        setLoading(true);
-        const response = await pagesAPI.getBySlug(slug);
-        setPage(response.data);
-      } catch (err) {
-        setError('Page not found');
-        console.error('Error fetching page:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchPage();
+  // Use cached API call for static pages
+  const { data: pageData, loading: pageLoading, error: pageError } = useApiCache(
+    () => pagesAPI.getBySlug(slug),
+    `pages-${slug}`,
+    {
+      ttl: 15 * 60 * 1000, // 15 minutes cache for static pages
+      enabled: !!slug, // Only fetch if slug is available
+      dependencies: [slug] // Refetch when slug changes
     }
-  }, [slug]);
+  );
 
-  if (loading) {
+  // Update data when API call completes
+  React.useEffect(() => {
+    if (pageData) {
+      setPage(pageData.data);
+    } else if (pageError) {
+      setError('Page not found');
+      console.error('Error fetching page:', pageError);
+    }
+  }, [pageData, pageError]);
+
+  if (pageLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

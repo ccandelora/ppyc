@@ -1,30 +1,32 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { newsAPI } from '../services/api';
+import { useApiCache } from '../hooks/useApiCache';
 
 const NewsPage = () => {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        const response = await newsAPI.getAll();
-        setPosts(response.data);
-      } catch (err) {
-        setError('Failed to load news posts');
-        console.error('Error fetching posts:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Use cached API call with loading state tracking
+  const { data: newsData, loading: newsLoading, error: newsError } = useApiCache(
+    newsAPI.getAll,
+    'news-all',
+    {
+      ttl: 5 * 60 * 1000 // 5 minutes cache
+    }
+  );
 
-    fetchPosts();
-  }, []);
+  // Update data when API call completes
+  React.useEffect(() => {
+    if (newsData) {
+      setPosts(newsData.data || []);
+    } else if (newsError) {
+      setError('Failed to load news posts');
+      console.error('Error fetching posts:', newsError);
+    }
+  }, [newsData, newsError]);
 
-  if (loading) {
+  if (newsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">

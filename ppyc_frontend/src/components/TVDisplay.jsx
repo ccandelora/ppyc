@@ -1,29 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { slidesAPI } from '../services/api';
+import { useApiCache } from '../hooks/useApiCache';
 import WeatherWidget from './WeatherWidget';
 
 const TVDisplay = () => {
   const [slides, setSlides] = useState([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Fetch slides from API
-  useEffect(() => {
-    const fetchSlides = async () => {
-      try {
-        const response = await slidesAPI.getAll();
-        if (response.data && response.data.length > 0) {
-          setSlides(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching slides:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSlides();
+  // Memoize callback functions to prevent infinite loops
+  const onSuccess = useCallback((data) => {
+    if (data.data && data.data.length > 0) {
+      setSlides(data.data);
+    }
+    setIsInitialLoad(false);
   }, []);
+
+  const onError = useCallback((error) => {
+    console.error('Error fetching slides:', error);
+    setIsInitialLoad(false);
+  }, []);
+
+  // Use cached API call for slides (shorter cache for TV display)
+  useApiCache(
+    slidesAPI.getAll,
+    'slides-all',
+    {
+      ttl: 2 * 60 * 1000, // 2 minutes cache for more dynamic content
+      onSuccess,
+      onError
+    }
+  );
 
   // Auto-advance slides
   useEffect(() => {
@@ -41,7 +48,7 @@ const TVDisplay = () => {
     return () => clearTimeout(timer);
   }, [currentSlideIndex, slides]);
 
-  if (loading) {
+  if (isInitialLoad) {
     return (
       <div className="h-screen bg-yacht-navy-900 flex items-center justify-center">
         <div className="text-center text-white">

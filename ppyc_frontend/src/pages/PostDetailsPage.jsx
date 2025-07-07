@@ -1,31 +1,33 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { newsAPI } from '../services/api';
+import { useApiCache } from '../hooks/useApiCache';
 
 const PostDetailsPage = () => {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        setLoading(true);
-        const response = await newsAPI.getBySlug(slug);
-        setPost(response.data);
-      } catch (err) {
-        setError('Article not found');
-        console.error('Error fetching post:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchPost();
+  // Use cached API call for individual post
+  const { data: postData, loading: postLoading, error: postError } = useApiCache(
+    () => newsAPI.getBySlug(slug),
+    `news-${slug}`,
+    {
+      ttl: 10 * 60 * 1000, // 10 minutes cache for individual posts
+      enabled: !!slug, // Only fetch if slug is available
+      dependencies: [slug] // Refetch when slug changes
     }
-  }, [slug]);
+  );
+
+  // Update data when API call completes
+  React.useEffect(() => {
+    if (postData) {
+      setPost(postData.data);
+    } else if (postError) {
+      setError('Article not found');
+      console.error('Error fetching post:', postError);
+    }
+  }, [postData, postError]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -50,7 +52,7 @@ const PostDetailsPage = () => {
     ));
   };
 
-  if (loading) {
+  if (postLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { newsAPI, eventsAPI, slidesAPI } from '../../services/api';
+import { useMultipleApiCache } from '../../hooks/useApiCache';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -11,38 +12,49 @@ const Dashboard = () => {
   });
   const [recentNews, setRecentNews] = useState([]);
   const [recentEvents, setRecentEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  useEffect(() => {
-    fetchDashboardData();
+  // Memoize callback functions
+  const onSuccess = useCallback(() => {
+    setIsInitialLoad(false);
   }, []);
 
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch news, events, and slides from public API using proper imports
-      const [newsResponse, eventsResponse, slidesResponse] = await Promise.all([
-        newsAPI.getAll(),
-        eventsAPI.getAll(),
-        slidesAPI.getAll()
-      ]);
+  const onError = useCallback((error) => {
+    console.error('Error fetching dashboard data:', error);
+    setIsInitialLoad(false);
+  }, []);
 
-      setStats(prev => ({
-        ...prev,
-        news: newsResponse.data.length,
-        events: eventsResponse.data.length,
-        slides: slidesResponse.data.length
-      }));
+  // Use cached API calls for dashboard data
+  const { data: dashboardData } = useMultipleApiCache([
+    { apiCall: newsAPI.getAll, cacheKey: 'news-all', ttl: 5 * 60 * 1000 },
+    { apiCall: eventsAPI.getAll, cacheKey: 'events-all', ttl: 5 * 60 * 1000 },
+    { apiCall: slidesAPI.getAll, cacheKey: 'slides-all', ttl: 2 * 60 * 1000 }
+  ], {
+    onSuccess,
+    onError
+  });
 
-      setRecentNews(newsResponse.data.slice(0, 5));
-      setRecentEvents(eventsResponse.data.slice(0, 5));
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
+  // Update stats and recent data when dashboard data loads
+  React.useEffect(() => {
+    if (dashboardData && Object.keys(dashboardData).length > 0) {
+      const newsData = dashboardData['news-all'];
+      const eventsData = dashboardData['events-all'];
+      const slidesData = dashboardData['slides-all'];
+
+      if (newsData && eventsData && slidesData) {
+        setStats(prev => ({
+          ...prev,
+          news: newsData.data?.length || 0,
+          events: eventsData.data?.length || 0,
+          slides: slidesData.data?.length || 0
+        }));
+
+        setRecentNews(newsData.data?.slice(0, 5) || []);
+        setRecentEvents(eventsData.data?.slice(0, 5) || []);
+        setIsInitialLoad(false);
+      }
     }
-  };
+  }, [dashboardData]);
 
   const quickActions = [
     {
@@ -106,7 +118,7 @@ const Dashboard = () => {
     }
   ];
 
-  if (loading) {
+  if (isInitialLoad) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">

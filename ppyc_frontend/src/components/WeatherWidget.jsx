@@ -1,45 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { weatherAPI } from '../services/api';
+import { useApiCache } from '../hooks/useApiCache';
 
-const WeatherWidget = ({ location = 'Boston, MA', weatherType = 'current' }) => {
+const WeatherWidget = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [marineData, setMarineData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [error, setError] = useState(null);
 
+  // Memoize callback functions
+  const onWeatherSuccess = useCallback((data) => {
+    setWeatherData(data.data);
+    setIsInitialLoad(false);
+  }, []);
+
+  const onWeatherError = useCallback((err) => {
+    setError('Failed to fetch weather data');
+    console.error('Weather API error:', err);
+    setIsInitialLoad(false);
+  }, []);
+
+  const onMarineSuccess = useCallback((data) => {
+    setMarineData(data.data);
+  }, []);
+
+  const onMarineError = useCallback((marineError) => {
+    console.log('Marine data not available for this location:', marineError.message);
+  }, []);
+
+  // Use cached API calls for weather data
+  useApiCache(
+    () => weatherAPI.getCurrent(),
+    'weather-current',
+    {
+      ttl: 10 * 60 * 1000, // 10 minutes cache for weather
+      onSuccess: onWeatherSuccess,
+      onError: onWeatherError
+    }
+  );
+
+  // Use cached API call for marine data
+  useApiCache(
+    () => weatherAPI.getMarine(),
+    'weather-marine',
+    {
+      ttl: 15 * 60 * 1000, // 15 minutes cache for marine data
+      onSuccess: onMarineSuccess,
+      onError: onMarineError
+    }
+  );
+
+  // Set up interval for cache refresh (weather data updates frequently)
   useEffect(() => {
-    const fetchWeatherData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch current weather
-        const currentResponse = await weatherAPI.current(location);
-        setWeatherData(currentResponse.data);
-        
-        // Fetch marine data for yacht club
-        try {
-          const marineResponse = await weatherAPI.marine(location, 1);
-          setMarineData(marineResponse.data);
-        } catch (marineError) {
-          console.log('Marine data not available for this location:', marineError.message);
-        }
-        
-      } catch (err) {
-        setError('Failed to fetch weather data');
-        console.error('Weather API error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const interval = setInterval(() => {
+      // The cache will handle refreshing automatically when TTL expires
+      // This just ensures we check periodically
+      setIsInitialLoad(true);
+    }, 15 * 60 * 1000); // Check every 15 minutes
 
-    fetchWeatherData();
-    
-    // Refresh every 15 minutes
-    const interval = setInterval(fetchWeatherData, 15 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [location, weatherType]);
+  }, []);
 
-  if (loading) {
+  if (isInitialLoad) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center text-white">

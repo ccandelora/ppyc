@@ -12,6 +12,8 @@ import {
   faTrash,
   faPlus,
   faCalendar,
+  faCalendarAlt,
+  faCalendarDay,
   faEnvelope,
   faPhone,
   faAnchor,
@@ -27,57 +29,7 @@ import {
   faCheckCircle,
   faFlag,
   faCompass,
-  faWind,
-  faShip,
-  faRedo,
-  faArrowRight,
-  faChevronRight,
-  faSearch,
-  faDownload,
-  faPrint,
-  faShare,
-  faHeart,
-  faStar,
-  faMapMarker
-} from '@fortawesome/free-solid-svg-icons';
-
-// Import social media icons from brands package
-import {
-  faFacebook,
-  faTwitter,
-  faInstagram,
-  faLinkedin,
-  faYoutube
-} from '@fortawesome/free-brands-svg-icons';
-
-// Prevent FontAwesome from automatically adding CSS since we're using React
-config.autoAddCss = false;
-
-// Add icons to the library
-library.add(
-  faHome,
-  faUser,
-  faBars,
-  faTimes,
-  faEdit,
-  faTrash,
-  faPlus,
-  faCalendar,
-  faEnvelope,
-  faPhone,
-  faAnchor,
-  faUsers,
-  faInfoCircle,
-  faNewspaper,
-  faTv,
-  faSpinner,
-  faExclamationTriangle,
-  faClock,
-  faMapMarkerAlt,
-  faFileAlt,
-  faCheckCircle,
-  faFlag,
-  faCompass,
+  faTrophy,
   faWind,
   faShip,
   faRedo,
@@ -90,6 +42,66 @@ library.add(
   faHeart,
   faStar,
   faMapMarker,
+  faSailboat,
+  faWater,
+  faLifeRing
+} from '@fortawesome/free-solid-svg-icons';
+
+// Import social media icons from brands package
+import {
+  faFacebook,
+  faTwitter,
+  faInstagram,
+  faLinkedin,
+  faYoutube
+} from '@fortawesome/free-brands-svg-icons';
+
+// Allow FontAwesome to automatically add CSS for React components
+config.autoAddCss = true;
+
+// Add icons to the library
+library.add(
+  faHome,
+  faUser,
+  faBars,
+  faTimes,
+  faEdit,
+  faTrash,
+  faPlus,
+  faCalendar,
+  faCalendarAlt,
+  faCalendarDay,
+  faEnvelope,
+  faPhone,
+  faAnchor,
+  faUsers,
+  faInfoCircle,
+  faNewspaper,
+  faTv,
+  faSpinner,
+  faExclamationTriangle,
+  faClock,
+  faMapMarkerAlt,
+  faFileAlt,
+  faCheckCircle,
+  faFlag,
+  faCompass,
+  faTrophy,
+  faWind,
+  faShip,
+  faRedo,
+  faArrowRight,
+  faChevronRight,
+  faSearch,
+  faDownload,
+  faPrint,
+  faShare,
+  faHeart,
+  faStar,
+  faMapMarker,
+  faSailboat,
+  faWater,
+  faLifeRing,
   // Social media icons
   faFacebook,
   faTwitter,
@@ -108,6 +120,8 @@ export const ICON_NAMES = {
   INFO: 'info-circle',
   NEWS: 'newspaper',
   CALENDAR: 'calendar',
+  CALENDAR_ALT: 'calendar-alt',
+  CALENDAR_DAY: 'calendar-day',
   ANCHOR: 'anchor',
   USERS: 'users',
   TV: 'tv',
@@ -126,8 +140,12 @@ export const ICON_NAMES = {
   CHECK: 'check-circle',
   FLAG: 'flag',
   COMPASS: 'compass',
+  TROPHY: 'trophy',
   WIND: 'wind',
   SHIP: 'ship',
+  SAILBOAT: 'sailboat',
+  WATER: 'water',
+  LIFE_RING: 'life-ring',
   REFRESH: 'redo',
   
   // Contact

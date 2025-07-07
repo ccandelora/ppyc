@@ -5,37 +5,28 @@ import { useApiCache } from '../hooks/useApiCache';
 
 function EventsPage() {
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Use cached API call
-  const { loading: cacheLoading, error: cacheError } = useApiCache(
+  // Use cached API call with loading state tracking
+  const { data: eventsData, loading: eventsLoading, error: eventsError } = useApiCache(
     eventsAPI.getAll,
     'events-all',
     {
-      ttl: 5 * 60 * 1000, // 5 minutes cache
-      onSuccess: (data) => {
-        setEvents(data.data || []);
-        setLoading(false);
-      },
-      onError: (err) => {
-        console.error('Error fetching events:', err);
-        setError('Failed to load events. Please try again later.');
-        setLoading(false);
-      }
+      ttl: 5 * 60 * 1000 // 5 minutes cache
     }
   );
 
+  // Update data when API call completes
   useEffect(() => {
-    if (cacheLoading) {
-      setLoading(true);
-    } else if (cacheError) {
+    if (eventsData) {
+      setEvents(eventsData.data || []);
+    } else if (eventsError) {
+      console.error('Error fetching events:', eventsError);
       setError('Failed to load events. Please try again later.');
-      setLoading(false);
     }
-  }, [cacheLoading, cacheError]);
+  }, [eventsData, eventsError]);
 
-  if (loading) {
+  if (eventsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

@@ -7,6 +7,9 @@ import AdminProtection from './components/AdminProtection';
 import SEOHelmet from './components/SEOHelmet';
 import { AuthProvider } from './contexts/AuthContext';
 
+// Initialize FontAwesome icons
+import './config/fontawesome';
+
 // Development-only performance monitoring
 const PerformanceMonitor = lazy(() => import('./components/PerformanceMonitor'));
 const CacheDebugger = lazy(() => import('./components/admin/CacheDebugger'));
