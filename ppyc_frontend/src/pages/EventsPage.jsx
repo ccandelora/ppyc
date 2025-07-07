@@ -1,27 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+import { eventsAPI } from '../services/api';
 import { sanitizeHtml } from '../utils/htmlUtils';
+import { useApiCache } from '../hooks/useApiCache';
 
 function EventsPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await api.get('/events');
-        setEvents(response.data);
-      } catch (error) {
-        console.error('Error fetching events:', error);
+  // Use cached API call
+  const { loading: cacheLoading, error: cacheError } = useApiCache(
+    eventsAPI.getAll,
+    'events-all',
+    {
+      ttl: 5 * 60 * 1000, // 5 minutes cache
+      onSuccess: (data) => {
+        setEvents(data.data || []);
+        setLoading(false);
+      },
+      onError: (err) => {
+        console.error('Error fetching events:', err);
         setError('Failed to load events. Please try again later.');
-      } finally {
         setLoading(false);
       }
-    };
+    }
+  );
 
-    fetchEvents();
-  }, []);
+  useEffect(() => {
+    if (cacheLoading) {
+      setLoading(true);
+    } else if (cacheError) {
+      setError('Failed to load events. Please try again later.');
+      setLoading(false);
+    }
+  }, [cacheLoading, cacheError]);
 
   if (loading) {
     return (

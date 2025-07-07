@@ -1,77 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
+import { eventsAPI, newsAPI } from '../services/api';
+import { useMultipleApiCache } from '../hooks/useApiCache';
 
 function HomePage() {
   const [events, setEvents] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [eventsResponse, postsResponse] = await Promise.all([
-          api.get('/events'),
-          api.get('/news')
-        ]);
-        setEvents(eventsResponse.data.slice(0, 3));
-        setPosts(postsResponse.data.slice(0, 3));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        // Fallback sample data for development
-        setEvents([
-          {
-            id: 1,
-            title: 'Annual Regatta 2024',
-            date: '2024-08-15',
-            description: 'Join us for our annual regatta featuring sailing competitions and maritime festivities.',
-            slug: 'annual-regatta-2024'
-          },
-          {
-            id: 2,
-            title: 'Summer Social Evening',
-            date: '2024-07-20',
-            description: 'An evening of fellowship and maritime stories with club members.',
-            slug: 'summer-social-evening'
-          },
-          {
-            id: 3,
-            title: 'Navigation Course',
-            date: '2024-06-10',
-            description: 'Learn advanced navigation techniques for Great Lakes sailing.',
-            slug: 'navigation-course'
-          }
-        ]);
-        setPosts([
-          {
-            id: 1,
-            title: 'PPYC Wins Regional Championship',
-            published_at: '2024-07-01',
-            excerpt: 'Our club team secured first place in the regional sailing championship.',
-            slug: 'ppyc-wins-regional-championship'
-          },
-          {
-            id: 2,
-            title: 'New Marina Facilities Open',
-            published_at: '2024-06-15',
-            excerpt: 'Enhanced docking facilities and amenities now available to members.',
-            slug: 'new-marina-facilities-open'
-          },
-          {
-            id: 3,
-            title: 'Heritage Preservation Project',
-            published_at: '2024-05-20',
-            excerpt: 'Documenting and preserving our club\'s rich maritime heritage.',
-            slug: 'heritage-preservation-project'
-          }
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Use cached API calls for better performance
+  const { data: cachedData, error: cacheError } = useMultipleApiCache([
+    { apiCall: eventsAPI.getAll, cacheKey: 'events-all', ttl: 5 * 60 * 1000 },
+    { apiCall: newsAPI.getAll, cacheKey: 'news-all', ttl: 5 * 60 * 1000 }
+  ]);
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (cachedData && Object.keys(cachedData).length > 0) {
+      const eventsData = cachedData['events-all'];
+      const newsData = cachedData['news-all'];
+      
+      if (eventsData) {
+        setEvents(eventsData.data?.slice(0, 3) || []);
+      }
+      if (newsData) {
+        setPosts(newsData.data?.slice(0, 3) || []);
+      }
+      setLoading(false);
+    } else if (cacheError) {
+      console.error('Error fetching cached data:', cacheError);
+      // Fallback sample data for development
+      setEvents([
+        {
+          id: 1,
+          title: 'Annual Regatta 2024',
+          date: '2024-08-15',
+          description: 'Join us for our annual regatta featuring sailing competitions and maritime festivities.',
+          slug: 'annual-regatta-2024'
+        },
+        {
+          id: 2,
+          title: 'Summer Social Evening',
+          date: '2024-07-20',
+          description: 'An evening of fellowship and maritime stories with club members.',
+          slug: 'summer-social-evening'
+        },
+        {
+          id: 3,
+          title: 'Navigation Course',
+          date: '2024-06-10',
+          description: 'Learn advanced navigation techniques for Great Lakes sailing.',
+          slug: 'navigation-course'
+        }
+      ]);
+      setPosts([
+        {
+          id: 1,
+          title: 'PPYC Wins Regional Championship',
+          published_at: '2024-07-01',
+          excerpt: 'Our club team secured first place in the regional sailing championship.',
+          slug: 'ppyc-wins-regional-championship'
+        },
+        {
+          id: 2,
+          title: 'New Marina Facilities Open',
+          published_at: '2024-06-15',
+          excerpt: 'Enhanced docking facilities and amenities now available to members.',
+          slug: 'new-marina-facilities-open'
+        },
+        {
+          id: 3,
+          title: 'Heritage Preservation Project',
+          published_at: '2024-05-20',
+          excerpt: 'Documenting and preserving our club\'s rich maritime heritage.',
+          slug: 'heritage-preservation-project'
+        }
+      ]);
+      setLoading(false);
+    }
+  }, [cachedData, cacheError]);
 
   if (loading) {
     return (

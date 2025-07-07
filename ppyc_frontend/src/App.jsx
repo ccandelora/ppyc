@@ -9,6 +9,7 @@ import { AuthProvider } from './contexts/AuthContext';
 
 // Development-only performance monitoring
 const PerformanceMonitor = lazy(() => import('./components/PerformanceMonitor'));
+const CacheDebugger = lazy(() => import('./components/admin/CacheDebugger'));
 
 // Lazy load components for better performance
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -171,6 +172,7 @@ function App() {
           {import.meta.env.DEV && (
             <Suspense fallback={null}>
               <PerformanceMonitor />
+              <CacheDebugger />
             </Suspense>
           )}
         </Router>
