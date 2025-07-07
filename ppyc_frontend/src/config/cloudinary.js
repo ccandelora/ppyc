@@ -84,7 +84,7 @@ export const generateAssetUrl = (publicId, transformations = {}) => {
     overlay && `l_${overlay}`,
   ].filter(Boolean).join(',');
 
-  return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/image/upload/${transformString}/${publicId}`;
+  return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload/${transformString}/${publicId}`;
 };
 
 export const generateVideoUrl = (publicId, transformations = {}) => {
@@ -104,7 +104,7 @@ export const generateVideoUrl = (publicId, transformations = {}) => {
     `f_${format}`,
   ].filter(Boolean).join(',');
 
-  return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/video/upload/${transformString}/${publicId}`;
+  return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/video/upload/${transformString}/${publicId}`;
 };
 
 // Responsive image sets for different breakpoints
