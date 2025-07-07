@@ -2,7 +2,7 @@
 // Professional yacht club assets optimized for performance and quality
 
 // Base Cloudinary configuration
-const CLOUDINARY_CONFIG = {
+const cloudinaryConfig = {
   cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'demo',
   apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY || '',
   apiSecret: import.meta.env.VITE_CLOUDINARY_API_SECRET || '',
@@ -142,4 +142,4 @@ export const createOptimizedImageProps = (publicId, alt, transformations = {}) =
   };
 };
 
-export default CLOUDINARY_CONFIG; 
+export default cloudinaryConfig; 
