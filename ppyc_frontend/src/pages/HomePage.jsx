@@ -1,83 +1,117 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { eventsAPI, newsAPI } from '../services/api';
-import { useMultipleApiCache } from '../hooks/useApiCache';
+import { useApiCache } from '../hooks/useApiCache';
 
 function HomePage() {
   const [events, setEvents] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [eventsLoaded, setEventsLoaded] = useState(false);
+  const [newsLoaded, setNewsLoaded] = useState(false);
 
-  // Use cached API calls for better performance
-  const { data: cachedData, error: cacheError } = useMultipleApiCache([
-    { apiCall: eventsAPI.getAll, cacheKey: 'events-all', ttl: 5 * 60 * 1000 },
-    { apiCall: newsAPI.getAll, cacheKey: 'news-all', ttl: 5 * 60 * 1000 }
-  ]);
+  // Memoize callback functions to prevent infinite loops
+  const onEventsSuccess = useCallback((data) => {
+    setEvents(data.data?.slice(0, 3) || []);
+    setEventsLoaded(true);
+  }, []);
 
+  const setFallbackEvents = useCallback(() => {
+    setEvents([
+      {
+        id: 1,
+        title: 'Annual Regatta 2024',
+        date: '2024-08-15',
+        description: 'Join us for our annual regatta featuring sailing competitions and maritime festivities.',
+        slug: 'annual-regatta-2024'
+      },
+      {
+        id: 2,
+        title: 'Summer Social Evening',
+        date: '2024-07-20',
+        description: 'An evening of fellowship and maritime stories with club members.',
+        slug: 'summer-social-evening'
+      },
+      {
+        id: 3,
+        title: 'Navigation Course',
+        date: '2024-06-10',
+        description: 'Learn advanced navigation techniques for Great Lakes sailing.',
+        slug: 'navigation-course'
+      }
+    ]);
+  }, []);
+
+  const setFallbackNews = useCallback(() => {
+    setPosts([
+      {
+        id: 1,
+        title: 'PPYC Wins Regional Championship',
+        published_at: '2024-07-01',
+        excerpt: 'Our club team secured first place in the regional sailing championship.',
+        slug: 'ppyc-wins-regional-championship'
+      },
+      {
+        id: 2,
+        title: 'New Marina Facilities Open',
+        published_at: '2024-06-15',
+        excerpt: 'Enhanced docking facilities and amenities now available to members.',
+        slug: 'new-marina-facilities-open'
+      },
+      {
+        id: 3,
+        title: 'Heritage Preservation Project',
+        published_at: '2024-05-20',
+        excerpt: 'Documenting and preserving our club\'s rich maritime heritage.',
+        slug: 'heritage-preservation-project'
+      }
+    ]);
+  }, []);
+
+  const onEventsError = useCallback((error) => {
+    console.error('Error fetching events:', error);
+    setFallbackEvents();
+    setEventsLoaded(true);
+  }, [setFallbackEvents]);
+
+  const onNewsSuccess = useCallback((data) => {
+    setPosts(data.data?.slice(0, 3) || []);
+    setNewsLoaded(true);
+  }, []);
+
+  const onNewsError = useCallback((error) => {
+    console.error('Error fetching news:', error);
+    setFallbackNews();
+    setNewsLoaded(true);
+  }, [setFallbackNews]);
+
+  // Use separate cached API calls for better stability
+  useApiCache(
+    eventsAPI.getAll,
+    'events-all',
+    {
+      ttl: 5 * 60 * 1000,
+      onSuccess: onEventsSuccess,
+      onError: onEventsError
+    }
+  );
+
+  useApiCache(
+    newsAPI.getAll,
+    'news-all',
+    {
+      ttl: 5 * 60 * 1000,
+      onSuccess: onNewsSuccess,
+      onError: onNewsError
+    }
+  );
+
+  // Update loading state when both API calls complete
   useEffect(() => {
-    if (cachedData && Object.keys(cachedData).length > 0) {
-      const eventsData = cachedData['events-all'];
-      const newsData = cachedData['news-all'];
-      
-      if (eventsData) {
-        setEvents(eventsData.data?.slice(0, 3) || []);
-      }
-      if (newsData) {
-        setPosts(newsData.data?.slice(0, 3) || []);
-      }
-      setLoading(false);
-    } else if (cacheError) {
-      console.error('Error fetching cached data:', cacheError);
-      // Fallback sample data for development
-      setEvents([
-        {
-          id: 1,
-          title: 'Annual Regatta 2024',
-          date: '2024-08-15',
-          description: 'Join us for our annual regatta featuring sailing competitions and maritime festivities.',
-          slug: 'annual-regatta-2024'
-        },
-        {
-          id: 2,
-          title: 'Summer Social Evening',
-          date: '2024-07-20',
-          description: 'An evening of fellowship and maritime stories with club members.',
-          slug: 'summer-social-evening'
-        },
-        {
-          id: 3,
-          title: 'Navigation Course',
-          date: '2024-06-10',
-          description: 'Learn advanced navigation techniques for Great Lakes sailing.',
-          slug: 'navigation-course'
-        }
-      ]);
-      setPosts([
-        {
-          id: 1,
-          title: 'PPYC Wins Regional Championship',
-          published_at: '2024-07-01',
-          excerpt: 'Our club team secured first place in the regional sailing championship.',
-          slug: 'ppyc-wins-regional-championship'
-        },
-        {
-          id: 2,
-          title: 'New Marina Facilities Open',
-          published_at: '2024-06-15',
-          excerpt: 'Enhanced docking facilities and amenities now available to members.',
-          slug: 'new-marina-facilities-open'
-        },
-        {
-          id: 3,
-          title: 'Heritage Preservation Project',
-          published_at: '2024-05-20',
-          excerpt: 'Documenting and preserving our club\'s rich maritime heritage.',
-          slug: 'heritage-preservation-project'
-        }
-      ]);
+    if (eventsLoaded && newsLoaded) {
       setLoading(false);
     }
-  }, [cachedData, cacheError]);
+  }, [eventsLoaded, newsLoaded]);
 
   if (loading) {
     return (

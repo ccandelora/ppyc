@@ -26,7 +26,10 @@ api.interceptors.response.use(
 
 // Helper function to create cached API calls
 const createCachedCall = (apiCall, cacheKey, ttl = 5 * 60 * 1000) => {
-  return () => apiCache.request(cacheKey, apiCall, ttl);
+  const cachedFunction = () => apiCache.request(cacheKey, apiCall, ttl);
+  // Add cache key for debugging
+  cachedFunction.cacheKey = cacheKey;
+  return cachedFunction;
 };
 
 // Public API calls with caching

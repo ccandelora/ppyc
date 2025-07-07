@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiCache } from '../services/api';
 
 /**
@@ -51,7 +51,7 @@ export const useApiCache = (apiCall, cacheKey, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [apiCall, cacheKey, ttl, enabled, onSuccess, onError]);
+  }, [apiCall, cacheKey, ttl, enabled]); // Remove onSuccess and onError from dependencies
 
   const refresh = useCallback(() => {
     apiCache.invalidate(cacheKey);
@@ -82,6 +82,21 @@ export const useMultipleApiCache = (requests, options = {}) => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Use useRef to avoid recreating requests on every render
+  const requestsRef = useRef(requests);
+  const hasRequestsChanged = useRef(false);
+  
+  // Check if requests have actually changed
+  useEffect(() => {
+    const currentRequests = JSON.stringify(requests.map(r => ({ cacheKey: r.cacheKey, ttl: r.ttl })));
+    const previousRequests = JSON.stringify(requestsRef.current?.map(r => ({ cacheKey: r.cacheKey, ttl: r.ttl })) || []);
+    
+    if (currentRequests !== previousRequests) {
+      requestsRef.current = requests;
+      hasRequestsChanged.current = true;
+    }
+  }, [requests]);
 
   const fetchAll = useCallback(async () => {
     if (!enabled) return;
@@ -90,14 +105,15 @@ export const useMultipleApiCache = (requests, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const promises = requests.map(({ apiCall, cacheKey, ttl = 5 * 60 * 1000 }) => 
+      const currentRequests = requestsRef.current;
+      const promises = currentRequests.map(({ apiCall, cacheKey, ttl = 5 * 60 * 1000 }) => 
         apiCache.request(cacheKey, apiCall, ttl)
       );
 
       const results = await Promise.all(promises);
       
       const dataMap = {};
-      requests.forEach(({ cacheKey }, index) => {
+      currentRequests.forEach(({ cacheKey }, index) => {
         dataMap[cacheKey] = results[index];
       });
 
@@ -107,18 +123,22 @@ export const useMultipleApiCache = (requests, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [requests, enabled]);
+  }, [enabled]);
 
   const refresh = useCallback(() => {
-    requests.forEach(({ cacheKey }) => {
+    const currentRequests = requestsRef.current;
+    currentRequests.forEach(({ cacheKey }) => {
       apiCache.invalidate(cacheKey);
     });
     fetchAll();
-  }, [requests, fetchAll]);
+  }, [fetchAll]);
 
   useEffect(() => {
-    fetchAll();
-  }, [fetchAll, ...dependencies]);
+    if (hasRequestsChanged.current || loading) {
+      hasRequestsChanged.current = false;
+      fetchAll();
+    }
+  }, [fetchAll, enabled, ...dependencies]);
 
   return {
     data,
