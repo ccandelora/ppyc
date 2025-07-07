@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { cloudinaryConfig } from '../../config/cloudinary';
+import cloudinaryConfig from '../../config/cloudinary';
 import { adminAPI } from '../../services/api';
 import { loadScript } from '../../utils/scriptLoader';
 
