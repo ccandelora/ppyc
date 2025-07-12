@@ -111,7 +111,7 @@ const EventsPage = () => {
           <div className="mb-6">
             <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-6xl text-blue-300" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">Club Events</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">Club Events</h1>
           <div className="w-24 h-1 bg-blue-400 mx-auto mb-8"></div>
           <p className="text-xl font-light max-w-3xl mx-auto leading-relaxed opacity-90">
             Join us for exciting events throughout the sailing season. From educational seminars to 

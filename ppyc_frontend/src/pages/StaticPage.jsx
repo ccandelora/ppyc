@@ -100,7 +100,7 @@ const StaticPage = ({ slug }) => {
       <section className="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="mb-4">{getPageIcon(slug)}</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
             {page?.title}
           </h1>
           <p className="text-xl text-gray-300 flex items-center justify-center gap-2">

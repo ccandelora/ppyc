@@ -25,7 +25,7 @@ function AboutPage() {
           <div className="mb-6">
             <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-6xl text-blue-300" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
             A Century of Community on the Water
           </h1>
           <p className="text-xl md:text-2xl text-gray-200 leading-relaxed">
