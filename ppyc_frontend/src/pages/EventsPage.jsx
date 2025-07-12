@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_NAMES } from '../config/fontawesome';
+import SEOHelmet from '../components/SEOHelmet';
+import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
+import CloudinaryVideo from '../components/CloudinaryVideo';
 import { eventsAPI } from '../services/api';
 import { sanitizeHtml } from '../utils/htmlUtils';
 import { useApiCache } from '../hooks/useApiCache';
 
-function EventsPage() {
+const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
 
@@ -30,12 +36,11 @@ function EventsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <img 
-            src="/assets/images/ppyc-logo.svg" 
-            alt="PPYC" 
-            className="w-16 h-16 mx-auto mb-6 opacity-80" 
-          />
-          <p className="text-blue-100 text-lg">Loading events...</p>
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6 animate-spin shadow-lg">
+            <FontAwesomeIcon icon={ICON_NAMES.LOADING} className="text-white text-xl" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading Events</h2>
+          <p className="text-gray-600">Fetching upcoming activities...</p>
         </div>
       </div>
     );
@@ -46,14 +51,15 @@ function EventsPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <div className="w-8 h-8 bg-red-500 rounded-full"></div>
+            <FontAwesomeIcon icon={ICON_NAMES.WARNING} className="text-red-500 text-2xl" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Unable to Load Events</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button 
             onClick={() => window.location.reload()} 
-            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200"
           >
+            <FontAwesomeIcon icon={ICON_NAMES.REFRESH} />
             Try Again
           </button>
         </div>
@@ -91,21 +97,20 @@ function EventsPage() {
       {/* Hero Section with Video Background */}
       <section className="relative text-white py-20 overflow-hidden">
         <div className="absolute inset-0">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
+          <CloudinaryVideo
+            publicId={YACHT_CLUB_ASSETS.videos.eventsHero}
             className="w-full h-full object-cover"
-          >
-            <source src="/assets/images/videos/vecteezy_similan-islands-thailand-november-23-2016-dive-boat-near_8821366.mp4" type="video/mp4" />
-            <source src="/assets/images/videos/13963117_2560_1440_30fps.mp4" type="video/mp4" />
-            {/* Fallback for browsers that don't support video */}
-            Your browser does not support the video tag.
-          </video>
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-blue-900/70 to-slate-800/80"></div>
         </div>
         <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+          <div className="mb-6">
+            <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-6xl text-blue-300" />
+          </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">Club Events</h1>
           <div className="w-24 h-1 bg-blue-400 mx-auto mb-8"></div>
           <p className="text-xl font-light max-w-3xl mx-auto leading-relaxed opacity-90">
@@ -121,7 +126,7 @@ function EventsPage() {
           {events.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <div className="w-10 h-10 bg-blue-500 rounded-full"></div>
+                <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-blue-500 text-3xl" />
               </div>
               <h3 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Events</h3>
               <p className="text-gray-600 max-w-md mx-auto">
@@ -135,6 +140,7 @@ function EventsPage() {
                 <div key={monthYear}>
                   {/* Month Header */}
                   <div className="text-center mb-12">
+                    <FontAwesomeIcon icon={ICON_NAMES.CALENDAR_ALT} className="text-4xl text-blue-600 mb-4" />
                     <h2 className="text-3xl font-bold text-slate-800 mb-4">{monthYear}</h2>
                     <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
                   </div>
@@ -165,7 +171,7 @@ function EventsPage() {
                         {/* Event Content */}
                         <div className="p-6">
                           <div className="text-blue-600 font-semibold text-sm mb-2 flex items-center gap-2">
-                            <i className="fas fa-calendar-day"></i>
+                            <FontAwesomeIcon icon={ICON_NAMES.CALENDAR_DAY} />
                             {new Date(event.start_time).toLocaleDateString('en-US', { 
                               weekday: 'long', 
                               month: 'long', 
@@ -174,7 +180,7 @@ function EventsPage() {
                           </div>
                           
                           <div className="text-gray-500 text-sm mb-3 flex items-center gap-2">
-                            <i className="fas fa-clock"></i>
+                            <FontAwesomeIcon icon={ICON_NAMES.CLOCK} />
                             {new Date(event.start_time).toLocaleTimeString('en-US', { 
                               hour: 'numeric', 
                               minute: '2-digit',
@@ -194,7 +200,7 @@ function EventsPage() {
                           
                           {event.location && (
                             <div className="flex items-center gap-2 text-sm text-gray-500">
-                              <i className="fas fa-map-marker-alt text-blue-500"></i>
+                              <FontAwesomeIcon icon={ICON_NAMES.LOCATION} className="text-blue-500" />
                               <span>{event.location}</span>
                             </div>
                           )}
@@ -212,6 +218,9 @@ function EventsPage() {
       {/* Call to Action */}
       <section className="py-16 bg-slate-900 text-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="mb-6">
+            <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-5xl text-blue-300" />
+          </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Stay Connected with PPYC
           </h2>
@@ -223,14 +232,16 @@ function EventsPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="/membership" 
-              className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
             >
+              <FontAwesomeIcon icon={ICON_NAMES.USERS} />
               Become a Member
             </a>
             <a 
               href="/news" 
-              className="px-8 py-4 border-2 border-blue-400 text-blue-400 font-semibold rounded-lg hover:bg-blue-400 hover:text-white transition-all duration-300"
+              className="inline-flex items-center gap-2 px-8 py-4 border-2 border-blue-400 text-blue-400 font-semibold rounded-lg hover:bg-blue-400 hover:text-white transition-all duration-300"
             >
+              <FontAwesomeIcon icon={ICON_NAMES.NEWS} />
               Read Club News
             </a>
           </div>
@@ -241,6 +252,7 @@ function EventsPage() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.SHIP} className="text-4xl text-blue-600 mb-4" />
             <h2 className="text-3xl font-bold text-slate-800 mb-4">Life at the Marina</h2>
             <div className="w-16 h-1 bg-blue-600 mx-auto mb-6"></div>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -257,7 +269,8 @@ function EventsPage() {
                   alt="Racing at PPYC" 
                   className="w-full h-32 object-cover"
                 />
-                <div className="p-3">
+                <div className="p-4">
+                  <FontAwesomeIcon icon={ICON_NAMES.TROPHY} className="text-blue-600 text-xl mb-2" />
                   <h3 className="font-semibold text-slate-800 text-sm">Racing Program</h3>
                 </div>
               </div>
@@ -270,7 +283,8 @@ function EventsPage() {
                   alt="Marina Facilities" 
                   className="w-full h-32 object-cover"
                 />
-                <div className="p-3">
+                <div className="p-4">
+                  <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-blue-600 text-xl mb-2" />
                   <h3 className="font-semibold text-slate-800 text-sm">Marina Services</h3>
                 </div>
               </div>
@@ -283,7 +297,8 @@ function EventsPage() {
                   alt="Deck Life" 
                   className="w-full h-32 object-cover"
                 />
-                <div className="p-3">
+                <div className="p-4">
+                  <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-blue-600 text-xl mb-2" />
                   <h3 className="font-semibold text-slate-800 text-sm">Social Gatherings</h3>
                 </div>
               </div>
@@ -296,7 +311,8 @@ function EventsPage() {
                   alt="Perfect Day" 
                   className="w-full h-32 object-cover"
                 />
-                <div className="p-3">
+                <div className="p-4">
+                  <FontAwesomeIcon icon={ICON_NAMES.SUN} className="text-blue-600 text-xl mb-2" />
                   <h3 className="font-semibold text-slate-800 text-sm">Perfect Days</h3>
                 </div>
               </div>

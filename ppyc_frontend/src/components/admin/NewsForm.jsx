@@ -170,7 +170,7 @@ const NewsForm = () => {
             value={formData.title}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             placeholder="Enter article title..."
           />
         </div>
@@ -219,7 +219,7 @@ const NewsForm = () => {
             name="published_at"
             value={formData.published_at}
             onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
           />
           <p className="text-sm text-gray-500 mt-1">
             Leave empty to save as draft. Set future date to schedule publication.

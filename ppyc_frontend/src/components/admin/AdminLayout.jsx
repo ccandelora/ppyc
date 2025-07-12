@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminLayout = () => {
@@ -25,7 +26,7 @@ const AdminLayout = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
-          <i className="fas fa-anchor fa-spin text-4xl text-blue-500 mb-4"></i>
+          <FontAwesomeIcon icon="anchor" className="fa-spin text-4xl text-blue-500 mb-4" />
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -41,37 +42,37 @@ const AdminLayout = () => {
     {
       name: 'Dashboard',
       href: '/admin',
-      icon: 'fas fa-tachometer-alt',
+      icon: 'tachometer-alt',
       current: location.pathname === '/admin'
     },
     {
       name: 'News',
       href: '/admin/news',
-      icon: 'fas fa-newspaper',
+      icon: 'newspaper',
       current: location.pathname.startsWith('/admin/news')
     },
     {
       name: 'Events',
       href: '/admin/events',
-      icon: 'fas fa-calendar-alt',
+      icon: 'calendar-alt',
       current: location.pathname.startsWith('/admin/events')
     },
     {
       name: 'Slides',
       href: '/admin/slides',
-      icon: 'fas fa-desktop',
+      icon: 'desktop',
       current: location.pathname.startsWith('/admin/slides')
     },
     {
       name: 'Media Library',
       href: '/admin/media',
-      icon: 'fas fa-photo-video',
+      icon: 'images',
       current: location.pathname.startsWith('/admin/media')
     },
     {
       name: 'Settings',
       href: '/admin/settings',
-      icon: 'fas fa-cog',
+      icon: 'cog',
       current: location.pathname.startsWith('/admin/settings')
     }
   ];
@@ -89,27 +90,28 @@ const AdminLayout = () => {
               className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               onClick={() => setSidebarOpen(false)}
             >
-              <i className="fas fa-times text-white"></i>
+              <FontAwesomeIcon icon="times" className="text-white" />
             </button>
           </div>
           
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
-              <img className="h-8 w-auto" src="/assets/images/ppyc-logo.svg" alt="PPYC" />
-              <span className="ml-2 text-xl font-bold text-gray-900">PPYC Admin</span>
+              <img className="h-8 w-auto" src="/assets/images/ppyclogo.png" alt="PPYC" />
+              <span className="ml-2 text-lg font-bold text-gray-900">PPYC Admin</span>
             </div>
             <nav className="mt-5 px-2 space-y-1">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
+                  onClick={() => setSidebarOpen(false)}
                   className={`${
                     item.current
                       ? 'bg-blue-100 text-blue-900'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  } group flex items-center px-2 py-2 text-base font-medium rounded-md`}
+                  } group flex items-center px-3 py-3 text-base font-medium rounded-md touch-manipulation`}
                 >
-                  <i className={`${item.icon} ${item.current ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'} mr-4 text-lg`}></i>
+                  <FontAwesomeIcon icon={item.icon} className={`${item.current ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'} mr-4 text-lg`} />
                   {item.name}
                 </Link>
               ))}
@@ -124,7 +126,7 @@ const AdminLayout = () => {
           <div className="flex flex-col h-0 flex-1 bg-white shadow">
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
               <div className="flex items-center flex-shrink-0 px-4">
-                <img className="h-8 w-auto" src="/assets/images/ppyc-logo.svg" alt="PPYC" />
+                <img className="h-8 w-auto" src="/assets/images/ppyclogo.png" alt="PPYC" />
                 <span className="ml-2 text-xl font-bold text-gray-900">PPYC Admin</span>
               </div>
               <nav className="mt-5 flex-1 px-2 space-y-1">
@@ -138,7 +140,7 @@ const AdminLayout = () => {
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     } group flex items-center px-2 py-2 text-sm font-medium rounded-md`}
                   >
-                    <i className={`${item.icon} ${item.current ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'} mr-3 text-lg`}></i>
+                    <FontAwesomeIcon icon={item.icon} className={`${item.current ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'} mr-3 text-lg`} />
                     {item.name}
                   </Link>
                 ))}
@@ -168,7 +170,7 @@ const AdminLayout = () => {
                   className="flex-shrink-0 ml-2 p-1 text-gray-400 hover:text-gray-500"
                   title="Sign out"
                 >
-                  <i className="fas fa-sign-out-alt"></i>
+                  <FontAwesomeIcon icon="sign-out-alt" />
                 </button>
               </div>
             </div>
@@ -180,17 +182,26 @@ const AdminLayout = () => {
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
         <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
           <button
-            className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 md:hidden"
+            className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 md:hidden touch-manipulation"
             onClick={() => setSidebarOpen(true)}
           >
-            <i className="fas fa-bars"></i>
+            <FontAwesomeIcon icon="bars" className="text-lg" />
           </button>
           
-          <div className="flex-1 px-4 flex justify-between items-center">
-            <div className="flex-1 flex">
-              <h1 className="text-2xl font-semibold text-gray-900">
+          <div className="flex-1 px-3 sm:px-4 flex justify-between items-center">
+            <div className="flex-1 flex min-w-0">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 truncate">
                 {navigation.find(item => item.current)?.name || 'Admin'}
               </h1>
+            </div>
+            
+            {/* Mobile user menu */}
+            <div className="flex md:hidden items-center">
+              <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                <span className="text-xs font-medium text-white uppercase">
+                  {user?.email?.charAt(0) || 'U'}
+                </span>
+              </div>
             </div>
             
             {/* Desktop user menu */}
@@ -210,7 +221,7 @@ const AdminLayout = () => {
                   className="p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-lg"
                   title="Sign out"
                 >
-                  <i className="fas fa-sign-out-alt"></i>
+                  <FontAwesomeIcon icon="sign-out-alt" />
                 </button>
               </div>
             </div>

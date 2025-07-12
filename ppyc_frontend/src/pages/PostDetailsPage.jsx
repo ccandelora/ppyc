@@ -39,19 +39,6 @@ const PostDetailsPage = () => {
     });
   };
 
-  const formatContent = (content) => {
-    // Simple formatting - split by paragraphs
-    return content?.split('\n').map((paragraph, index) => (
-      paragraph.trim() ? (
-        <p key={index} className="mb-4 text-yacht-navy-700 leading-relaxed text-lg">
-          {paragraph}
-        </p>
-      ) : (
-        <br key={index} />
-      )
-    ));
-  };
-
   if (postLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -169,9 +156,7 @@ const PostDetailsPage = () => {
               </h1>
 
               {/* Article Content */}
-              <div className="prose prose-lg max-w-none">
-                {formatContent(post?.content)}
-              </div>
+              <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: post?.content }} />
 
               {/* Tags or Categories (if we had them) */}
               <div className="mt-12 pt-8 border-t border-slate-200">
@@ -228,7 +213,7 @@ const PostDetailsPage = () => {
             </p>
             <div className="space-x-4">
               <a 
-                href="mailto:info@ppyc.org"
+                href="mailto:secretary.ppyc@gmail.com"
                 className="btn-primary"
               >
                 Contact Club Office

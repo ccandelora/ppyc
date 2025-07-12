@@ -102,10 +102,35 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
   }, [handleFiles]);
 
   const handleImageSelect = useCallback((imageData) => {
-    setSelectedImage(imageData);
-    if (imageData) {
-      onUploadSuccess?.(imageData);
+    if (!imageData) {
+      console.log('❌ No image data received');
+      return;
     }
+    
+    console.log('🖼️ Image selected:', imageData);
+    
+    // Normalize the image data
+    const normalizedImageData = {
+      url: imageData.url || imageData.secure_url,
+      secure_url: imageData.secure_url || imageData.url,
+      public_id: imageData.public_id,
+      width: imageData.width,
+      height: imageData.height,
+      alt: imageData.alt || imageData.public_id.split('/').pop()
+    };
+    
+    console.log('🖼️ Setting normalized image data:', normalizedImageData);
+    
+    // Update local state first
+    setSelectedImage(normalizedImageData);
+    
+    // Then notify parent component
+    console.log('🖼️ Notifying parent component with image data');
+    onUploadSuccess?.(normalizedImageData);
+    
+    // Finally close the browser
+    console.log('🖼️ Closing image browser');
+    setShowBrowser(false);
   }, [onUploadSuccess]);
 
   const handleRemoveSelected = useCallback(() => {
@@ -145,14 +170,24 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
         
         <div className="mt-4 flex space-x-2">
           <button
-            onClick={() => setShowBrowser(true)}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowBrowser(true);
+            }}
             className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
           >
             <i className="fas fa-images mr-2"></i>
             Browse Library
           </button>
           <button
-            onClick={() => setSelectedImage(null)}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setSelectedImage(null);
+            }}
             className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
           >
             <i className="fas fa-cloud-upload-alt mr-2"></i>
@@ -229,7 +264,12 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
       {allowLibraryBrowse && !uploading && (
         <div className="mt-4 text-center">
           <button
-            onClick={() => setShowBrowser(true)}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowBrowser(true);
+            }}
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
           >
             <i className="fas fa-images mr-2"></i>

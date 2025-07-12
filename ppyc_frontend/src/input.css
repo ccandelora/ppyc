@@ -33,11 +33,19 @@
 
 /* Professional Base Styles */
 @layer base {
+  html, body {
+    @apply h-full w-full m-0 p-0;
+  }
+
+  #root {
+    @apply h-full w-full;
+  }
+
   body {
     font-family: var(--font-body);
     line-height: 1.6;
     color: var(--color-slate);
-    background-color: #ffffff;
+    background-color: #000000;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -409,5 +417,17 @@
   
   .section-professional {
     padding: 2rem 0;
+  }
+}
+
+/* Scrollbar utilities for mobile navigation */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

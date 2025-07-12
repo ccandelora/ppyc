@@ -25,7 +25,7 @@ const HeroSection = () => {
       <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
         <div className="mb-8">
           <img 
-            src="/assets/images/file.svg" 
+            src="/assets/images/ppyclogo.png" 
             alt="Pleasant Park Yacht Club" 
             className="w-24 h-24 mx-auto mb-6 opacity-90"
           />

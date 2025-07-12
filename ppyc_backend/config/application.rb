@@ -47,5 +47,59 @@ module PpycBackend
 
     # Add CSRF protection for session-based authentication
     config.middleware.use ActionDispatch::ContentSecurityPolicy::Middleware
+
+    # Explicitly add CORS middleware
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '/api/v1/slides',
+          headers: :any,
+          methods: [:get],
+          credentials: false
+
+        resource '/api/v1/news',
+          headers: :any,
+          methods: [:get],
+          credentials: false
+
+        resource '/api/v1/news/*',
+          headers: :any,
+          methods: [:get],
+          credentials: false
+
+        resource '/api/v1/events',
+          headers: :any,
+          methods: [:get],
+          credentials: false
+
+        resource '/api/v1/events/*',
+          headers: :any,
+          methods: [:get],
+          credentials: false
+
+        resource '/api/v1/pages/*',
+          headers: :any,
+          methods: [:get],
+          credentials: false
+
+        resource '/api/v1/weather/*',
+          headers: :any,
+          methods: [:get],
+          credentials: false
+      end
+
+      allow do
+        origins 'http://localhost:5173', 'http://localhost:3000', 'http://srv894370.hstgr.cloud'
+        resource '/api/v1/admin/*',
+          headers: :any,
+          methods: [:get, :post, :put, :patch, :delete, :options, :head],
+          credentials: true
+
+        resource '/api/v1/auth/*',
+          headers: :any,
+          methods: [:get, :post, :put, :patch, :delete, :options, :head],
+          credentials: true
+      end
+    end
   end
 end

@@ -130,7 +130,7 @@ const StaticPage = ({ slug }) => {
                 </p>
                 <div className="space-x-4">
                   <a 
-                    href="mailto:info@ppyc.org"
+                    href="mailto:secretary.ppyc@gmail.com"
                     className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
                   >
                     <i className="fas fa-envelope"></i>

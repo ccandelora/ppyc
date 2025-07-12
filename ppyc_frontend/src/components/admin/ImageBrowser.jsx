@@ -14,25 +14,53 @@ const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null }) => {
   const fetchImages = async () => {
     try {
       setLoading(true);
+      setError(null);
+      console.log('🔍 Fetching images from media library...');
       const response = await adminAPI.images.getAll();
-      setImages(response.data.data.resources || []);
+      
+      if (!response?.data?.data?.resources) {
+        throw new Error('Invalid response format from server');
+      }
+      
+      const images = response.data.data.resources.map(image => ({
+        url: image.url,
+        secure_url: image.url, // Cloudinary URLs are always secure
+        public_id: image.public_id,
+        width: image.width,
+        height: image.height,
+        resource_type: image.resource_type,
+        format: image.format,
+        created_at: image.created_at
+      }));
+      
+      console.log(`✅ Fetched ${images.length} images successfully`);
+      setImages(images);
     } catch (err) {
-      setError('Failed to fetch images');
-      console.error('Error fetching images:', err);
+      console.error('❌ Error fetching images:', err);
+      setError(err.message || 'Failed to fetch images');
     } finally {
       setLoading(false);
     }
   };
 
   const handleImageSelect = (image) => {
-    onImageSelect({
+    console.log('🖼️ Image selected:', image);
+    const selectedImageData = {
       url: image.url,
+      secure_url: image.url,
       public_id: image.public_id,
       width: image.width,
       height: image.height,
-      alt: image.public_id.split('/').pop()
-    });
-    onClose();
+      alt: image.public_id.split('/').pop(),
+      resource_type: image.resource_type
+    };
+    console.log('🖼️ Sending image data to parent:', selectedImageData);
+    onImageSelect(selectedImageData);
+    
+    // Add a small delay before closing to ensure the selection is processed
+    setTimeout(() => {
+      onClose();
+    }, 100);
   };
 
   const filteredImages = images.filter(image => {
@@ -68,7 +96,12 @@ const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null }) => {
             </p>
           </div>
           <button
-            onClick={onClose}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
             className="text-gray-400 hover:text-gray-600 p-2"
           >
             <i className="fas fa-times text-xl"></i>
@@ -117,13 +150,21 @@ const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null }) => {
                       ? 'border-purple-500 ring-2 ring-purple-200'
                       : 'border-gray-200 hover:border-purple-300'
                   }`}
-                  onClick={() => handleImageSelect(image)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleImageSelect(image);
+                  }}
                 >
                   <div className="aspect-square">
                     <img
                       src={image.url}
                       alt={image.public_id}
                       className="w-full h-full object-cover"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                     />
                   </div>
                   
@@ -165,14 +206,22 @@ const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null }) => {
           </div>
           <div className="flex items-center space-x-2">
             <button
-              onClick={onClose}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onClose();
+              }}
               className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             {selectedImage && (
               <button
-                onClick={() => {
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   onImageSelect(null);
                   onClose();
                 }}

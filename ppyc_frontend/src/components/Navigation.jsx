@@ -42,6 +42,7 @@ function Navigation() {
     { name: 'News', path: '/news', icon: ICON_NAMES.NEWS },
     { name: 'Events', path: '/events', icon: ICON_NAMES.CALENDAR },
     { name: 'Marina', path: '/marina', icon: ICON_NAMES.ANCHOR },
+    { name: 'Heritage', path: '/heritage', icon: ICON_NAMES.SHIP },
     { name: 'Membership', path: '/membership', icon: ICON_NAMES.USERS },
   ];
 
@@ -54,7 +55,7 @@ function Navigation() {
           {/* Professional Logo */}
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
-              src="/assets/images/file.svg"
+              src="/assets/images/ppyclogo.png"
               alt="Pleasant Park Yacht Club"
               className="h-12 w-auto"
               loading="eager"

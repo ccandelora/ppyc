@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
+import { useContact } from '../contexts/contactContext';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
+  const { contactInfo } = useContact();
 
   return (
     <footer className="bg-slate-900 text-white mt-auto">
@@ -15,16 +17,16 @@ function Footer() {
           <div className="lg:col-span-2">
             <div className="mb-4">
               <img 
-                src="/assets/images/file.svg"
+                src="/assets/images/ppyclogo.png"
                 alt="Pleasant Park Yacht Club"
-                className="h-16 w-auto mb-2 brightness-0 invert"
+                className="h-16 w-auto mb-2 bg-white rounded-lg p-2"
               />
               <div className="text-slate-400 text-sm">
-                Excellence in Sailing Since 1910
+                Excellence in Boating Since 1910
               </div>
             </div>
             <p className="text-slate-300 mb-6 max-w-md">
-              Join our prestigious yacht club and experience the finest in sailing, 
+              Join our prestigious yacht club and experience the finest in boating, 
               marina services, and maritime community on the beautiful waters of Pleasant Park.
             </p>
             
@@ -35,28 +37,28 @@ function Footer() {
                 className="text-slate-400 hover:text-white transition-colors"
                 aria-label="Follow us on Facebook"
               >
-                <FontAwesomeIcon icon={ICON_NAMES.HOME} className="text-xl" />
+                <FontAwesomeIcon icon={ICON_NAMES.FACEBOOK} className="text-xl" />
               </a>
               <a
                 href="#"
                 className="text-slate-400 hover:text-white transition-colors"
                 aria-label="Follow us on Instagram"
               >
-                <FontAwesomeIcon icon={ICON_NAMES.USER} className="text-xl" />
+                <FontAwesomeIcon icon={ICON_NAMES.INSTAGRAM} className="text-xl" />
               </a>
               <a
                 href="#"
                 className="text-slate-400 hover:text-white transition-colors"
                 aria-label="Follow us on Twitter"
               >
-                <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-xl" />
+                <FontAwesomeIcon icon={ICON_NAMES.TWITTER} className="text-xl" />
               </a>
               <a
                 href="#"
                 className="text-slate-400 hover:text-white transition-colors"
                 aria-label="Connect on LinkedIn"
               >
-                <FontAwesomeIcon icon={ICON_NAMES.EMAIL} className="text-xl" />
+                <FontAwesomeIcon icon={ICON_NAMES.LINKEDIN} className="text-xl" />
               </a>
             </div>
           </div>
@@ -81,6 +83,11 @@ function Footer() {
                 </Link>
               </li>
               <li>
+                <Link to="/heritage" className="text-slate-300 hover:text-white transition-colors">
+                  Club Heritage
+                </Link>
+              </li>
+              <li>
                 <Link to="/events" className="text-slate-300 hover:text-white transition-colors">
                   Events
                 </Link>
@@ -100,21 +107,26 @@ function Footer() {
               <li className="flex items-start space-x-3">
                 <FontAwesomeIcon icon={ICON_NAMES.HOME} className="text-amber-500 mt-1" />
                 <span className="text-slate-300">
-                  123 Harbor Drive<br />
-                  Pleasant Park, NY 12345
+                  {contactInfo.address}
                 </span>
               </li>
               <li className="flex items-center space-x-3">
                 <FontAwesomeIcon icon={ICON_NAMES.PHONE} className="text-amber-500" />
-                <span className="text-slate-300">
-                  (555) 123-4567
-                </span>
+                <a 
+                  href={`tel:${contactInfo.phone.replace(/[^0-9]/g, '')}`}
+                  className="text-slate-300 hover:text-white hover:underline transition-colors duration-200"
+                >
+                  {contactInfo.phone}
+                </a>
               </li>
               <li className="flex items-center space-x-3">
-                <FontAwesomeIcon icon={ICON_NAMES.EMAIL} className="text-amber-500" />
-                <span className="text-slate-300">
-                  info@ppyc.com
-                </span>
+                <FontAwesomeIcon icon={ICON_NAMES.ENVELOPE} className="text-amber-500" />
+                <a 
+                  href={`mailto:${contactInfo.email}`}
+                  className="text-slate-300 hover:text-white hover:underline transition-colors duration-200"
+                >
+                  {contactInfo.email}
+                </a>
               </li>
             </ul>
           </div>
