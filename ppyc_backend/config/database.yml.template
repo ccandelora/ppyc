@@ -1,0 +1,74 @@
+# Database Configuration Template for PPYC Backend
+# Copy this to database.yml and customize for your environment
+# 
+# Environment variables used:
+# - PPYC_BACKEND_DATABASE_PASSWORD: PostgreSQL password (required for production)
+# - PPYC_BACKEND_DATABASE_USERNAME: PostgreSQL username (defaults to ppyc_user)
+# - PPYC_BACKEND_DATABASE_HOST: PostgreSQL host (defaults to localhost)
+# - PPYC_BACKEND_DATABASE_PORT: PostgreSQL port (defaults to 5432)
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: ppyc_development
+  username: ppyc_user
+  password: <%= ENV["PPYC_BACKEND_DATABASE_PASSWORD"] %>
+  host: <%= ENV.fetch("PPYC_BACKEND_DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("PPYC_BACKEND_DATABASE_PORT", "5432") %>
+
+test:
+  <<: *default
+  database: ppyc_test
+  username: ppyc_user
+  password: <%= ENV["PPYC_BACKEND_DATABASE_PASSWORD"] %>
+  host: <%= ENV.fetch("PPYC_BACKEND_DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("PPYC_BACKEND_DATABASE_PORT", "5432") %>
+
+production:
+  primary: &primary_production
+    <<: *default
+    database: ppyc_production
+    username: <%= ENV.fetch("PPYC_BACKEND_DATABASE_USERNAME", "ppyc_user") %>
+    password: <%= ENV["PPYC_BACKEND_DATABASE_PASSWORD"] %>
+    host: <%= ENV.fetch("PPYC_BACKEND_DATABASE_HOST", "localhost") %>
+    port: <%= ENV.fetch("PPYC_BACKEND_DATABASE_PORT", "5432") %>
+    
+    # Connection pool settings for production
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+    
+    # Connection retry settings
+    retry_attempts: 3
+    retry_delay: 2
+    
+    # SSL settings (uncomment if using SSL)
+    # sslmode: require
+    # sslcert: /path/to/client-cert.pem
+    # sslkey: /path/to/client-key.pem
+    # sslrootcert: /path/to/ca-cert.pem
+
+  # If you need multiple database connections in production, uncomment below
+  # secondary:
+  #   <<: *primary_production
+  #   database: ppyc_secondary
+  #   username: <%= ENV.fetch("PPYC_BACKEND_SECONDARY_USERNAME", "ppyc_user") %>
+  #   password: <%= ENV["PPYC_BACKEND_SECONDARY_PASSWORD"] %>
+
+# Configuration notes:
+# 
+# 1. Database passwords should never be committed to version control
+# 2. Use environment variables for all sensitive information
+# 3. Test your configuration with: bundle exec rails db:health_check
+# 4. For production, consider using connection pooling and SSL
+# 
+# Common environment variable examples:
+# export PPYC_BACKEND_DATABASE_PASSWORD="your_secure_password"
+# export PPYC_BACKEND_DATABASE_USERNAME="ppyc_user"
+# export PPYC_BACKEND_DATABASE_HOST="localhost"
+# export PPYC_BACKEND_DATABASE_PORT="5432"
+# export RAILS_MAX_THREADS="5" 

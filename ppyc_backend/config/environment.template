@@ -1,0 +1,65 @@
+# Environment Variables Template for PPYC Backend
+# Copy this to create your environment configuration
+# 
+# IMPORTANT: Never commit sensitive values to version control!
+
+# ===== REQUIRED VARIABLES =====
+
+# Database Configuration
+export PPYC_BACKEND_DATABASE_PASSWORD="your_secure_password_here"
+
+# Rails Secret Key (generate with: openssl rand -hex 64)
+export SECRET_KEY_BASE="your_secret_key_here"
+
+# Rails Environment
+export RAILS_ENV="production"
+
+# ===== OPTIONAL VARIABLES =====
+
+# Database Connection (defaults shown)
+# export PPYC_BACKEND_DATABASE_USERNAME="ppyc_user"
+# export PPYC_BACKEND_DATABASE_HOST="localhost"
+# export PPYC_BACKEND_DATABASE_PORT="5432"
+
+# Application Server
+# export PORT="3000"
+# export RAILS_MAX_THREADS="5"
+# export RAILS_MIN_THREADS="5"
+
+# Logging
+# export RAILS_LOG_LEVEL="info"
+# export RAILS_LOG_TO_STDOUT="true"
+
+# Cloudinary (for image uploads)
+# export CLOUDINARY_CLOUD_NAME="your_cloud_name"
+# export CLOUDINARY_API_KEY="your_api_key"
+# export CLOUDINARY_API_SECRET="your_api_secret"
+
+# ===== USAGE INSTRUCTIONS =====
+# 
+# 1. Copy this file to a secure location:
+#    cp config/environment.template /home/deploy/ppyc_env.sh
+# 
+# 2. Edit the file and fill in your values:
+#    nano /home/deploy/ppyc_env.sh
+# 
+# 3. Load the environment variables:
+#    source /home/deploy/ppyc_env.sh
+# 
+# 4. Add to your shell profile for persistence:
+#    echo 'source /home/deploy/ppyc_env.sh' >> ~/.bashrc
+# 
+# 5. Verify the variables are set:
+#    printenv | grep -E "(PPYC|SECRET|RAILS)"
+# 
+# 6. Test the configuration:
+#    bundle exec rails db:health_check
+# 
+# For systemd services, add these to your service file:
+# [Service]
+# Environment=PPYC_BACKEND_DATABASE_PASSWORD=your_password
+# Environment=SECRET_KEY_BASE=your_secret_key
+# Environment=RAILS_ENV=production
+# 
+# For generating a secure secret key:
+# openssl rand -hex 64 
