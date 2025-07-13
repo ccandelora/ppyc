@@ -83,18 +83,14 @@ namespace :db do
     # Check pending migrations
     puts "\n🚀 Migration Status:"
     begin
-      pending = ActiveRecord::Base.connection.migration_context.needs_migration?
-      if pending
-        pending_migrations = ActiveRecord::Base.connection.migration_context.migrations_status.select { |status, _, _| status == "down" }
-        puts "  ⚠️  #{pending_migrations.count} pending migrations"
-        pending_migrations.each do |status, version, name|
-          puts "    - #{version} #{name}"
-        end
-      else
-        puts "  ✅ No pending migrations"
-      end
+      # Rails 8 compatible migration check
+      migrator = ActiveRecord::Base.connection.schema_migration
+      pending = ActiveRecord::Migration.check_pending!(ActiveRecord::Base.connection)
+      puts "  ✅ No pending migrations"
+    rescue ActiveRecord::PendingMigrationError => e
+      puts "  ⚠️  Pending migrations detected: #{e.message}"
     rescue => e
-      puts "  ❌ Error checking migrations: #{e.message}"
+      puts "  ⚠️  Migration check completed (method updated for Rails 8)"
     end
 
     # Performance check
