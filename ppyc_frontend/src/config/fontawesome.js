@@ -1,113 +1,60 @@
-// FontAwesome Configuration for React
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { config } from '@fortawesome/fontawesome-svg-core';
+// FontAwesome Configuration for React with Premium Kit
+// The FontAwesome kit is loaded via script tag in index.html
+// This configuration enables React components to use the globally available icons
 
-// Import icons from FontAwesome Free packages
-import {
-  faHome,
-  faUser,
-  faBars,
-  faTimes,
-  faEdit,
-  faTrash,
-  faPlus,
-  faCalendar,
-  faCalendarAlt,
-  faCalendarDay,
-  faEnvelope,
-  faPhone,
-  faAnchor,
-  faUsers,
-  faInfoCircle,
-  faNewspaper,
-  faTv,
-  faSpinner,
-  faExclamationTriangle,
-  faClock,
-  faMapMarkerAlt,
-  faFileAlt,
-  faCheckCircle,
-  faFlag,
-  faCompass,
-  faTrophy,
-  faWind,
-  faShip,
-  faRedo,
-  faArrowRight,
-  faChevronRight,
-  faSearch,
-  faDownload,
-  faPrint,
-  faShare,
-  faHeart,
-  faStar,
-  faMapMarker,
-  faSailboat,
-  faWater,
-  faLifeRing
+import { config, library } from '@fortawesome/fontawesome-svg-core';
+
+// Configure FontAwesome to work with the kit
+config.autoAddCss = true; // Let React handle CSS for components
+config.searchPseudoElements = false; // Kit handles pseudo elements
+
+// Since we're using a kit, we need to tell the library about the icons
+// The kit provides icons globally, but React needs them in the library
+// This is a workaround to make React components work with the kit
+
+// We'll add the icons by name to the library so React can find them
+import { 
+  faHome, faUser, faBars, faTimes, faEdit, faTrash, faPlus, 
+  faCalendar, faCalendarAlt, faCalendarDay, faEnvelope, faPhone, 
+  faAnchor, faUsers, faInfoCircle, faNewspaper, faTv, faSpinner, 
+  faExclamationTriangle, faClock, faMapMarkerAlt, faFileAlt, 
+  faCheckCircle, faFlag, faCompass, faTrophy, faWind, faShip, 
+  faRedo, faArrowRight, faChevronRight, faSearch, faDownload, 
+  faPrint, faShare, faHeart, faStar, faMapMarker, faWater, 
+  faLifeRing, faShieldAlt, faUtensils, faBroadcastTower, 
+  faCloud, faCloudRain, faSnowflake, faBolt, faSmog, faSun, 
+  faWaveSquare, faDroplet, faThermometerHalf, faImages, 
+  faCloudUploadAlt, faFolderOpen, faSyncAlt, faTh, faList, 
+  faCopy, faCheck, faVideo, faChevronLeft, faChevronDown, 
+  faEllipsisH, faLayerGroup, faImage, faTachometerAlt, 
+  faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt, 
+  faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown, 
+  faUserShield, faLock, faSave, faBook, faSailboat
 } from '@fortawesome/free-solid-svg-icons';
 
-// Import social media icons from brands package
-import {
-  faFacebook,
-  faTwitter,
-  faInstagram,
-  faLinkedin,
-  faYoutube
+import { 
+  faFacebook, faTwitter, faInstagram, faLinkedin, faYoutube 
 } from '@fortawesome/free-brands-svg-icons';
 
-// Allow FontAwesome to automatically add CSS for React components
-config.autoAddCss = true;
-
-// Add icons to the library
+// Add icons to library so React can find them
 library.add(
-  faHome,
-  faUser,
-  faBars,
-  faTimes,
-  faEdit,
-  faTrash,
-  faPlus,
-  faCalendar,
-  faCalendarAlt,
-  faCalendarDay,
-  faEnvelope,
-  faPhone,
-  faAnchor,
-  faUsers,
-  faInfoCircle,
-  faNewspaper,
-  faTv,
-  faSpinner,
-  faExclamationTriangle,
-  faClock,
-  faMapMarkerAlt,
-  faFileAlt,
-  faCheckCircle,
-  faFlag,
-  faCompass,
-  faTrophy,
-  faWind,
-  faShip,
-  faRedo,
-  faArrowRight,
-  faChevronRight,
-  faSearch,
-  faDownload,
-  faPrint,
-  faShare,
-  faHeart,
-  faStar,
-  faMapMarker,
-  faSailboat,
-  faWater,
-  faLifeRing,
-  // Social media icons
-  faFacebook,
-  faTwitter,
-  faInstagram,
-  faLinkedin,
-  faYoutube
+  faHome, faUser, faBars, faTimes, faEdit, faTrash, faPlus, 
+  faCalendar, faCalendarAlt, faCalendarDay, faEnvelope, faPhone, 
+  faAnchor, faUsers, faInfoCircle, faNewspaper, faTv, faSpinner, 
+  faExclamationTriangle, faClock, faMapMarkerAlt, faFileAlt, 
+  faCheckCircle, faFlag, faCompass, faTrophy, faWind, faShip, 
+  faRedo, faArrowRight, faChevronRight, faSearch, faDownload, 
+  faPrint, faShare, faHeart, faStar, faMapMarker, faWater, 
+  faLifeRing, faShieldAlt, faUtensils, faBroadcastTower, 
+  faCloud, faCloudRain, faSnowflake, faBolt, faSmog, faSun, 
+  faWaveSquare, faDroplet, faThermometerHalf, faImages, 
+  faCloudUploadAlt, faFolderOpen, faSyncAlt, faTh, faList, 
+  faCopy, faCheck, faVideo, faChevronLeft, faChevronDown, 
+  faEllipsisH, faLayerGroup, faImage, faTachometerAlt, 
+  faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt, 
+  faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown, 
+  faUserShield, faLock, faSave, faBook, faSailboat,
+  faFacebook, faTwitter, faInstagram, faLinkedin, faYoutube
 );
 
 // Icon name mapping for easy reference
@@ -126,34 +73,38 @@ export const ICON_NAMES = {
   USERS: 'users',
   TV: 'tv',
   
-  // Admin
+  // Contact & Location
+  ENVELOPE: 'envelope',
+  PHONE: 'phone',
+  LOCATION: 'map-marker-alt',
+
+  // Weather Icons
+  SUN: 'sun',
+  CLOUD: 'cloud',
+  RAIN: 'cloud-rain',
+  SNOW: 'snowflake',
+  THUNDER: 'bolt',
+  WIND: 'wind',
+  FOG: 'smog',
+  WATER: 'water',
+  WAVE: 'wave-square',
+  DROPLET: 'droplet',
+  THERMOMETER: 'thermometer-half',
+  COMPASS: 'compass',
+  WARNING: 'exclamation-triangle',
+  LOADING: 'spinner',
+
+  // Admin & Security
+  SHIELD: 'shield-alt',
   EDIT: 'edit',
   DELETE: 'trash',
   ADD: 'plus',
-  LOADING: 'spinner',
-  WARNING: 'exclamation-triangle',
-  TIME: 'clock',
-  LOCATION: 'map-marker-alt',
-  DOCUMENT: 'file-alt',
-  
-  // UI
-  CHECK: 'check-circle',
+  CHECK: 'check',
+  CHECK_CIRCLE: 'check-circle',
   FLAG: 'flag',
-  COMPASS: 'compass',
   TROPHY: 'trophy',
-  WIND: 'wind',
   SHIP: 'ship',
-  SAILBOAT: 'sailboat',
-  WATER: 'water',
-  LIFE_RING: 'life-ring',
-  REFRESH: 'redo',
-  
-  // Contact
-  PHONE: 'phone',
-  EMAIL: 'envelope',
-  MAP: 'map-marker',
-  
-  // Actions
+  REDO: 'redo',
   ARROW_RIGHT: 'arrow-right',
   CHEVRON_RIGHT: 'chevron-right',
   SEARCH: 'search',
@@ -162,13 +113,68 @@ export const ICON_NAMES = {
   SHARE: 'share',
   HEART: 'heart',
   STAR: 'star',
-  
-  // Social Media
-  FACEBOOK: 'facebook',
-  TWITTER: 'twitter',
-  INSTAGRAM: 'instagram',
-  LINKEDIN: 'linkedin',
-  YOUTUBE: 'youtube'
-};
+  MAP_MARKER: 'map-marker',
+  LIFE_RING: 'life-ring',
+  UTENSILS: 'utensils',
+  BROADCAST_TOWER: 'broadcast-tower',
+  CLOCK: 'clock',
+  SAILBOAT: 'sailboat',
 
-export default library; 
+  // Media Library
+  IMAGES: 'images',
+  CLOUD_UPLOAD: 'cloud-upload-alt',
+  FOLDER_OPEN: 'folder-open',
+  SYNC: 'sync-alt',
+  GRID: 'th',
+  LIST: 'list',
+  COPY: 'copy',
+  VIDEO: 'video',
+  CHEVRON_LEFT: 'chevron-left',
+  CHEVRON_DOWN: 'chevron-down',
+  ELLIPSIS: 'ellipsis-h',
+  LAYER_GROUP: 'layer-group',
+  IMAGE: 'image',
+
+  // Additional Admin
+  DASHBOARD: 'tachometer-alt',
+  DESKTOP: 'desktop',
+  SETTINGS: 'cog',
+  MEDIA: 'photo-video',
+  CHEVRON_UP: 'chevron-up',
+  SIGN_OUT: 'sign-out-alt',
+  SIGN_IN: 'sign-in-alt',
+  EXTERNAL_LINK: 'external-link-alt',
+  ANNOUNCEMENT: 'bullhorn',
+  CROWN: 'crown',
+  USER_SHIELD: 'user-shield',
+  LOCK: 'lock',
+  SAVE: 'save',
+  BOOK: 'book',
+
+  // Social Media
+  FACEBOOK: ['fab', 'facebook'],
+  TWITTER: ['fab', 'twitter'],
+  INSTAGRAM: ['fab', 'instagram'],
+  LINKEDIN: ['fab', 'linkedin'],
+  YOUTUBE: ['fab', 'youtube'],
+
+  // Premium Icons - Add more as needed
+  // With your premium kit, you now have access to:
+  // - Pro solid icons (fas)
+  // - Pro regular icons (far)
+  // - Pro light icons (fal)
+  // - Pro thin icons (fat)
+  // - Pro duotone icons (fad)
+  // - Sharp solid icons (fass)
+  // - Sharp regular icons (fasr)
+  // - Sharp light icons (fasl)
+  // - Sharp thin icons (fast)
+  // - Sharp duotone icons (fasd)
+  // - Brands icons (fab)
+  
+  // Examples of premium icon styles:
+  // LIGHT_HOME: ['fal', 'home'],
+  // THIN_USER: ['fat', 'user'],
+  // DUOTONE_ANCHOR: ['fad', 'anchor'],
+  // SHARP_SHIP: ['fass', 'ship'],
+}; 

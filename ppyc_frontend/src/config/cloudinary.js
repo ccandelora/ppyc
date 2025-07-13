@@ -25,25 +25,25 @@ export const YACHT_CLUB_ASSETS = {
     membershipSection: `https://res.cloudinary.com/demo/image/upload/c_fill,w_1920,h_600,q_auto,f_auto/lake`,
   },
 
-  // Logos and Branding - Optimized for various sizes
-  branding: {
-    mainLogo: `/assets/images/ppyc-logo.svg`,
-    smallLogo: `/assets/images/ppyc-logo.svg`,
-    favicon: `/assets/images/ppyc-logo.svg`,
+  // Logo paths
+  logos: {
+    mainLogo: `/assets/images/ppyclogo.png`,
+    smallLogo: `/assets/images/ppyclogo.png`,
+    favicon: `/assets/images/ppyclogo.png`,
   },
 
   // Gallery Images - Various sizes for different contexts
   gallery: {
     // Marina and facilities - using demo cloud for sample images
     marina: [
-      `https://res.cloudinary.com/demo/image/upload/c_fill,w_800,h_600,q_auto,f_auto/v1/samples/landscapes/beach-boat`,
-      `https://res.cloudinary.com/demo/image/upload/c_fill,w_800,h_600,q_auto,f_auto/v1/samples/landscapes/sea-beach-boardwalk`,
+      `https://res.cloudinary.com/dqb8hp68j/image/upload/v1751928001/ppyc/people/members/j-farr-pic-2`,
+      `https://res.cloudinary.com/dqb8hp68j/image/upload/v1751928021/ppyc/general/misc/middaysun.jpg`,
       `https://res.cloudinary.com/demo/image/upload/c_fill,w_800,h_600,q_auto,f_auto/v1/samples/landscapes/water-sunset`,
     ],
     // Events and activities - using demo cloud for sample images
     events: [
-      `https://res.cloudinary.com/demo/image/upload/c_fill,w_600,h_400,q_auto,f_auto/v1/samples/landscapes/nature-mountains`,
-      `https://res.cloudinary.com/demo/image/upload/c_fill,w_600,h_400,q_auto,f_auto/v1/samples/landscapes/beach-boat`,
+      `https://res.cloudinary.com/dqb8hp68j/image/upload/v1751928021/ppyc/events/parties/kickoffparty1.jpg`,
+      `https://res.cloudinary.com/dqb8hp68j/image/upload/v1751928001/ppyc/people/members/j-farr-pic-2`,
       `https://res.cloudinary.com/demo/image/upload/c_fill,w_600,h_400,q_auto,f_auto/v1/samples/landscapes/sea-beach-boardwalk`,
     ],
     // Sailing and racing - using demo cloud for sample images
@@ -54,11 +54,16 @@ export const YACHT_CLUB_ASSETS = {
     ],
   },
 
-  // Video Assets - Optimized for web delivery - using demo cloud for sample videos
+  // Video Assets - Optimized for web delivery
   videos: {
-    heroVideo: `https://res.cloudinary.com/demo/video/upload/c_fill,w_1920,h_1080,q_auto,f_auto/v1/samples/sea-turtle`,
-    marinaOverview: `https://res.cloudinary.com/demo/video/upload/c_fill,w_1280,h_720,q_auto,f_auto/v1/samples/elephants`,
-    sailingDemo: `https://res.cloudinary.com/demo/video/upload/c_fill,w_1280,h_720,q_auto,f_auto/v1/samples/cld-sample-video`,
+    bostonBridge: 'ppyc/ppyc/website/cloudinaryfile_yahsta',
+    bostonWaterfront: 'ppyc/ppyc/website/cloudinaryfile_zg0as1',
+    harborView: 'ppyc/ppyc/website/cloudinaryfile_hxnxal',
+    sailingBoat: 'ppyc/ppyc/website/cloudinaryfile_br2gtv',
+    diveBoat: 'ppyc/ppyc/website/cloudinaryfile_jelvbp',
+    ultraHD: 'ppyc/ppyc/website/cloudinaryfile_r3gj77',
+    heroVideo: 'ppyc/ppyc/website/cloudinaryfile_yahsta',  // About page hero
+    eventsHero: 'ppyc/ppyc/website/cloudinaryfile_br2gtv', // Events page hero
   },
 };
 
@@ -87,24 +92,35 @@ export const generateAssetUrl = (publicId, transformations = {}) => {
   return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload/${transformString}/${publicId}`;
 };
 
-export const generateVideoUrl = (publicId, transformations = {}) => {
+export const generateVideoUrl = (publicId, options = {}) => {
   const {
-    width = 'auto',
-    height = 'auto',
-    crop = 'fill',
     quality = 'auto',
-    format = 'auto',
-  } = transformations;
+  } = options;
 
-  const transformString = [
-    `c_${crop}`,
-    width !== 'auto' && `w_${width}`,
-    height !== 'auto' && `h_${height}`,
-    `q_${quality}`,
-    `f_${format}`,
-  ].filter(Boolean).join(',');
+  // Standard video optimizations
+  const videoParams = [
+    'q_' + quality,
+    'f_auto',
+    'c_scale',
+    'w_960',
+    'so_0'          // Start from beginning
+  ].join(',');
 
-  return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/video/upload/${transformString}/${publicId}`;
+  return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/video/upload/${videoParams}/${publicId}`;
+};
+
+// Generate a high-quality poster
+export const generatePosterUrl = (publicId) => {
+  const posterParams = [
+    'q_auto:best',    // Best quality for the poster
+    'f_auto',         // Auto format
+    'w_960',          // Match video width
+    'c_scale',        // Scale transformation
+    'so_0',           // Start from first frame
+    'vs_1'            // Single frame
+  ].join(',');
+  
+  return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/video/upload/${posterParams}/${publicId}.jpg`;
 };
 
 // Responsive image sets for different breakpoints

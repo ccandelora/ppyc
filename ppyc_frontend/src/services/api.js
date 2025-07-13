@@ -8,11 +8,21 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true, // This ensures cookies are sent with requests
+  withCredentials: false, // Set to false for public endpoints
+});
+
+// Create a separate instance for authenticated endpoints
+const authApi = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  withCredentials: true, // Keep true for authenticated endpoints
 });
 
 // Add response interceptor to handle auth errors
-api.interceptors.response.use(
+authApi.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
@@ -32,7 +42,7 @@ const createCachedCall = (apiCall, cacheKey, ttl = 5 * 60 * 1000) => {
   return cachedFunction;
 };
 
-// Public API calls with caching
+// Public API calls with caching (using non-authenticated api instance)
 export const newsAPI = {
   getAll: createCachedCall(
     () => api.get('/news'),
@@ -71,7 +81,7 @@ export const slidesAPI = {
   getAll: createCachedCall(
     () => api.get('/slides'),
     'slides-all',
-    2 * 60 * 1000 // 2 minutes cache for slides (more dynamic)
+    30 * 1000 // 30 seconds cache for slides (more dynamic for TV display)
   ),
 };
 
@@ -79,36 +89,34 @@ export const weatherAPI = {
   getCurrent: createCachedCall(
     () => api.get('/weather/current'),
     'weather-current',
-    10 * 60 * 1000 // 10 minutes cache for weather
+    5 * 60 * 1000 // 5 minutes cache for weather
   ),
   getForecast: createCachedCall(
-    () => api.get('/weather/forecast'),
+    () => api.get('/weather/forecast?days=3'),
     'weather-forecast',
-    15 * 60 * 1000 // 15 minutes cache for forecast
+    10 * 60 * 1000 // 10 minutes cache for forecast
   ),
   getMarine: createCachedCall(
-    () => api.get('/weather/marine'),
+    () => api.get('/weather/marine?days=3'),
     'weather-marine',
-    15 * 60 * 1000 // 15 minutes cache for marine data
+    10 * 60 * 1000 // 10 minutes cache for marine data
   ),
 };
 
-// Authentication API (no caching for auth)
+// Authentication API (no caching, using authenticated api instance)
 export const authAPI = {
-  login: (credentials) => api.post('/auth/login', credentials),
-  logout: () => api.delete('/auth/logout'),
-  me: () => api.get('/auth/me'),
+  login: (credentials) => authApi.post('/auth/login', credentials),
+  logout: () => authApi.delete('/auth/logout'),
+  me: () => authApi.get('/auth/me'),
 };
 
 // Cache invalidation helpers
 export const cacheInvalidators = {
   invalidateNews: () => {
     apiCache.invalidate('news-all');
-    // Also invalidate individual news items if needed
   },
   invalidateEvents: () => {
     apiCache.invalidate('events-all');
-    // Also invalidate individual events if needed
   },
   invalidateSlides: () => {
     apiCache.invalidate('slides-all');
@@ -118,48 +126,51 @@ export const cacheInvalidators = {
     apiCache.invalidate('weather-forecast');
     apiCache.invalidate('weather-marine');
   },
+  invalidateImages: () => {
+    apiCache.invalidate('images-all');
+  },
+  invalidateSettings: () => {
+    apiCache.invalidate('settings-all');
+  },
   invalidateAll: () => {
     apiCache.clearAll();
   }
 };
 
-// Admin API calls (no caching for admin operations)
+// Admin API calls (no caching, using authenticated api instance)
 export const adminAPI = {
   news: {
-    getAll: () => api.get('/admin/news'),
-    getById: (id) => api.get(`/admin/news/${id}`),
+    getAll: () => authApi.get('/admin/news'),
+    getById: (id) => authApi.get(`/admin/news/${id}`),
     create: (data) => {
-      const result = api.post('/admin/news', data, {
+      const result = authApi.post('/admin/news', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      // Invalidate cache after successful creation
       result.then(() => cacheInvalidators.invalidateNews());
       return result;
     },
     update: (id, data) => {
-      const result = api.put(`/admin/news/${id}`, data, {
+      const result = authApi.put(`/admin/news/${id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      // Invalidate cache after successful update
       result.then(() => cacheInvalidators.invalidateNews());
       return result;
     },
     delete: (id) => {
-      const result = api.delete(`/admin/news/${id}`);
-      // Invalidate cache after successful deletion
+      const result = authApi.delete(`/admin/news/${id}`);
       result.then(() => cacheInvalidators.invalidateNews());
       return result;
     },
   },
   events: {
-    getAll: () => api.get('/admin/events'),
-    getById: (id) => api.get(`/admin/events/${id}`),
+    getAll: () => authApi.get('/admin/events'),
+    getById: (id) => authApi.get(`/admin/events/${id}`),
     create: (data) => {
-      const result = api.post('/admin/events', data, {
+      const result = authApi.post('/admin/events', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -168,7 +179,7 @@ export const adminAPI = {
       return result;
     },
     update: (id, data) => {
-      const result = api.put(`/admin/events/${id}`, data, {
+      const result = authApi.put(`/admin/events/${id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -177,23 +188,16 @@ export const adminAPI = {
       return result;
     },
     delete: (id) => {
-      const result = api.delete(`/admin/events/${id}`);
+      const result = authApi.delete(`/admin/events/${id}`);
       result.then(() => cacheInvalidators.invalidateEvents());
       return result;
     },
-  },
-  pages: {
-    getAll: () => api.get('/admin/pages'),
-    getById: (id) => api.get(`/admin/pages/${id}`),
-    create: (data) => api.post('/admin/pages', data),
-    update: (id, data) => api.put(`/admin/pages/${id}`, data),
-    delete: (id) => api.delete(`/admin/pages/${id}`),
   },
   slides: {
-    getAll: () => api.get('/admin/slides'),
-    getById: (id) => api.get(`/admin/slides/${id}`),
+    getAll: () => authApi.get('/admin/slides'),
+    getById: (id) => authApi.get(`/admin/slides/${id}`),
     create: (data) => {
-      const result = api.post('/admin/slides', data, {
+      const result = authApi.post('/admin/slides', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -202,7 +206,7 @@ export const adminAPI = {
       return result;
     },
     update: (id, data) => {
-      const result = api.put(`/admin/slides/${id}`, data, {
+      const result = authApi.put(`/admin/slides/${id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -211,32 +215,46 @@ export const adminAPI = {
       return result;
     },
     delete: (id) => {
-      const result = api.delete(`/admin/slides/${id}`);
+      const result = authApi.delete(`/admin/slides/${id}`);
       result.then(() => cacheInvalidators.invalidateSlides());
       return result;
     },
-    reorder: (slidesData) => {
-      const result = api.patch('/admin/slides/reorder', { slides: slidesData });
-      result.then(() => cacheInvalidators.invalidateSlides());
-      return result;
-    },
-  },
-  users: {
-    getAll: () => api.get('/admin/users'),
-    getById: (id) => api.get(`/admin/users/${id}`),
-    create: (data) => api.post('/admin/users', data),
-    update: (id, data) => api.put(`/admin/users/${id}`, data),
-    delete: (id) => api.delete(`/admin/users/${id}`),
   },
   images: {
-    getAll: () => api.get('/admin/images'),
-    upload: (data) => api.post('/admin/images', data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }),
-    delete: (id) => api.delete(`/admin/images/${id}`),
-    search: (query) => api.get(`/admin/images/search?q=${encodeURIComponent(query)}`),
+    getAll: () => authApi.get('/admin/images/all'),
+    upload: (data) => {
+      const result = authApi.post('/admin/images', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      result.then(() => cacheInvalidators.invalidateImages());
+      return result;
+    },
+    delete: (publicId) => {
+      const result = authApi.delete(`/admin/images/${publicId}`);
+      result.then(() => cacheInvalidators.invalidateImages());
+      return result;
+    },
+  },
+  settings: {
+    getAll: () => authApi.get('/admin/settings'),
+    getByKey: (key) => authApi.get(`/admin/settings/${key}`),
+    update: (key, data) => authApi.put(`/admin/settings/${key}`, data),
+    updateMultiple: (category, settings) => {
+      console.log('Making API call to /admin/settings/update_multiple with:', { category, settings });
+      return authApi.put('/admin/settings/update_multiple', { category, settings });
+    },
+    create: (data) => authApi.post('/admin/settings', data),
+    delete: (key) => authApi.delete(`/admin/settings/${key}`),
+    initializeDefaults: () => authApi.post('/admin/settings/initialize_defaults'),
+  },
+  users: {
+    getAll: () => authApi.get('/admin/users'),
+    getById: (id) => authApi.get(`/admin/users/${id}`),
+    create: (data) => authApi.post('/admin/users', data),
+    update: (id, data) => authApi.put(`/admin/users/${id}`, data),
+    delete: (id) => authApi.delete(`/admin/users/${id}`),
   },
 };
 

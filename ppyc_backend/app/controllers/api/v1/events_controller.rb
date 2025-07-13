@@ -1,14 +1,14 @@
 class Api::V1::EventsController < Api::V1::BaseController
   def index
-    events = Event.upcoming.by_start_time.includes(:image_attachment)
-    render_success(events.map { |event| event_json(event) })
+    events = Event.upcoming.by_start_time
+    render json: events.map { |event| event_json(event) }
   end
 
   def show
     event = Event.find(params[:id])
-    render_success(event_json(event))
+    render json: event_json(event)
   rescue ActiveRecord::RecordNotFound
-    render_error('Event not found', :not_found)
+    render json: { error: 'Event not found' }, status: :not_found
   end
 
   private
@@ -21,7 +21,9 @@ class Api::V1::EventsController < Api::V1::BaseController
       start_time: event.start_time,
       end_time: event.end_time,
       location: event.location,
-      image_url: event.image.attached? ? event.image.url : nil
+      image_url: event.image_url,
+      created_at: event.created_at,
+      updated_at: event.updated_at
     }
   end
 end

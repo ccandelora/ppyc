@@ -1,33 +1,38 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_NAMES } from '../config/fontawesome';
+import SEOHelmet from '../components/SEOHelmet';
+import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
+import CloudinaryVideo from '../components/CloudinaryVideo';
 
-function HeritagePage() {
+const HeritagePage = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
+      <SEOHelmet
+        title="Heritage - Pleasant Park Yacht Club"
+        description="Discover the rich history and heritage of Pleasant Park Yacht Club, serving the boating community since 1894."
+      />
+
       {/* Hero Section with Video Background */}
-      <div className="relative text-white">
+      <div className="relative h-[60vh] overflow-hidden">
         <div className="absolute inset-0">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
+          <CloudinaryVideo
+            publicId={YACHT_CLUB_ASSETS.videos.bostonWaterfront}
             className="w-full h-full object-cover"
-          >
-            <source src="/assets/images/videos/vecteezy_fan-pier-boston-waterfront_1624405.mov" type="video/quicktime" />
-            <source src="/assets/images/videos/13963117_2560_1440_30fps.mp4" type="video/mp4" />
-            {/* Fallback for browsers that don't support video */}
-            Your browser does not support the video tag.
-          </video>
-          <div className="absolute inset-0 bg-slate-900 bg-opacity-75"></div>
+          />
+          <div className="absolute inset-0 bg-black opacity-50"></div>
         </div>
-        <div className="relative max-w-4xl mx-auto px-6 py-24">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Our Heritage
-          </h1>
-          <div className="w-24 h-1 bg-blue-400 mx-auto mb-8"></div>
-          <p className="text-xl md:text-2xl text-gray-200 leading-relaxed">
-            Over a century of maritime excellence, community spirit, and unwavering dedication to the sea.
-          </p>
+        
+        {/* Hero Content */}
+        <div className="relative z-10 flex items-center justify-center h-full text-center px-4">
+          <div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+              Our Heritage
+            </h1>
+            <p className="text-xl text-white max-w-2xl mx-auto">
+              Over a century of maritime tradition and community spirit.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -36,8 +41,8 @@ function HeritagePage() {
         {/* Founding Visionaries */}
         <section className="mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-800 mb-6 flex items-center justify-center">
-              <i className="fas fa-anchor text-blue-600 mr-4"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-4xl font-bold text-slate-800 mb-4">
               The Founding Vision (1910)
             </h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
@@ -55,14 +60,18 @@ function HeritagePage() {
 
         {/* Early Development Timeline */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">The Birth of a Club</h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.CLOCK} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">The Birth of a Club</h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           
           <div className="space-y-8">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
-                    <i className="fas fa-calendar-alt text-white"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.CALENDAR_ALT} className="text-white text-xl" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-slate-800">September 18, 1910</h3>
@@ -77,7 +86,7 @@ function HeritagePage() {
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
-                    <i className="fas fa-flag text-white"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.FLAG} className="text-white text-xl" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-slate-800">September 27, 1910</h3>
@@ -94,7 +103,7 @@ function HeritagePage() {
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
-                    <i className="fas fa-scroll text-white"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.FILE} className="text-white text-xl" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-slate-800">November 1, 1910</h3>
@@ -109,7 +118,7 @@ function HeritagePage() {
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
-                    <i className="fas fa-home text-white"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.HOME} className="text-white text-xl" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-slate-800">September 2, 1911</h3>
@@ -126,6 +135,11 @@ function HeritagePage() {
 
         {/* Historical Image Section */}
         <section className="mb-16">
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.IMAGE} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Historical Photos</h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <img 
@@ -148,10 +162,13 @@ function HeritagePage() {
 
         {/* Growth and Development */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center flex items-center justify-center">
-            <i className="fas fa-ship text-blue-600 mr-3"></i>
-            Growth and Innovation (1915-1930)
-          </h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.SHIP} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">
+              Growth and Innovation (1915-1930)
+            </h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           
           <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -170,7 +187,7 @@ function HeritagePage() {
         <section className="mb-16">
           <div className="bg-blue-50 rounded-xl p-8">
             <div className="text-center mb-6">
-              <i className="fas fa-trophy text-blue-600 text-4xl mb-4"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.TROPHY} className="text-blue-600 text-4xl mb-4" />
               <h3 className="text-2xl font-bold text-slate-800">1930 Tercentenary Celebration</h3>
             </div>
             <p className="text-lg text-gray-700 leading-relaxed text-center">
@@ -181,13 +198,17 @@ function HeritagePage() {
 
         {/* The Depression Era */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Resilience Through Adversity (1930s-1940s)</h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.SHIELD} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Resilience Through Adversity (1930s-1940s)</h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
-                  <i className="fas fa-hammer text-blue-600 mr-3"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.SHIELD} className="text-blue-600 mr-3" />
                   Depression Era Expansion
                 </h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
@@ -212,8 +233,8 @@ function HeritagePage() {
         {/* Radio Class Innovation */}
         <section className="mb-16">
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
-              <i className="fas fa-sailboat text-blue-600 mr-3"></i>
+            <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center justify-center">
+              <FontAwesomeIcon icon={ICON_NAMES.SAILBOAT} className="text-blue-600 mr-3" />
               The Radio Class Revolution (1935)
             </h3>
             <p className="text-lg text-gray-700 leading-relaxed mb-4">
@@ -227,11 +248,15 @@ function HeritagePage() {
 
         {/* The Fire and Rebirth */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center text-red-600">Tragedy and Triumph (1958-1959)</h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.SHIELD} className="text-4xl text-red-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Tragedy and Triumph (1958-1959)</h2>
+            <div className="w-16 h-1 bg-red-600 mx-auto"></div>
+          </div>
           
           <div className="bg-red-50 rounded-xl p-8 border-l-4 border-red-500">
             <div className="flex items-start">
-              <i className="fas fa-fire text-red-600 text-3xl mr-4 mt-1"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.WARNING} className="text-red-600 text-3xl mr-4 mt-1" />
               <div>
                 <h3 className="text-xl font-bold text-slate-800 mb-4">The Great Fire of 1958</h3>
                 <p className="text-lg text-gray-700 leading-relaxed mb-4">
@@ -245,41 +270,19 @@ function HeritagePage() {
           </div>
         </section>
 
-        {/* Historical Photos Section */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Through the Decades</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="text-center">
-              <img 
-                src="/assets/images/ppyc-images/ppyc1951_men_at_bar-768x563.jpg" 
-                alt="Members at the bar in 1951" 
-                className="w-full rounded-lg shadow-lg mb-4"
-              />
-              <h3 className="text-lg font-bold text-slate-800 mb-2">1951: Social Life</h3>
-              <p className="text-gray-600">Members enjoying fellowship at the club bar</p>
-            </div>
-            
-            <div className="text-center">
-              <img 
-                src="/assets/images/ppyc-images/ppyc-1919a-768x603.jpg" 
-                alt="PPYC in 1919" 
-                className="w-full rounded-lg shadow-lg mb-4"
-              />
-              <h3 className="text-lg font-bold text-slate-800 mb-2">1919: Early Days</h3>
-              <p className="text-gray-600">The club in its formative years</p>
-            </div>
-          </div>
-        </section>
-
         {/* Modern Era Highlights */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Modern Developments (1960s-2010)</h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.CLOCK} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Modern Developments (1960s-2010)</h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           
           <div className="space-y-8">
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-users text-white"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-white text-xl" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-800 mb-3 text-center">1963: Crew's Quarters</h3>
                 <p className="text-gray-700 text-center">
@@ -289,7 +292,7 @@ function HeritagePage() {
               
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-anchor text-white"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-white text-xl" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-800 mb-3 text-center">1967-1971: Marina Development</h3>
                 <p className="text-gray-700 text-center">
@@ -299,7 +302,7 @@ function HeritagePage() {
               
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-venus text-white"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.STAR} className="text-white text-xl" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-800 mb-3 text-center">1989: First Female Member</h3>
                 <p className="text-gray-700 text-center">
@@ -314,7 +317,7 @@ function HeritagePage() {
         <section className="mb-16">
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white text-center">
             <div className="mb-6">
-              <i className="fas fa-birthday-cake text-6xl mb-4"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.TROPHY} className="text-6xl mb-4" />
               <h2 className="text-4xl font-bold mb-4">Centennial Celebration (2010)</h2>
               <div className="w-24 h-1 bg-white mx-auto mb-6"></div>
             </div>
@@ -330,14 +333,15 @@ function HeritagePage() {
         {/* Legacy Section */}
         <section className="mb-16">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-800 mb-6">Our Enduring Legacy</h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
+            <FontAwesomeIcon icon={ICON_NAMES.HEART} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Our Enduring Legacy</h2>
+            <div className="w-20 h-1 bg-blue-600 mx-auto"></div>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center bg-white rounded-xl shadow-lg p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-hands-helping text-3xl text-blue-600"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-3xl text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-3">Community Spirit</h3>
               <p className="text-gray-600">
@@ -347,7 +351,7 @@ function HeritagePage() {
             
             <div className="text-center bg-white rounded-xl shadow-lg p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-water text-3xl text-blue-600"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.WATER} className="text-3xl text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-3">Maritime Excellence</h3>
               <p className="text-gray-600">
@@ -357,7 +361,7 @@ function HeritagePage() {
             
             <div className="text-center bg-white rounded-xl shadow-lg p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-heart text-3xl text-blue-600"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.HEART} className="text-3xl text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-3">Family Tradition</h3>
               <p className="text-gray-600">
@@ -370,6 +374,9 @@ function HeritagePage() {
         {/* Call to Action */}
         <section className="text-center">
           <div className="bg-slate-900 rounded-xl p-8 text-white">
+            <div className="mb-6">
+              <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-5xl text-blue-300" />
+            </div>
             <h2 className="text-3xl font-bold mb-6">Join Our Story</h2>
             <p className="text-xl mb-8 opacity-90">
               Become part of our continuing heritage. The next chapter of Pleasant Park Yacht Club's story includes you.
@@ -377,70 +384,24 @@ function HeritagePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
                 href="/membership" 
-                className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
               >
+                <FontAwesomeIcon icon={ICON_NAMES.USERS} />
                 Learn About Membership
               </a>
               <a 
                 href="/contact" 
-                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-slate-900 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-slate-900 transition-all duration-300"
               >
+                <FontAwesomeIcon icon={ICON_NAMES.EMAIL} />
                 Contact Us
               </a>
             </div>
           </div>
         </section>
-
-        {/* Historical Image Section */}
-        <section className="mb-16">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <img 
-                src="/assets/images/ppyc-images/ppyc1920a-768x518.jpg" 
-                alt="PPYC in 1920" 
-                className="w-full rounded-lg shadow-lg"
-              />
-              <p className="text-sm text-gray-500 text-center mt-2 italic">PPYC in 1920 - Early expansion years</p>
-            </div>
-            <div>
-              <img 
-                src="/assets/images/ppyc-images/ppycclub.jpg" 
-                alt="Historic PPYC clubhouse" 
-                className="w-full rounded-lg shadow-lg"
-              />
-              <p className="text-sm text-gray-500 text-center mt-2 italic">The original clubhouse and marina</p>
-            </div>
-          </div>
-        </section>
-
-       
-        {/* Call to Action */}
-        <section className="text-center">
-          <div className="bg-slate-900 rounded-xl p-8 text-white">
-            <h2 className="text-3xl font-bold mb-6">Join Our Story</h2>
-            <p className="text-xl mb-8 opacity-90">
-              Become part of our continuing heritage. The next chapter of Pleasant Park Yacht Club's story includes you.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="/membership" 
-                className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
-              >
-                Learn About Membership
-              </a>
-              <a 
-                href="/contact" 
-                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-slate-900 transition-all duration-300"
-              >
-                Contact Us
-              </a>
-            </div>
-          </div>
-        </section>
-
       </article>
     </div>
   );
-}
+};
 
 export default HeritagePage; 

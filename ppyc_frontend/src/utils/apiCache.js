@@ -27,6 +27,7 @@ class ApiCache {
    * Get cached data if available and valid
    */
   get(key) {
+    if (!key) return null;
     const entry = this.cache.get(key);
     if (this.isValid(entry)) {
       console.log(`📦 Cache hit for: ${key}`);
@@ -39,6 +40,7 @@ class ApiCache {
    * Set cache entry with TTL
    */
   set(key, data, ttl = this.defaultTTL) {
+    if (!key) return;
     console.log(`💾 Caching data for: ${key} (TTL: ${ttl}ms)`);
     this.cache.set(key, {
       data,
@@ -51,6 +53,12 @@ class ApiCache {
    * Execute API request with caching and deduplication
    */
   async request(key, apiCall, ttl = this.defaultTTL) {
+    // If no key provided, just execute the API call without caching
+    if (!key) {
+      console.log('⚠️ No cache key provided, executing API call without caching');
+      return apiCall();
+    }
+
     // Check cache first
     const cached = this.get(key);
     if (cached) {

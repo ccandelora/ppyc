@@ -23,7 +23,7 @@ const HeritageSection = () => {
             </div>
             <h3 className="text-2xl font-bold text-slate-800 mb-4">Navigation Excellence</h3>
             <p className="text-gray-600 leading-relaxed">
-              Promoting the highest standards of seamanship and navigation on the Great Lakes.
+              Promoting the highest standards of seamanship and navigation in the Boston area.
             </p>
           </div>
           

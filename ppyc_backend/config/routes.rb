@@ -18,16 +18,12 @@ Rails.application.routes.draw do
       delete 'auth/logout', to: 'auth#destroy'
 
       # Public endpoints (no authentication required)
-      resources :news, only: [:index], param: :slug
-      get 'news/:slug', to: 'news#show'
-
-      resources :events, only: [:index, :show]
-
-      get 'pages/:slug', to: 'pages#show'
-
+      resources :news, only: [:index, :show], param: :slug
+      resources :events, only: [:index, :show], param: :id
+      resources :pages, only: [:show], param: :slug
       resources :slides, only: [:index]
 
-      # Weather endpoints (public, no authentication required)
+      # Weather endpoints
       namespace :weather do
         get :current
         get :forecast
@@ -52,8 +48,20 @@ Rails.application.routes.draw do
         resources :images, only: [:create, :index, :destroy] do
           collection do
             get :search
+            get :all
           end
         end
+
+        # Settings management endpoints
+        resources :settings, param: :key, only: [:index, :show, :create, :destroy] do
+          collection do
+            post :initialize_defaults
+            put :update_multiple
+          end
+        end
+
+        # Individual setting update
+        put 'settings/:key', to: 'settings#update'
       end
     end
   end

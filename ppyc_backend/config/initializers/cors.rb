@@ -5,12 +5,58 @@
 
 # Read more: https://github.com/cyu/rack-cors
 
-Rails.application.config.middleware.insert_before 0, Rack::Cors do
-  allow do
-    origins /\Ahttp:\/\/localhost:\d+\z/, 'http://localhost:3000', 'http://srv894370.hstgr.cloud' # Allow localhost for development and production domain
-    resource '*',
-      headers: :any,
-      methods: [:get, :post, :put, :patch, :delete, :options, :head],
-      credentials: true
-  end
-end
+# CORS configuration moved to config/application.rb for better compatibility with API-only mode
+# Rails.application.config.middleware.insert_before 0, Rack::Cors do
+#   # Allow public endpoints without credentials
+#   allow do
+#     origins '*'
+#     resource '/api/v1/slides',
+#       headers: :any,
+#       methods: [:get],
+#       credentials: false
+
+#     resource '/api/v1/news',
+#       headers: :any,
+#       methods: [:get],
+#       credentials: false
+
+#     resource '/api/v1/news/*',
+#       headers: :any,
+#       methods: [:get],
+#       credentials: false
+
+#     resource '/api/v1/events',
+#       headers: :any,
+#       methods: [:get],
+#       credentials: false
+
+#     resource '/api/v1/events/*',
+#       headers: :any,
+#       methods: [:get],
+#       credentials: false
+
+#     resource '/api/v1/pages/*',
+#       headers: :any,
+#       methods: [:get],
+#       credentials: false
+
+#     resource '/api/v1/weather/*',
+#       headers: :any,
+#       methods: [:get],
+#       credentials: false
+#   end
+
+#   # Allow authenticated endpoints with credentials
+#   allow do
+#     origins 'http://localhost:5173', 'http://localhost:3000', 'http://srv894370.hstgr.cloud'
+#     resource '/api/v1/admin/*',
+#       headers: :any,
+#       methods: [:get, :post, :put, :patch, :delete, :options, :head],
+#       credentials: true
+
+#     resource '/api/v1/auth/*',
+#       headers: :any,
+#       methods: [:get, :post, :put, :patch, :delete, :options, :head],
+#       credentials: true
+#   end
+# end

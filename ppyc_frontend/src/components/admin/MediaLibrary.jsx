@@ -1,184 +1,273 @@
 import React, { useState, useEffect, useRef } from 'react';
-import cloudinaryConfig from '../../config/cloudinary';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { adminAPI } from '../../services/api';
-import { loadScript } from '../../utils/scriptLoader';
+import { useApiCache } from '../../hooks/useApiCache';
+import cloudinaryConfig from '../../config/cloudinary';
 
 const MediaLibrary = () => {
-  const [selectedImages, setSelectedImages] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [useCloudinaryWidget, setUseCloudinaryWidget] = useState(false);
-  const [allImages, setAllImages] = useState([]);
+  // State management
   const [filteredImages, setFilteredImages] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [success, setSuccess] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('grid');
-  const [selectedImageIds, setSelectedImageIds] = useState(new Set());
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const cloudinaryRef = useRef();
-  const widgetRef = useRef();
+  const [mediaFilter, setMediaFilter] = useState('all');
+  const [selectedVideoModal, setSelectedVideoModal] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadPreview, setUploadPreview] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadQueue, setUploadQueue] = useState([]);
+  const [uploadFolder, setUploadFolder] = useState('');
+  const [localError, setLocalError] = useState(null);
 
+  // Refs
+  const fileInputRef = useRef(null);
+
+  // Use API cache for fetching images
+  const { data: allImages, error: cacheError, isLoading: cacheLoading, refetch } = useApiCache(
+    () => adminAPI.images.getAll(),
+    'allImages'
+  );
+
+  // Filter images based on search and media type
   useEffect(() => {
-    if (!useCloudinaryWidget) {
-      fetchAllImages();
-    } else {
-      // Load Cloudinary widget with optimized loader
-      if (!window.cloudinary) {
-        loadScript('https://media-library.cloudinary.com/global/all.js', {
-          async: true,
-          timeout: 15000
-        }).then(() => {
-          setIsLoading(false);
-          initializeWidget();
-        }).catch((error) => {
-          console.error('Failed to load Cloudinary widget:', error);
-          setError('Failed to load media library widget');
-          setIsLoading(false);
-        });
-      } else {
-        setIsLoading(false);
-        initializeWidget();
+    if (allImages?.data?.resources) {
+      let filtered = [...allImages.data.resources];
+      
+      // Apply search filter
+      if (searchTerm) {
+        filtered = filtered.filter(img => 
+          img.public_id.toLowerCase().includes(searchTerm.toLowerCase())
+        );
       }
-    }
-
-    return () => {
-      if (widgetRef.current && typeof widgetRef.current.destroy === 'function') {
-        try {
-          widgetRef.current.destroy();
-        } catch (error) {
-          console.warn('Error destroying Cloudinary widget:', error);
-        }
+      
+      // Apply media type filter
+      if (mediaFilter !== 'all') {
+        filtered = filtered.filter(img => 
+          mediaFilter === 'videos' ? isVideo(img) : !isVideo(img)
+        );
       }
-    };
-  }, [useCloudinaryWidget]);
-
-  useEffect(() => {
-    // Filter images based on search term
-    if (searchTerm.trim()) {
-      const filtered = allImages.filter(image =>
-        image.public_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        image.format?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      
       setFilteredImages(filtered);
     } else {
-      setFilteredImages(allImages);
+      setFilteredImages([]);
     }
-  }, [searchTerm, allImages]);
+  }, [allImages, searchTerm, mediaFilter]);
 
-  const fetchAllImages = async () => {
-    try {
-      setIsLoading(true);
-      // Fetch images from ALL folders by not specifying a folder parameter
-      const response = await adminAPI.images.getAll();
-      const images = response.data.data.resources || [];
-      setAllImages(images);
-      setFilteredImages(images);
-    } catch (err) {
-      setError('Failed to fetch images');
-      console.error('Error fetching images:', err);
-    } finally {
-      setIsLoading(false);
-    }
+  // Error display component
+  const ErrorDisplay = () => {
+    const error = localError || cacheError;
+    if (!error) return null;
+    
+    return (
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <strong className="font-bold">Error: </strong>
+        <span className="block sm:inline">{error.message || error}</span>
+        {localError && (
+          <button
+            onClick={() => setLocalError(null)}
+            className="absolute top-0 bottom-0 right-0 px-4 py-3"
+          >
+            <FontAwesomeIcon icon="times" />
+          </button>
+        )}
+      </div>
+    );
   };
 
-  const initializeWidget = () => {
-    if (window.cloudinary) {
-      cloudinaryRef.current = window.cloudinary;
-      
-      widgetRef.current = cloudinaryRef.current.createMediaLibrary({
-        cloud_name: cloudinaryConfig.cloudName,
-        api_key: cloudinaryConfig.apiKey,
-        button_class: 'cloudinary-media-library-button',
-        button_caption: 'Open Media Library',
-        max_files: 10,
-        multiple: true,
-        insert_caption: 'Select Images',
-        default_transformations: [[]],
-        show_upload_more: true,
-        show_advanced_search: true,
-        show_folders: true,
-        folder: {
-          path: 'ppyc',
-          resource_type: 'image'
-        }
-      }, {
-        insertHandler: (data) => {
-          setSelectedImages(data.assets || []);
-          console.log('Selected images:', data.assets);
-          
-          if (window.onCloudinarySelect) {
-            window.onCloudinarySelect(data.assets);
-          }
-        },
-        showHandler: () => {
-          console.log('Media Library opened');
-        },
-        hideHandler: () => {
-          console.log('Media Library closed');
-        }
-      });
-    }
+  // Loading display component
+  const LoadingDisplay = () => {
+    if (!cacheLoading) return null;
+
+    return (
+      <div className="flex items-center justify-center p-4">
+        <FontAwesomeIcon icon="spinner" spin className="text-blue-500 text-2xl" />
+        <span className="ml-2">Loading media...</span>
+      </div>
+    );
   };
 
-  const openMediaLibrary = () => {
-    if (widgetRef.current) {
-      widgetRef.current.show();
-    }
-  };
+  // Effects
+  useEffect(() => {
+    console.log('🔄 MediaLibrary mounted');
+    console.log('🌐 Current URL:', window.location.href);
+    console.log('🍪 Document cookies:', document.cookie);
+    console.log('📦 Using cached data approach...');
+  }, []);
 
-  const handleImageSelect = (publicId) => {
-    setSelectedImageIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(publicId)) {
-        newSet.delete(publicId);
-      } else {
-        newSet.add(publicId);
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedVideoModal(null);
       }
-      return newSet;
-    });
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  // API Functions - Remove the fetchAllImages function since we're using cache
+  const handleImageSelect = (publicId) => {
+    setSelectedImages(prev => 
+      prev.includes(publicId) 
+        ? prev.filter(id => id !== publicId)
+        : [...prev, publicId]
+    );
   };
 
   const handleDeleteSelected = async () => {
-    if (selectedImageIds.size === 0) return;
+    if (selectedImages.length === 0) return;
     
-    if (!window.confirm(`Are you sure you want to delete ${selectedImageIds.size} image(s)?`)) {
+    if (!window.confirm(`Are you sure you want to delete ${selectedImages.length} selected media file(s)?`)) {
       return;
     }
-
+    
     try {
-      const deletePromises = Array.from(selectedImageIds).map(publicId =>
-        adminAPI.images.delete(publicId)
-      );
-      
-      await Promise.all(deletePromises);
-      
-      setAllImages(prev => prev.filter(img => !selectedImageIds.has(img.public_id)));
-      setSelectedImageIds(new Set());
-      setSuccess(`Successfully deleted ${selectedImageIds.size} image(s)`);
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err) {
-      setError('Failed to delete images');
-      console.error('Error deleting images:', err);
+      for (const publicId of selectedImages) {
+        await adminAPI.images.delete(publicId);
+      }
+      setSuccess(`Successfully deleted ${selectedImages.length} media file(s)`);
+      setSelectedImages([]);
+      // Refresh the cache after deletion
+      refetch();
+    } catch (error) {
+      console.error('Delete error:', error);
+      setLocalError(`Failed to delete media files: ${error.message}`);
     }
   };
 
   const copyImageUrl = (url) => {
     navigator.clipboard.writeText(url);
-    setSuccess('Image URL copied to clipboard!');
-    setTimeout(() => setSuccess(null), 2000);
+    setSuccess('📋 URL copied to clipboard!');
   };
 
   const getImageFolder = (publicId) => {
     const parts = publicId.split('/');
-    return parts.length > 1 ? parts.slice(0, -1).join('/') : 'root';
+    return parts.length > 1 ? parts.slice(0, -1).join('/') : 'Root';
   };
 
-  if (isLoading) {
+  const isVideo = (resource) => {
+    return resource.resource_type === 'video' || 
+           (resource.format && ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm'].includes(resource.format.toLowerCase()));
+  };
+
+  const getVideoThumbnail = (publicId) => {
+    return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/video/upload/w_400,h_300,c_fill,f_jpg/${publicId}.jpg`;
+  };
+
+  const formatFileSize = (bytes) => {
+    if (!bytes) return 'Unknown';
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
+  };
+
+  const formatDuration = (seconds) => {
+    if (!seconds) return null;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleFileSelect = (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    // Create preview for selected files
+    const previews = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+      name: file.name,
+      size: file.size,
+      type: file.type
+    }));
+
+    setUploadPreview(previews);
+    setShowUploadModal(true);
+  };
+
+  const uploadFiles = async () => {
+    if (uploadPreview.length === 0) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    try {
+      const uploadResults = [];
+      
+      for (let i = 0; i < uploadPreview.length; i++) {
+        const preview = uploadPreview[i];
+        const formData = new FormData();
+        
+        // Upload each file individually
+        formData.append('file', preview.file);
+        formData.append('folder', uploadFolder);
+        formData.append('tags', 'ppyc,admin-upload');
+        formData.append('context', JSON.stringify({
+          source: 'admin-panel',
+          uploaded_by: 'admin',
+          upload_date: new Date().toISOString()
+        }));
+        
+        try {
+          const response = await adminAPI.images.upload(formData);
+          
+          if (response.data) {
+            uploadResults.push(response.data);
+            setUploadQueue(prev => [...prev, response.data]);
+          }
+          
+          setUploadProgress(((i + 1) / uploadPreview.length) * 100);
+        } catch (fileError) {
+          console.error(`Failed to upload ${preview.name}:`, fileError);
+          setLocalError(`Failed to upload ${preview.name}: ${fileError.message}`);
+        }
+      }
+      
+      if (uploadResults.length > 0) {
+        setSuccess(`Successfully uploaded ${uploadResults.length} of ${uploadPreview.length} file(s)`);
+        // Invalidate cache and refresh the images list
+        refetch();
+      }
+      
+      setShowUploadModal(false);
+      setUploadPreview([]);
+      
+      // Clean up preview URLs
+      uploadPreview.forEach(preview => {
+        URL.revokeObjectURL(preview.preview);
+      });
+      
+    } catch (error) {
+      console.error('Upload error:', error);
+      setLocalError('Failed to upload files');
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const removePreview = (index) => {
+    setUploadPreview(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const closeUploadModal = () => {
+    setShowUploadModal(false);
+    setUploadPreview([]);
+    // Clean up preview URLs
+    uploadPreview.forEach(preview => {
+      URL.revokeObjectURL(preview.preview);
+    });
+  };
+
+
+
+  if (cacheLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <i className="fas fa-anchor fa-spin text-blue-600 text-2xl"></i>
-        <span className="ml-3 text-gray-600">
-          {useCloudinaryWidget ? 'Loading Cloudinary Media Library...' : 'Loading images...'}
-        </span>
+        <FontAwesomeIcon icon="anchor" className="fa-spin text-blue-600 text-2xl" />
+        <span className="ml-3 text-gray-600">Loading media files...</span>
       </div>
     );
   }
@@ -186,59 +275,64 @@ const MediaLibrary = () => {
   return (
     <div className="bg-white rounded-lg shadow-md">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-800">
-              <i className="fas fa-images mr-2 text-purple-500"></i>
-              Media Library
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center">
+              <FontAwesomeIcon icon="images" className="mr-2 text-purple-500" />
+              <span className="hidden sm:inline">Media Library</span>
+              <span className="sm:hidden">Media</span>
             </h1>
-            <p className="text-sm text-gray-600 mt-1">
-              Manage all your images from across your entire Cloudinary account
+            <p className="text-xs sm:text-sm text-gray-600 mt-1 hidden sm:block">
+              Manage all your images and videos from across your entire Cloudinary account
             </p>
           </div>
-          <div className="flex items-center space-x-3">
-            {/* View Toggle */}
+          
+          {/* Compact Controls */}
+          <div className="flex items-center gap-2">
+            {/* View Toggle - Compact */}
             <div className="flex items-center bg-gray-100 rounded-lg p-1">
               <button
-                onClick={() => setUseCloudinaryWidget(false)}
-                className={`px-3 py-1 rounded text-sm transition-colors ${
-                  !useCloudinaryWidget 
-                    ? 'bg-white text-purple-600 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded transition-colors ${viewMode === 'grid' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+                title="Grid View"
               >
-                Custom View
+                <FontAwesomeIcon icon="th" className="text-sm" />
               </button>
               <button
-                onClick={() => setUseCloudinaryWidget(true)}
-                className={`px-3 py-1 rounded text-sm transition-colors ${
-                  useCloudinaryWidget 
-                    ? 'bg-white text-purple-600 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded transition-colors ${viewMode === 'list' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+                title="List View"
               >
-                Cloudinary Widget
+                <FontAwesomeIcon icon="list" className="text-sm" />
               </button>
             </div>
 
-            {useCloudinaryWidget ? (
+            {/* Action Buttons - Icon Only */}
+            <div className="flex items-center gap-2">
               <button
-                onClick={openMediaLibrary}
-                className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+                onClick={() => fileInputRef.current?.click()}
+                className="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors"
+                title="Upload Files"
               >
-                <i className="fas fa-folder-open mr-2"></i>
-                Open Media Library
+                <FontAwesomeIcon icon="cloud-upload-alt" className="text-sm" />
               </button>
-            ) : (
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
               <button
-                onClick={fetchAllImages}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                onClick={refetch}
+                className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
+                title="Refresh"
               >
-                <i className="fas fa-sync-alt mr-2"></i>
-                Refresh
+                <FontAwesomeIcon icon="sync-alt" className="text-sm" />
               </button>
-            )}
+            </div>
           </div>
         </div>
       </div>
@@ -246,285 +340,519 @@ const MediaLibrary = () => {
       {/* Success/Error Messages */}
       {success && (
         <div className="mx-6 mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-          <i className="fas fa-check-circle mr-2"></i>
+          <FontAwesomeIcon icon="check-circle" className="mr-2" />
           {success}
         </div>
       )}
 
-      {error && (
-        <div className="mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          <i className="fas fa-exclamation-triangle mr-2"></i>
-          {error}
-        </div>
-      )}
+      {ErrorDisplay()}
+      {LoadingDisplay()}
 
       {/* Main Content */}
       <div className="p-6">
-        {useCloudinaryWidget ? (
-          // Cloudinary Widget View
-          <>
-            {/* Features Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <i className="fas fa-search text-purple-500 text-2xl mb-2"></i>
-                <h3 className="font-semibold text-gray-800 mb-1">Advanced Search</h3>
-                <p className="text-sm text-gray-600">Search across all images, folders, and metadata</p>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <i className="fas fa-folder text-purple-500 text-2xl mb-2"></i>
-                <h3 className="font-semibold text-gray-800 mb-1">Folder Management</h3>
-                <p className="text-sm text-gray-600">Organize images in folders and collections</p>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <i className="fas fa-cloud-upload-alt text-purple-500 text-2xl mb-2"></i>
-                <h3 className="font-semibold text-gray-800 mb-1">Upload & Transform</h3>
-                <p className="text-sm text-gray-600">Upload images and apply transformations</p>
-              </div>
+        {/* Search and Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="flex-1 max-w-sm">
+            <div className="relative">
+              <FontAwesomeIcon icon="search" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search media files..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              />
             </div>
+          </div>
+          
+          {/* Media Type Filter */}
+          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setMediaFilter('all')}
+              className={`px-3 py-1 rounded text-sm transition-colors ${
+                mediaFilter === 'all' 
+                  ? 'bg-white text-purple-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+              title="All Media"
+            >
+              <FontAwesomeIcon icon="layer-group" className="mr-1" />
+              All
+            </button>
+            <button
+              onClick={() => setMediaFilter('images')}
+              className={`px-3 py-1 rounded text-sm transition-colors ${
+                mediaFilter === 'images' 
+                  ? 'bg-white text-purple-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+              title="Images Only"
+            >
+              <FontAwesomeIcon icon="image" className="mr-1" />
+              Images
+            </button>
+            <button
+              onClick={() => setMediaFilter('videos')}
+              className={`px-3 py-1 rounded text-sm transition-colors ${
+                mediaFilter === 'videos' 
+                  ? 'bg-white text-purple-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+              title="Videos Only"
+            >
+              <FontAwesomeIcon icon="video" className="mr-1" />
+              Videos
+            </button>
+          </div>
 
-            {/* Selected Images from Widget */}
-            {selectedImages.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Selected Images ({selectedImages.length})
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
-                  {selectedImages.map((asset, index) => (
-                    <div key={index} className="relative group">
-                      <div className="aspect-square rounded-lg overflow-hidden border border-gray-200">
-                        <img
-                          src={asset.secure_url}
-                          alt={asset.public_id}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-lg">
-                        <div className="absolute top-2 right-2">
-                          <button
-                            onClick={() => copyImageUrl(asset.secure_url)}
-                            className="bg-black bg-opacity-50 text-white p-1 rounded hover:bg-opacity-70 transition-all"
-                            title="Copy URL"
-                          >
-                            <i className="fas fa-copy text-xs"></i>
-                          </button>
-                        </div>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-b-lg">
-                        <p className="text-white text-xs truncate">
-                          {asset.public_id.split('/').pop()}
-                        </p>
-                        <p className="text-white text-xs opacity-75">
-                          {asset.width} × {asset.height}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setSelectedImages([])}
-                  className="text-gray-600 hover:text-gray-800 text-sm"
-                >
-                  <i className="fas fa-times mr-1"></i>
-                  Clear Selection
-                </button>
-              </div>
-            )}
-
-            {/* Widget Instructions */}
-            {selectedImages.length === 0 && (
-              <div className="text-center py-12">
-                <i className="fas fa-images text-gray-400 text-4xl mb-4"></i>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                  Access Your Complete Media Library
-                </h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Click "Open Media Library" to browse, search, upload, and manage all your images 
-                  with Cloudinary's professional interface. This shows images from all folders in your account.
-                </p>
-                <div className="space-y-2 text-sm text-gray-500">
-                  <p>• View all images across all folders</p>
-                  <p>• Advanced search and filtering</p>
-                  <p>• Upload multiple images with drag & drop</p>
-                  <p>• Automatic duplicate detection</p>
-                  <p>• Professional image transformations</p>
-                </div>
-              </div>
-            )}
-          </>
-        ) : (
-          // Custom View
-          <>
-            {/* Search and Controls */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                  <input
-                    type="text"
-                    placeholder="Search images..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded ${viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'text-gray-400'}`}
-                  >
-                    <i className="fas fa-th"></i>
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`p-2 rounded ${viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'text-gray-400'}`}
-                  >
-                    <i className="fas fa-list"></i>
-                  </button>
-                </div>
-                <span className="text-sm text-gray-500">
-                  {filteredImages.length} of {allImages.length} images
+          <div className="flex items-center justify-between sm:justify-end gap-4">
+            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded transition-colors ${viewMode === 'grid' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                title="Grid View"
+              >
+                <FontAwesomeIcon icon="th" className="text-sm" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded transition-colors ${viewMode === 'list' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                title="List View"
+              >
+                <FontAwesomeIcon icon="list" className="text-sm" />
+              </button>
+            </div>
+            <div className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+              <span className="hidden sm:inline">
+                {filteredImages.length} of {allImages?.data?.resources?.length || 0} total
+              </span>
+              <span className="sm:hidden">
+                {filteredImages.length}/{allImages?.data?.resources?.length || 0}
+              </span>
+              <div className="text-xs text-gray-400 mt-1">
+                <span className="mr-2">
+                  <FontAwesomeIcon icon="image" className="mr-1" />
+                  {allImages?.data?.resources?.filter(f => !isVideo(f))?.length || 0}
+                </span>
+                <span>
+                  <FontAwesomeIcon icon="video" className="mr-1" />
+                  {allImages?.data?.resources?.filter(f => isVideo(f))?.length || 0}
                 </span>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Bulk Actions */}
-            {selectedImageIds.size > 0 && (
-              <div className="mb-6 flex items-center justify-between bg-blue-50 px-4 py-2 rounded-lg">
-                <span className="text-sm text-blue-700">
-                  {selectedImageIds.size} image(s) selected
-                </span>
-                <button
-                  onClick={handleDeleteSelected}
-                  className="text-red-600 hover:text-red-800 px-3 py-1 rounded"
-                >
-                  <i className="fas fa-trash mr-1"></i>
-                  Delete
-                </button>
-              </div>
-            )}
+        {/* Bulk Actions */}
+        {selectedImages.length > 0 && (
+          <div className="mb-6 flex items-center justify-between bg-blue-50 px-4 py-2 rounded-lg">
+            <span className="text-sm text-blue-700">
+              {selectedImages.length} file(s) selected
+            </span>
+            <button
+              onClick={handleDeleteSelected}
+              className="text-red-600 hover:text-red-800 px-3 py-1 rounded"
+            >
+              <FontAwesomeIcon icon="trash" className="mr-1" />
+              Delete
+            </button>
+          </div>
+        )}
 
-            {/* Images Display */}
-            {filteredImages.length === 0 ? (
-              <div className="text-center py-12">
-                <i className="fas fa-images text-gray-400 text-4xl mb-4"></i>
-                <p className="text-gray-500 mb-4">
-                  {searchTerm ? 'No images found matching your search' : 'No images found'}
-                </p>
-                <button
-                  onClick={fetchAllImages}
-                  className="text-purple-600 hover:text-purple-800 font-medium"
-                >
-                  Refresh Images
-                </button>
-              </div>
-            ) : viewMode === 'grid' ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {filteredImages.map((image) => (
-                  <div
-                    key={image.public_id}
-                    className={`relative group rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                      selectedImageIds.has(image.public_id)
-                        ? 'border-purple-500 ring-2 ring-purple-200'
-                        : 'border-transparent hover:border-gray-300'
-                    }`}
-                    onClick={() => handleImageSelect(image.public_id)}
-                  >
-                    <div className="aspect-square">
+        {/* Media Display */}
+        {filteredImages.length === 0 ? (
+          <div className="text-center py-12">
+            <FontAwesomeIcon icon="images" className="text-gray-400 text-4xl mb-4" />
+            <p className="text-gray-500 mb-4">
+              {searchTerm ? 'No media files found matching your search' : 'No media files found'}
+            </p>
+            <p className="text-gray-400 text-sm mb-4">
+              This library displays both images and videos from your Cloudinary account
+            </p>
+            <button
+              onClick={refetch}
+              className="text-purple-600 hover:text-purple-800 font-medium"
+            >
+              Refresh Media Library
+            </button>
+          </div>
+        ) : viewMode === 'grid' ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {filteredImages.map((image) => (
+              <div
+                key={image.public_id}
+                className={`relative group rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                  selectedImages.includes(image.public_id)
+                    ? 'border-purple-500 ring-2 ring-purple-200'
+                    : 'border-transparent hover:border-gray-300'
+                }`}
+                onClick={() => handleImageSelect(image.public_id)}
+                onDoubleClick={() => {
+                  if (isVideo(image)) {
+                    // Open video in modal viewer
+                    setSelectedVideoModal(image);
+                  }
+                }}
+              >
+                <div className="aspect-square relative">
+                  {isVideo(image) ? (
+                    <>
                       <img
-                        src={image.url}
+                        src={getVideoThumbnail(image.public_id)}
                         alt={image.public_id}
                         className="w-full h-full object-cover"
                       />
-                    </div>
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all">
-                      <div className="absolute top-2 right-2">
-                        <div className={`w-4 h-4 rounded border-2 ${
-                          selectedImageIds.has(image.public_id)
-                            ? 'bg-purple-500 border-purple-500'
-                            : 'border-white bg-white bg-opacity-80'
-                        }`}>
-                          {selectedImageIds.has(image.public_id) && (
-                            <i className="fas fa-check text-white text-xs"></i>
-                          )}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-black bg-opacity-70 rounded-full p-3 group-hover:bg-opacity-80 transition-all">
+                          <FontAwesomeIcon icon="video" className="text-white text-lg" />
                         </div>
                       </div>
-                      <div className="absolute top-2 left-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyImageUrl(image.url);
-                          }}
-                          className="bg-black bg-opacity-50 text-white p-1 rounded hover:bg-opacity-70 transition-all"
-                          title="Copy URL"
-                        >
-                          <i className="fas fa-copy text-xs"></i>
-                        </button>
+                      <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                        VIDEO
                       </div>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <p className="text-white text-xs truncate">
-                        {image.public_id.split('/').pop()}
-                      </p>
-                      <p className="text-white text-xs opacity-75">
-                        {image.width} × {image.height} • {getImageFolder(image.public_id)}
-                      </p>
+                    </>
+                  ) : (
+                    <img
+                      src={image.url}
+                      alt={image.public_id}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all">
+                  <div className="absolute top-2 right-2">
+                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                      selectedImages.includes(image.public_id)
+                        ? 'bg-purple-500 border-purple-500'
+                        : 'border-white bg-white bg-opacity-80'
+                    }`}>
+                      {selectedImages.includes(image.public_id) && (
+                        <FontAwesomeIcon icon="check" className="text-white text-xs" />
+                      )}
                     </div>
                   </div>
-                ))}
+                  <div className="absolute top-2 left-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        copyImageUrl(image.url);
+                      }}
+                      className="bg-black bg-opacity-50 text-white p-1 rounded hover:bg-opacity-70 transition-all"
+                      title="Copy URL"
+                    >
+                      <FontAwesomeIcon icon="copy" className="text-xs" />
+                    </button>
+                  </div>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <p className="text-white text-xs truncate">
+                    {image.public_id.split('/').pop()}
+                  </p>
+                  <p className="text-white text-xs opacity-75">
+                    {isVideo(image) ? (
+                      <>
+                        {image.duration && formatDuration(image.duration)} • {formatFileSize(image.bytes)}
+                        <br />
+                        {image.format?.toUpperCase()} Video • {getImageFolder(image.public_id)}
+                      </>
+                    ) : (
+                      <>
+                        {image.width} × {image.height} • {getImageFolder(image.public_id)}
+                      </>
+                    )}
+                  </p>
+                </div>
               </div>
-            ) : (
-              <div className="space-y-2">
-                {filteredImages.map((image) => (
-                  <div
-                    key={image.public_id}
-                    className={`flex items-center space-x-4 p-3 rounded hover:bg-gray-50 ${
-                      selectedImageIds.has(image.public_id) ? 'bg-purple-50' : ''
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedImageIds.has(image.public_id)}
-                      onChange={() => handleImageSelect(image.public_id)}
-                      className="rounded border-gray-300 text-purple-600"
-                    />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filteredImages.map((image) => (
+              <div
+                key={image.public_id}
+                className={`flex items-center space-x-4 p-3 rounded hover:bg-gray-50 ${
+                  selectedImages.includes(image.public_id) ? 'bg-purple-50' : ''
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedImages.includes(image.public_id)}
+                  onChange={() => handleImageSelect(image.public_id)}
+                  className="rounded border-gray-300 text-purple-600"
+                />
+                <div className="relative">
+                  {isVideo(image) ? (
+                    <>
+                      <img
+                        src={getVideoThumbnail(image.public_id)}
+                        alt={image.public_id}
+                        className="w-12 h-12 object-cover rounded"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <FontAwesomeIcon icon="video" className="text-white text-xs drop-shadow-md" />
+                      </div>
+                    </>
+                  ) : (
                     <img
                       src={image.url}
                       alt={image.public_id}
                       className="w-12 h-12 object-cover rounded"
                     />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {image.public_id.split('/').pop()}
-                      </p>
-                      <p className="text-xs text-gray-500">
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 flex items-center">
+                    <span 
+                      className={`${isVideo(image) ? 'cursor-pointer hover:text-purple-600' : ''}`}
+                      onClick={() => {
+                        if (isVideo(image)) {
+                          setSelectedVideoModal(image);
+                        }
+                      }}
+                    >
+                      {image.public_id.split('/').pop()}
+                    </span>
+                    {isVideo(image) && (
+                      <span className="ml-2 px-1 py-0.5 text-xs bg-purple-100 text-purple-700 rounded">
+                        VIDEO
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {isVideo(image) ? (
+                      <>
+                        {image.duration && formatDuration(image.duration)} • {formatFileSize(image.bytes)} • {image.format?.toUpperCase()}
+                      </>
+                    ) : (
+                      <>
                         {image.width} × {image.height} • {image.format?.toUpperCase()}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Folder: {getImageFolder(image.public_id)}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          copyImageUrl(image.url);
-                        }}
-                        className="text-blue-600 hover:text-blue-800 p-1"
-                        title="Copy URL"
-                      >
-                        <i className="fas fa-copy"></i>
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                      </>
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Folder: {getImageFolder(image.public_id)}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyImageUrl(image.url);
+                    }}
+                    className="text-blue-600 hover:text-blue-800 p-1"
+                    title="Copy URL"
+                  >
+                    <FontAwesomeIcon icon="copy" />
+                  </button>
+                </div>
               </div>
-            )}
-          </>
+            ))}
+          </div>
+        )}
+
+        {/* Media Count Display */}
+        {allImages?.data?.resources?.length > 0 && (
+          <div className="flex items-center justify-center py-6 mt-6 border-t border-gray-200">
+            <div className="text-sm text-gray-600">
+              <span>
+                Showing {filteredImages.length} of {allImages?.data?.resources?.length} media files
+              </span>
+            </div>
+          </div>
         )}
       </div>
+
+      {/* Upload Progress Bar */}
+      {isUploading && (
+        <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg border max-w-sm">
+          <div className="flex items-center space-x-3">
+            <FontAwesomeIcon icon="cloud-upload-alt" className="text-green-600 text-xl" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-800">Uploading files...</p>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                <div 
+                  className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">{Math.round(uploadProgress)}% complete</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Upload Files</h2>
+              <button
+                onClick={closeUploadModal}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FontAwesomeIcon icon="times" className="text-xl" />
+              </button>
+            </div>
+
+            {/* Folder Selection */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Upload to folder:
+              </label>
+              <select
+                value={uploadFolder}
+                onChange={(e) => setUploadFolder(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              >
+                <option value="ppyc/uploads">ppyc/uploads</option>
+                <option value="ppyc/events">ppyc/events</option>
+                <option value="ppyc/marina">ppyc/marina</option>
+                <option value="ppyc/historical">ppyc/historical</option>
+                <option value="ppyc/facilities">ppyc/facilities</option>
+                <option value="ppyc/activities">ppyc/activities</option>
+                <option value="ppyc/people">ppyc/people</option>
+                <option value="ppyc/graphics">ppyc/graphics</option>
+                <option value="ppyc/nature">ppyc/nature</option>
+                <option value="ppyc/seasonal">ppyc/seasonal</option>
+                <option value="ppyc/website">ppyc/website</option>
+              </select>
+            </div>
+
+            {/* File Previews */}
+            {uploadPreview.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">
+                  Files to upload ({uploadPreview.length})
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-60 overflow-y-auto">
+                  {uploadPreview.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <div className="aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                        {preview.type.startsWith('image/') ? (
+                          <img
+                            src={preview.preview}
+                            alt={preview.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <FontAwesomeIcon icon="video" className="text-gray-400 text-2xl" />
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => removePreview(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                      >
+                        <FontAwesomeIcon icon="times" className="text-xs" />
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-b-lg">
+                        <p className="text-white text-xs truncate">{preview.name}</p>
+                        <p className="text-white text-xs opacity-75">
+                          {(preview.size / 1024 / 1024).toFixed(1)} MB
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Upload Queue Status */}
+            {uploadQueue.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">
+                  Recently uploaded ({uploadQueue.length})
+                </h3>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {uploadQueue.slice(-5).map((item, index) => (
+                    <div key={index} className="flex items-center space-x-2 text-sm">
+                      <FontAwesomeIcon icon="check-circle" className="text-green-500" />
+                      <span className="text-gray-700 truncate">{item.public_id}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                <FontAwesomeIcon icon="plus" className="mr-1" />
+                Add more files
+              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={closeUploadModal}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={uploadFiles}
+                  disabled={uploadPreview.length === 0 || isUploading}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                >
+                  {isUploading ? (
+                    <>
+                      <FontAwesomeIcon icon="spinner" className="fa-spin mr-2" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon="cloud-upload-alt" className="mr-2" />
+                      Upload {uploadPreview.length} file(s)
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Video Modal */}
+      {selectedVideoModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-4 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">
+                {selectedVideoModal.public_id.split('/').pop()}
+              </h2>
+              <button
+                onClick={() => {
+                  setSelectedVideoModal(null);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FontAwesomeIcon icon="times" className="text-xl" />
+              </button>
+            </div>
+            
+            <div className="aspect-video rounded-lg overflow-hidden bg-black">
+              <video
+                src={selectedVideoModal.url}
+                controls
+                autoPlay
+                className="w-full h-full"
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            
+            <div className="mt-4 text-sm text-gray-600">
+              <p><strong>Duration:</strong> {formatDuration(selectedVideoModal.duration) || 'Unknown'}</p>
+              <p><strong>Size:</strong> {formatFileSize(selectedVideoModal.bytes)}</p>
+              <p><strong>Format:</strong> {selectedVideoModal.format?.toUpperCase()}</p>
+              <p><strong>Folder:</strong> {getImageFolder(selectedVideoModal.public_id)}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

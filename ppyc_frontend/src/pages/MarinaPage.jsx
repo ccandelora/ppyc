@@ -1,41 +1,41 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_NAMES } from '../config/fontawesome';
+import SEOHelmet from '../components/SEOHelmet';
+import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
+import CloudinaryVideo from '../components/CloudinaryVideo';
 
 const MarinaPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-white">
+      <SEOHelmet
+        title="Marina - Pleasant Park Yacht Club"
+        description="Explore our state-of-the-art marina facilities at Pleasant Park Yacht Club. Safe harbor, modern amenities, and exceptional service."
+      />
+
       {/* Hero Section with Video Background */}
-      <section className="relative text-white py-24 overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden">
         <div className="absolute inset-0">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
+          <CloudinaryVideo
+            publicId={YACHT_CLUB_ASSETS.videos.diveBoat}
             className="w-full h-full object-cover"
-          >
-            <source src="/assets/images/videos/vecteezy_similan-islands-thailand-november-23-2016-dive-boat-near_8821366.mp4" type="video/mp4" />
-            <source src="/assets/images/videos/vecteezy_the-boat-is-sailing-on-the-river-a-fishing-boat-departs_53333837.mp4" type="video/mp4" />
-            <source src="/assets/images/videos/vecteezy_boston-usa-october-16-2024-the-evelyn-moakley-bridge_52194493.mp4" type="video/mp4" />
-            <source src="/assets/images/videos/vecteezy_fan-pier-boston-waterfront_1624405.mov" type="video/quicktime" />
-            <source src="/assets/images/videos/13963117_2560_1440_30fps.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-800/85 to-blue-900/80"></div>
+          />
+          <div className="absolute inset-0 bg-black opacity-50"></div>
         </div>
         
-        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-          <div className="mb-6">
-            <i className="fas fa-ship text-6xl mb-6 text-blue-300"></i>
+        {/* Hero Content */}
+        <div className="relative z-10 flex items-center justify-center h-full text-center px-4">
+          <div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+              Our Marina
+            </h1>
+            <p className="text-xl text-white max-w-2xl mx-auto">
+              Experience world-class facilities and services in our protected harbor.
+            </p>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Marina & Services
-          </h1>
-          <div className="w-24 h-1 bg-blue-600 mx-auto mb-6"></div>
-          <p className="text-xl md:text-2xl text-slate-200 max-w-3xl mx-auto leading-relaxed">
-            Modern marina facilities and comprehensive services for our boating community
-          </p>
         </div>
-      </section>
+      </div>
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         
@@ -60,7 +60,7 @@ const MarinaPage = () => {
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-anchor text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Summer Marina Slip Assignments</h4>
@@ -70,7 +70,7 @@ const MarinaPage = () => {
 
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-calendar-day text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Daily and Short Term Marina Slip Rentals</h4>
@@ -80,7 +80,7 @@ const MarinaPage = () => {
 
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-child text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Junior Members Program</h4>
@@ -90,7 +90,7 @@ const MarinaPage = () => {
 
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-snowflake text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.WATER} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Ice Always Available</h4>
@@ -100,7 +100,7 @@ const MarinaPage = () => {
 
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-utensils text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.UTENSILS} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Full Bar and Grill ALL YEAR</h4>
@@ -112,7 +112,7 @@ const MarinaPage = () => {
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-heart text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.HEART} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">"Lunch with Cindy" Sundays</h4>
@@ -122,7 +122,7 @@ const MarinaPage = () => {
 
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-tv text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.TV} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Monday-Thursday Night Football</h4>
@@ -132,7 +132,7 @@ const MarinaPage = () => {
 
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-building text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.HOME} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Hall Rental Available</h4>
@@ -142,7 +142,7 @@ const MarinaPage = () => {
 
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fas fa-handshake text-blue-600 text-lg"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-blue-600 text-lg" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Weekend Invasions</h4>
@@ -178,17 +178,19 @@ const MarinaPage = () => {
             
             <div className="grid md:grid-cols-3 gap-6 mt-8">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <i className="fas fa-map-marked-alt text-2xl text-blue-600 mb-3"></i>
-                <h4 className="font-semibold text-slate-800 mb-2">Slip Navigation</h4>
-                <p className="text-sm text-slate-600">Clear pathways and slip numbering for easy dock access</p>
+                <div className="flex flex-col items-center">
+                  <FontAwesomeIcon icon={ICON_NAMES.COMPASS} className="text-2xl text-blue-600 mb-3" />
+                  <h4 className="font-semibold text-slate-800 mb-2">Slip Navigation</h4>
+                  <p className="text-sm text-slate-600">Clear pathways and slip numbering for easy dock access</p>
+                </div>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <i className="fas fa-tools text-2xl text-blue-600 mb-3"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.SHIELD} className="text-2xl text-blue-600 mb-3" />
                 <h4 className="font-semibold text-slate-800 mb-2">Service Areas</h4>
                 <p className="text-sm text-slate-600">Pump-out station, and maintenance facilities</p>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <i className="fas fa-anchor text-2xl text-blue-600 mb-3"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-2xl text-blue-600 mb-3" />
                 <h4 className="font-semibold text-slate-800 mb-2">Mooring Options</h4>
                 <p className="text-sm text-slate-600">Seasonal and transient slips for vessels of all sizes</p>
               </div>
@@ -218,27 +220,27 @@ const MarinaPage = () => {
               <h3 className="text-2xl font-bold text-slate-800 mb-6">Modern Marina Amenities</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-check-circle text-green-600 text-lg"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
                   <span className="text-slate-700">Floating dock systems with modern amenities</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-check-circle text-green-600 text-lg"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
                   <span className="text-slate-700">30 & 50 amp electrical service available</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-check-circle text-green-600 text-lg"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
                   <span className="text-slate-700">Fresh water connections at all slips</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-check-circle text-green-600 text-lg"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
                   <span className="text-slate-700">Pump-out station for sanitary systems</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-check-circle text-green-600 text-lg"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
                   <span className="text-slate-700">Winter storage and haul-out services</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-check-circle text-green-600 text-lg"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
                   <span className="text-slate-700">24/7 security and monitoring</span>
                 </div>
               </div>
@@ -295,33 +297,33 @@ const MarinaPage = () => {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-white rounded-xl shadow-lg p-8">
               <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-                <i className="fas fa-user-tie text-blue-600"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.USER} className="text-blue-600" />
                 Harbormaster Services
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-envelope text-blue-600"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.ENVELOPE} className="text-blue-600" />
                   <div>
                     <p className="font-medium text-slate-800">Email</p>
                     <a href="mailto:marina@ppyc.org" className="text-blue-600 hover:text-blue-800">marina@ppyc.org</a>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-phone text-blue-600"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.PHONE} className="text-blue-600" />
                   <div>
                     <p className="font-medium text-slate-800">Phone</p>
                     <a href="tel:248-555-3625" className="text-blue-600 hover:text-blue-800">(248) 555-DOCK</a>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-broadcast-tower text-blue-600"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.BROADCAST} className="text-blue-600" />
                   <div>
                     <p className="font-medium text-slate-800">VHF Radio</p>
                     <p className="text-slate-600">Channel 68</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <i className="fas fa-clock text-blue-600"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.CLOCK} className="text-blue-600" />
                   <div>
                     <p className="font-medium text-slate-800">Hours</p>
                     <p className="text-slate-600">Daily: 6:00 AM - 10:00 PM</p>
@@ -332,7 +334,7 @@ const MarinaPage = () => {
 
             <div className="bg-white rounded-xl shadow-lg p-8">
               <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-                <i className="fas fa-info-circle text-blue-600"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.INFO} className="text-blue-600" />
                 Slip Reservations
               </h3>
               <div className="space-y-4 text-slate-700">
@@ -350,7 +352,7 @@ const MarinaPage = () => {
                     to="/membership" 
                     className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:shadow-lg"
                   >
-                    <i className="fas fa-anchor"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} />
                     Learn About Membership
                   </Link>
                 </div>
@@ -373,14 +375,16 @@ const MarinaPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 to="/membership" 
-                className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
               >
+                <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} />
                 Learn About Membership
               </Link>
               <Link 
                 to="/events" 
-                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300"
               >
+                <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} />
                 View Upcoming Events
               </Link>
             </div>

@@ -8,6 +8,18 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+# Initialize default settings
+puts "Initializing default settings..."
+Setting.initialize_defaults!
+puts "Default settings initialized successfully!"
+
+# Print summary
+settings_count = Setting.count
+puts "Total settings: #{settings_count}"
+Setting.grouped_by_category.each do |category, settings|
+  puts "  #{category}: #{settings.keys.count} settings"
+end
+
 puts "🌊 Seeding Pleasant Park Yacht Club Database..."
 
 # Create admin user
@@ -291,120 +303,63 @@ pages.each do |page_data|
   puts "Created/found page: #{page.title}"
 end
 
-# Create diverse slides for TV display
+# Clear existing slides
+puts "Clearing existing slides..."
+Slide.destroy_all
+
+# Create some initial slides
+puts "Creating new slides..."
 slides = [
   {
-    title: "Welcome to PPYC!",
+    title: "Welcome to Pleasant Park Yacht Club",
+    content: "Established in 1925, we're proud to serve the Boston Harbor boating community.",
     slide_type: "announcement",
-    content: "Pleasant Park Yacht Club\nYour home on the water since 1910\nNavigating traditions, creating memories",
+    duration_seconds: 30,
     active_status: true,
     display_order: 1,
-    duration_seconds: 12,
-    image_url: "/assets/images/ppyc-images/ppyc-hero.png"
+    background_tint_color: "#000000",
+    background_tint_opacity: 0.5
   },
   {
-    title: "Taco Tuesday",
-    slide_type: "event_promo",
-    content: "Every Tuesday 6PM\nDelicious tacos & great company\nMembers & guests welcome\nNo reservations needed!",
+    title: "Marine Weather Update",
+    content: "Stay informed about current conditions in Boston Harbor",
+    slide_type: "weather",
+    duration_seconds: 20,
     active_status: true,
     display_order: 2,
-    duration_seconds: 8
+    location: "Boston Harbor, MA",
+    weather_type: "marine",
+    background_tint_color: "#000000",
+    background_tint_opacity: 0.6
   },
   {
-    title: "Marina Life",
-    slide_type: "photo",
-    content: "",
+    title: "Summer Membership Drive",
+    content: "Join our vibrant community! Special rates available for new members.",
+    slide_type: "announcement",
+    duration_seconds: 25,
     active_status: true,
     display_order: 3,
-    duration_seconds: 15,
-    image_url: "/assets/images/ppyc-images/dinghy.jpg"
+    background_tint_color: "#000000",
+    background_tint_opacity: 0.4
   },
   {
-    title: "Weather & Marine Conditions",
-    slide_type: "weather",
-    content: "",
+    title: "Harbor Cleanup Event",
+    content: "Join us this Saturday for our monthly harbor cleanup initiative. Meet at the clubhouse at 9 AM.",
+    slide_type: "event_promo",
+    duration_seconds: 20,
     active_status: true,
     display_order: 4,
-    duration_seconds: 20,
-    location: "Boston, MA",
-    weather_type: "current"
-  },
-  {
-    title: "Join Our Community",
-    slide_type: "announcement",
-    content: "New Members Welcome\nExperience the maritime lifestyle\nContact: info@ppyc.org\nVisit our membership desk",
-    active_status: true,
-    display_order: 5,
-    duration_seconds: 10
-  },
-  {
-    title: "Sunset at PPYC",
-    slide_type: "photo",
-    content: "",
-    active_status: true,
-    display_order: 6,
-    duration_seconds: 20,
-    image_url: "/assets/images/ppyc-images/sunset2.jpg"
-  },
-  {
-    title: "Youth Sailing Program",
-    slide_type: "announcement",
-    content: "Now Enrolling!\nAges 8-18 • All skill levels\nCertified instructors\nSafe, fun learning environment",
-    active_status: true,
-    display_order: 7,
-    duration_seconds: 10,
-    image_url: "/assets/images/ppyc-images/ppyc-small-boat.jpg"
-  },
-  {
-    title: "Marina Views",
-    slide_type: "photo",
-    content: "",
-    active_status: true,
-    display_order: 8,
-    duration_seconds: 15,
-    image_url: "/assets/images/ppyc-images/float2.jpg"
-  },
-  {
-    title: "Special Events",
-    slide_type: "event_promo",
-    content: "Check our calendar\nClambakes • Jazz Nights • Regattas\nWeddings • Corporate Events\nPrivate Parties",
-    active_status: true,
-    display_order: 9,
-    duration_seconds: 12
-  },
-  {
-    title: "Historic Club",
-    slide_type: "photo",
-    content: "",
-    active_status: true,
-    display_order: 10,
-    duration_seconds: 18,
-    image_url: "/assets/images/ppyc-images/ppyc1951.jpg"
-  },
-  {
-    title: "Marina Services",
-    slide_type: "announcement",
-    content: "Full Service Marina\n200 Slips • Fuel Dock • Pump-out\nWinter Storage • Launch Service\nProfessional Maintenance",
-    active_status: true,
-    display_order: 11,
-    duration_seconds: 12
-  },
-  {
-    title: "Waterfront Dining",
-    slide_type: "announcement",
-    content: "Fresh Seafood & New England Favorites\nSpectacular water views\nPrivate dining available\nReservations recommended",
-    active_status: true,
-    display_order: 12,
-    duration_seconds: 10
+    background_tint_color: "#000000",
+    background_tint_opacity: 0.5
   }
 ]
 
 slides.each do |slide_data|
-  slide = Slide.find_or_create_by(display_order: slide_data[:display_order]) do |s|
-    s.assign_attributes(slide_data)
-  end
-  puts "Created/found slide: #{slide.title}"
+  puts "Creating slide: #{slide_data[:title]}"
+  Slide.create!(slide_data)
 end
+
+puts "Seed data creation complete!"
 
 puts "🎉 Enhanced seed data created successfully!"
 puts "📊 Summary:"

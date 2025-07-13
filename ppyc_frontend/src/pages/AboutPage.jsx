@@ -1,5 +1,9 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_NAMES } from '../config/fontawesome';
 import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
+import { Link } from 'react-router-dom';
+import CloudinaryVideo from '../components/CloudinaryVideo';
 
 function AboutPage() {
   return (
@@ -7,25 +11,21 @@ function AboutPage() {
       {/* Hero Section with Cloudinary Video Background */}
       <div className="relative text-white">
         <div className="absolute inset-0">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
+          <CloudinaryVideo
+            publicId={YACHT_CLUB_ASSETS.videos.heroVideo}
             className="w-full h-full object-cover"
-          >
-            <source src={YACHT_CLUB_ASSETS.videos.heroVideo} type="video/mp4" />
-            {/* Fallback image for browsers that don't support video */}
-            <img 
-              src={YACHT_CLUB_ASSETS.heroes.sunsetMarina} 
-              alt="Marina sunset" 
-              className="w-full h-full object-cover"
-            />
-          </video>
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
           <div className="absolute inset-0 bg-slate-900 bg-opacity-70"></div>
         </div>
-        <div className="relative max-w-4xl mx-auto px-6 py-24">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+        <div className="relative max-w-4xl mx-auto px-6 py-24 text-center">
+          <div className="mb-6">
+            <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-6xl text-blue-300" />
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
             A Century of Community on the Water
           </h1>
           <p className="text-xl md:text-2xl text-gray-200 leading-relaxed">
@@ -38,7 +38,11 @@ function AboutPage() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         {/* Our Story Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Our Story</h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.SHIP} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Our Story</h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -74,7 +78,11 @@ function AboutPage() {
 
         {/* Timeline Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Our History</h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.CLOCK} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Our History</h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           
           <div className="space-y-8">
             <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-600">
@@ -129,16 +137,19 @@ function AboutPage() {
 
         {/* Values Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center flex items-center justify-center">
-            <span className="text-blue-600 mr-3 text-4xl">🏁</span>
-            What We Stand For
-          </h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.FLAG} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">What We Stand For</h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-600">
               <div className="flex items-start">
-                <span className="text-blue-600 text-2xl mr-4 mt-1">👥</span>
-                <div>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-2xl text-blue-600" />
+                </div>
+                <div className="ml-4">
                   <h3 className="text-xl font-bold text-slate-800 mb-3">Camaraderie</h3>
                   <p className="text-gray-700">We foster a welcoming and inclusive atmosphere where friendships span generations.</p>
                 </div>
@@ -147,8 +158,10 @@ function AboutPage() {
 
             <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-600">
               <div className="flex items-start">
-                <span className="text-blue-600 text-2xl mr-4 mt-1">⛵</span>
-                <div>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <FontAwesomeIcon icon={ICON_NAMES.COMPASS} className="text-2xl text-blue-600" />
+                </div>
+                <div className="ml-4">
                   <h3 className="text-xl font-bold text-slate-800 mb-3">Seamanship</h3>
                   <p className="text-gray-700">We are committed to promoting safe boating practices, education, and a respect for the marine environment.</p>
                 </div>
@@ -157,8 +170,10 @@ function AboutPage() {
 
             <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-600">
               <div className="flex items-start">
-                <span className="text-blue-600 text-2xl mr-4 mt-1">🛟</span>
-                <div>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <FontAwesomeIcon icon={ICON_NAMES.HEART} className="text-2xl text-blue-600" />
+                </div>
+                <div className="ml-4">
                   <h3 className="text-xl font-bold text-slate-800 mb-3">Volunteerism</h3>
                   <p className="text-gray-700">Our club thrives because our members actively participate in its operation and improvement.</p>
                 </div>
@@ -167,8 +182,10 @@ function AboutPage() {
 
             <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-600">
               <div className="flex items-start">
-                <span className="text-blue-600 text-2xl mr-4 mt-1">🌊</span>
-                <div>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-2xl text-blue-600" />
+                </div>
+                <div className="ml-4">
                   <h3 className="text-xl font-bold text-slate-800 mb-3">Tradition</h3>
                   <p className="text-gray-700">We honor our maritime heritage while embracing innovation and welcoming new generations of sailors.</p>
                 </div>
@@ -179,7 +196,11 @@ function AboutPage() {
 
         {/* Facilities Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Our Facilities</h2>
+          <div className="text-center mb-12">
+            <FontAwesomeIcon icon={ICON_NAMES.HOME} className="text-4xl text-blue-600 mb-4" />
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Our Facilities</h2>
+            <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
+          </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -189,7 +210,10 @@ function AboutPage() {
                 className="w-full h-48 object-cover"
               />
               <div className="p-6">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">Full-Service Marina</h3>
+                <div className="flex items-center gap-3 mb-3">
+                  <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-xl text-blue-600" />
+                  <h3 className="text-xl font-bold text-slate-800">Full-Service Marina</h3>
+                </div>
                 <p className="text-gray-700">
                   200+ slips accommodating vessels up to 50 feet, with electricity, water, 
                   and pump-out services at every slip.
@@ -204,7 +228,10 @@ function AboutPage() {
                 className="w-full h-48 object-cover"
               />
               <div className="p-6">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">Waterfront Dining</h3>
+                <div className="flex items-center gap-3 mb-3">
+                  <FontAwesomeIcon icon={ICON_NAMES.UTENSILS} className="text-xl text-blue-600" />
+                  <h3 className="text-xl font-bold text-slate-800">Waterfront Dining</h3>
+                </div>
                 <p className="text-gray-700">
                   Award-winning restaurant and bar with panoramic harbor views, 
                   serving fresh seafood and classic New England fare.
@@ -219,7 +246,10 @@ function AboutPage() {
                 className="w-full h-48 object-cover"
               />
               <div className="p-6">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">Sailing Center</h3>
+                <div className="flex items-center gap-3 mb-3">
+                  <FontAwesomeIcon icon={ICON_NAMES.SAILBOAT} className="text-xl text-blue-600" />
+                  <h3 className="text-xl font-bold text-slate-800">Sailing Center</h3>
+                </div>
                 <p className="text-gray-700">
                   Professional sailing instruction, racing programs, and a fleet 
                   of club boats available for member use.
@@ -232,16 +262,18 @@ function AboutPage() {
         {/* Community Section */}
         <section>
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-8 text-white text-center">
+            <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-5xl mb-4" />
             <h2 className="text-3xl font-bold mb-4">Join Our Maritime Family</h2>
             <p className="text-xl mb-6 opacity-90">
               Experience the tradition, fellowship, and adventure that makes PPYC special.
             </p>
-            <a 
-              href="/membership" 
-              className="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+            <Link 
+              to="/membership" 
+              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-lg transition-colors"
             >
+              <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} />
               Learn About Membership
-            </a>
+            </Link>
           </div>
         </section>
       </div>

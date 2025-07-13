@@ -107,10 +107,32 @@ const SlideForm = () => {
   };
 
   const handleImageUpload = (uploadData) => {
+    console.log('🖼️ handleImageUpload called with:', uploadData);
+    
+    if (!uploadData) {
+      console.log('❌ Clearing image data');
+      setFormData(prev => ({
+        ...prev,
+        image: null
+      }));
+      return;
+    }
+
+    console.log('✅ Setting image data:', uploadData);
     setFormData(prev => ({
       ...prev,
-      image: uploadData // This will contain the Cloudinary upload response
+      image: {
+        secure_url: uploadData.secure_url || uploadData.url,
+        public_id: uploadData.public_id,
+        width: uploadData.width,
+        height: uploadData.height,
+        alt: uploadData.alt || uploadData.public_id.split('/').pop()
+      }
     }));
+    
+    // Show success message
+    setSuccess('Image selected successfully!');
+    setTimeout(() => setSuccess(''), 3000);
   };
 
   const handleBackgroundVideoUpload = (uploadData) => {
@@ -128,6 +150,8 @@ const SlideForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
+    
     setLoading(true);
     setError('');
     setSuccess('');
@@ -140,25 +164,29 @@ const SlideForm = () => {
       formDataToSend.append('slide[duration_seconds]', formData.duration_seconds);
       formDataToSend.append('slide[active_status]', formData.active_status);
       
-      if (formData.image && formData.image.secure_url) {
-        formDataToSend.append('slide[image_url]', formData.image.secure_url);
+      // Add image if selected
+      if (formData.image && (formData.image.secure_url || formData.image.url)) {
+        console.log('🖼️ Adding image URL:', formData.image.secure_url || formData.image.url);
+        formDataToSend.append('slide[image_url]', formData.image.secure_url || formData.image.url);
+        if (formData.image.public_id) {
+          formDataToSend.append('slide[image_public_id]', formData.image.public_id);
+        }
+      } else {
+        console.log('⚠️ No image to add:', formData.image);
       }
 
-      // Add background video and tint fields
-      console.log('Form data before submission:', formData);
+      // Add background video if selected
       if (formData.background_video && formData.background_video.secure_url) {
         console.log('🎥 Adding background video URL:', formData.background_video.secure_url);
         formDataToSend.append('slide[background_video_url]', formData.background_video.secure_url);
-      } else {
-        console.log('⚠️ No background video to add:', formData.background_video);
       }
+
+      // Add background tint settings
       if (formData.background_tint_color) {
-        console.log('🎨 Adding background tint color:', formData.background_tint_color);
         formDataToSend.append('slide[background_tint_color]', formData.background_tint_color);
       }
-      if (formData.background_tint_opacity !== undefined && formData.background_tint_opacity !== null) {
-        console.log('🌫️ Adding background tint opacity:', formData.background_tint_opacity);
-        formDataToSend.append('slide[background_tint_opacity]', parseFloat(formData.background_tint_opacity));
+      if (formData.background_tint_opacity !== undefined) {
+        formDataToSend.append('slide[background_tint_opacity]', formData.background_tint_opacity);
       }
 
       // Add weather-specific fields
@@ -167,25 +195,26 @@ const SlideForm = () => {
         formDataToSend.append('slide[weather_type]', formData.weather_type || 'current');
       }
 
-      // Debug: Log all form data being sent
-      console.log('📋 Complete FormData being sent:');
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(`  ${key}: ${value}`);
-      }
+      // Log form data for debugging
+      console.log('📋 Form data being sent:', Object.fromEntries(formDataToSend));
 
+      // Save the slide
       if (isEditing) {
         await adminAPI.slides.update(id, formDataToSend);
       } else {
         await adminAPI.slides.create(formDataToSend);
       }
 
-      setSuccess(`Slide ${isEditing ? 'updated' : 'created'} successfully!`);
-      setTimeout(() => {
-        navigate('/admin/slides');
-      }, 2000);
+      // Show success message
+      setSuccess('Slide saved successfully!');
+      setLoading(false);
+
+      // Wait for success message to be shown before navigating
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      navigate('/admin/slides');
     } catch (err) {
-      setError(err.message || `Failed to ${isEditing ? 'update' : 'create'} slide`);
-    } finally {
+      console.error('Error saving slide:', err);
+      setError(err.response?.data?.message || 'Failed to save slide');
       setLoading(false);
     }
   };
@@ -245,8 +274,166 @@ const SlideForm = () => {
         </div>
       )}
 
+      {/* Image Upload Section - Outside Form */}
+      <div className="p-6 border-b border-gray-200">
+        <div>
+          <label htmlFor="slide_image" className="block text-sm font-medium text-gray-700 mb-2">
+            <i className="fas fa-image mr-2 text-gray-400"></i>
+            Slide Image {formData.slide_type === 'photo' && <span className="text-red-500">*</span>}
+          </label>
+          <div id="slide_image">
+            {formData.image && formData.image.secure_url ? (
+              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center">
+                    <i className="fas fa-image text-blue-600 mr-2"></i>
+                    <span className="text-blue-700 font-medium">
+                      {isEditing ? 'Current slide image' : 'Slide image uploaded'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, image: null }))}
+                    className="text-red-600 hover:text-red-800 transition-colors"
+                    title="Remove slide image"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+                
+                {/* Image Preview */}
+                <div className="mb-3">
+                  <img
+                    src={formData.image.secure_url}
+                    alt="Slide preview"
+                    className="w-full h-32 object-cover rounded border border-blue-200"
+                  />
+                </div>
+                
+                <p className="text-xs text-blue-600 mt-1 truncate">
+                  {formData.image.secure_url}
+                </p>
+                
+                {isEditing && (
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <p className="text-xs text-gray-600 mb-2">Replace with a new image:</p>
+                    <ImageUpload 
+                      onUploadSuccess={handleImageUpload}
+                      onUploadError={(error) => setError(`Image upload failed: ${error}`)}
+                      folder="slides"
+                      allowLibraryBrowse={true}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <ImageUpload 
+                onUploadSuccess={handleImageUpload}
+                onUploadError={(error) => setError(`Image upload failed: ${error}`)}
+                folder="slides"
+                allowLibraryBrowse={true}
+              />
+            )}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            {formData.slide_type === 'photo' 
+              ? 'Image is required for photo slides'
+              : 'Optional: Add a background image for your slide'
+            }
+          </p>
+        </div>
+      </div>
+
+      {/* Background Video Upload Section - Outside Form */}
+      <div className="p-6 border-b border-gray-200">
+        <div>
+          <label htmlFor="background_video" className="block text-sm font-medium text-gray-700 mb-2">
+            <i className="fas fa-video mr-2 text-gray-400"></i>
+            Background Video
+          </label>
+          <div id="background_video">
+            {formData.background_video && formData.background_video.secure_url ? (
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center">
+                    <i className="fas fa-video text-green-600 mr-2"></i>
+                    <span className="text-green-700 font-medium">
+                      {isEditing ? 'Current background video' : 'Background video uploaded'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, background_video: null }))}
+                    className="text-red-600 hover:text-red-800 transition-colors"
+                    title="Remove background video"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+                
+                {/* Video Preview */}
+                <div className="mb-3">
+                  <video
+                    src={formData.background_video.secure_url}
+                    className="w-full h-32 object-cover rounded border border-green-200"
+                    controls
+                    muted
+                  />
+                </div>
+                
+                <p className="text-xs text-green-600 mt-1 truncate">
+                  {formData.background_video.secure_url}
+                </p>
+                
+                {isEditing && (
+                  <div className="mt-3 pt-3 border-t border-green-200">
+                    <p className="text-xs text-gray-600 mb-2">Replace with a new video:</p>
+                    <ImageUpload 
+                      onUploadSuccess={handleBackgroundVideoUpload}
+                      onUploadError={(error) => setError(`Background video upload failed: ${error}`)}
+                      folder="slides/videos"
+                      allowLibraryBrowse={true}
+                      acceptTypes="video/*"
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <ImageUpload 
+                onUploadSuccess={handleBackgroundVideoUpload}
+                onUploadError={(error) => setError(`Background video upload failed: ${error}`)}
+                folder="slides/videos"
+                allowLibraryBrowse={true}
+                acceptTypes="video/*"
+              />
+            )}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Optional: Add a background video for your slide (will override the default video backgrounds)
+          </p>
+        </div>
+      </div>
+
       {/* Form */}
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <form 
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleSubmit(e);
+        }}
+        className="p-6 space-y-6"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+          }
+        }}
+      >
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -260,7 +447,7 @@ const SlideForm = () => {
             value={formData.title}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             placeholder="Enter slide title..."
           />
         </div>
@@ -276,7 +463,7 @@ const SlideForm = () => {
               <div key={type.value}>
                 <input
                   type="radio"
-                  id={type.value}
+                  id={`slide_type_${type.value}`}
                   name="slide_type"
                   value={type.value}
                   checked={formData.slide_type === type.value}
@@ -284,7 +471,7 @@ const SlideForm = () => {
                   className="sr-only"
                 />
                 <label
-                  htmlFor={type.value}
+                  htmlFor={`slide_type_${type.value}`}
                   className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.slide_type === type.value
                       ? 'border-blue-500 bg-blue-50'
@@ -306,18 +493,18 @@ const SlideForm = () => {
         {formData.slide_type === 'weather' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="weather_location" className="block text-sm font-medium text-gray-700 mb-2">
                 <i className="fas fa-map-marker-alt mr-2 text-gray-400"></i>
                 Location *
               </label>
               <input
                 type="text"
-                id="location"
+                id="weather_location"
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
                 required={formData.slide_type === 'weather'}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 placeholder="e.g., Boston, MA or 42.3601,-71.0589"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -326,16 +513,16 @@ const SlideForm = () => {
             </div>
 
             <div>
-              <label htmlFor="weather_type" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="weather_type_select" className="block text-sm font-medium text-gray-700 mb-2">
                 <i className="fas fa-thermometer-half mr-2 text-gray-400"></i>
                 Weather Display Type
               </label>
               <select
-                id="weather_type"
+                id="weather_type_select"
                 name="weather_type"
                 value={formData.weather_type}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               >
                 <option value="current">Current Weather & Marine</option>
                 <option value="forecast">3-Day Forecast</option>
@@ -348,196 +535,42 @@ const SlideForm = () => {
           </div>
         )}
 
-        {/* Image Upload */}
+        {/* Background Tint Color */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-image mr-2 text-gray-400"></i>
-            Slide Image {formData.slide_type === 'photo' && <span className="text-red-500">*</span>}
-          </label>
-          {formData.image && formData.image.secure_url ? (
-            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                  <i className="fas fa-image text-blue-600 mr-2"></i>
-                  <span className="text-blue-700 font-medium">
-                    {isEditing ? 'Current slide image' : 'Slide image uploaded'}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, image: null }))}
-                  className="text-red-600 hover:text-red-800 transition-colors"
-                  title="Remove slide image"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-              </div>
-              
-              {/* Image Preview */}
-              <div className="mb-3">
-                <img
-                  src={formData.image.secure_url}
-                  alt="Slide preview"
-                  className="w-full h-32 object-cover rounded border border-blue-200"
-                />
-              </div>
-              
-              <p className="text-xs text-blue-600 mt-1 truncate">
-                {formData.image.secure_url}
-              </p>
-              
-              {isEditing && (
-                <div className="mt-3 pt-3 border-t border-blue-200">
-                  <p className="text-xs text-gray-600 mb-2">Replace with a new image:</p>
-                  <ImageUpload 
-                    onUploadSuccess={handleImageUpload}
-                    onUploadError={(error) => setError(`Image upload failed: ${error}`)}
-                    folder="slides"
-                    allowLibraryBrowse={true}
-                  />
-                </div>
-              )}
-            </div>
-          ) : (
-            <ImageUpload 
-              onUploadSuccess={handleImageUpload}
-              onUploadError={(error) => setError(`Image upload failed: ${error}`)}
-              folder="slides"
-              allowLibraryBrowse={true}
-            />
-          )}
-          <p className="text-xs text-gray-500 mt-1">
-            {formData.slide_type === 'photo' 
-              ? 'Image is required for photo slides'
-              : 'Optional: Add a background image for your slide'
-            }
-          </p>
-        </div>
-
-        {/* Background Video Upload */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-video mr-2 text-gray-400"></i>
-            Background Video
-          </label>
-          {formData.background_video && formData.background_video.secure_url ? (
-            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                  <i className="fas fa-video text-green-600 mr-2"></i>
-                  <span className="text-green-700 font-medium">
-                    {isEditing ? 'Current background video' : 'Background video uploaded'}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, background_video: null }))}
-                  className="text-red-600 hover:text-red-800 transition-colors"
-                  title="Remove background video"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-              </div>
-              
-              {/* Video Preview */}
-              <div className="mb-3">
-                <video
-                  src={formData.background_video.secure_url}
-                  className="w-full h-32 object-cover rounded border border-green-200"
-                  controls
-                  muted
-                />
-              </div>
-              
-              <p className="text-xs text-green-600 mt-1 truncate">
-                {formData.background_video.secure_url}
-              </p>
-              
-              {isEditing && (
-                <div className="mt-3 pt-3 border-t border-green-200">
-                  <p className="text-xs text-gray-600 mb-2">Replace with a new video:</p>
-                  <ImageUpload 
-                    onUploadSuccess={handleBackgroundVideoUpload}
-                    onUploadError={(error) => setError(`Background video upload failed: ${error}`)}
-                    folder="slides/videos"
-                    allowLibraryBrowse={true}
-                    acceptTypes="video/*"
-                  />
-                </div>
-              )}
-            </div>
-          ) : (
-            <ImageUpload 
-              onUploadSuccess={handleBackgroundVideoUpload}
-              onUploadError={(error) => setError(`Background video upload failed: ${error}`)}
-              folder="slides/videos"
-              allowLibraryBrowse={true}
-              acceptTypes="video/*"
-            />
-          )}
-          <p className="text-xs text-gray-500 mt-1">
-            Optional: Add a background video for your slide (will override the default video backgrounds)
-          </p>
-        </div>
-
-        {/* Background Tint */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label htmlFor="background_tint_color" className="block text-sm font-medium text-gray-700 mb-2">
             <i className="fas fa-palette mr-2 text-gray-400"></i>
-            Background Tint
+            Background Tint Color
           </label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="background_tint_color" className="block text-sm font-medium text-gray-700 mb-2">
-                Tint Color
-              </label>
-              <div className="flex items-center space-x-3">
-                <input
-                  type="color"
-                  id="background_tint_color"
-                  name="background_tint_color"
-                  value={formData.background_tint_color}
-                  onChange={handleInputChange}
-                  className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={formData.background_tint_color}
-                  onChange={handleInputChange}
-                  name="background_tint_color"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="#000000"
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Color overlay for the background
-              </p>
-            </div>
+          <input
+            type="color"
+            id="background_tint_color"
+            name="background_tint_color"
+            value={formData.background_tint_color}
+            onChange={handleInputChange}
+            className="h-10 w-20"
+          />
+        </div>
 
-            <div>
-              <label htmlFor="background_tint_opacity" className="block text-sm font-medium text-gray-700 mb-2">
-                Tint Opacity
-              </label>
-              <div className="flex items-center space-x-3">
-                <input
-                  type="range"
-                  id="background_tint_opacity"
-                  name="background_tint_opacity"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={formData.background_tint_opacity}
-                  onChange={handleInputChange}
-                  className="flex-1"
-                />
-                <span className="text-sm text-gray-600 font-medium min-w-[3rem]">
-                  {Math.round(formData.background_tint_opacity * 100)}%
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Opacity of the color overlay (0% = transparent, 100% = opaque)
-              </p>
-            </div>
+        {/* Background Tint Opacity */}
+        <div>
+          <label htmlFor="background_tint_opacity" className="block text-sm font-medium text-gray-700 mb-2">
+            <i className="fas fa-adjust mr-2 text-gray-400"></i>
+            Background Tint Opacity
+          </label>
+          <input
+            type="range"
+            id="background_tint_opacity"
+            name="background_tint_opacity"
+            min="0"
+            max="1"
+            step="0.1"
+            value={formData.background_tint_opacity}
+            onChange={handleInputChange}
+            className="w-full"
+          />
+          <div className="flex justify-between text-xs text-gray-500">
+            <span>Transparent</span>
+            <span>Solid</span>
           </div>
         </div>
 
@@ -583,7 +616,7 @@ const SlideForm = () => {
               min="5"
               max="300"
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             />
             <p className="text-xs text-gray-500 mt-1">
               How long to display this slide (5-300 seconds)
@@ -710,31 +743,35 @@ const SlideForm = () => {
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+        {/* Submit Button */}
+        <div className="flex justify-end space-x-4 mt-8">
           <button
             type="button"
-            onClick={handleCancel}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCancel();
+            }}
+            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
           >
-            <i className="fas fa-times mr-2"></i>
             Cancel
           </button>
-          
           <button
             type="submit"
-            disabled={loading || !formData.title.trim() || (formData.slide_type === 'announcement' && !formData.content.trim())}
-            className="px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white rounded-lg transition-colors flex items-center space-x-2"
+            disabled={loading}
+            className={`px-6 py-2 rounded-lg text-white transition-colors ${
+              loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
             {loading ? (
               <>
-                <i className="fas fa-spinner fa-spin"></i>
-                <span>Saving...</span>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                Saving...
               </>
             ) : (
               <>
-                <i className="fas fa-save"></i>
-                <span>{isEditing ? 'Update Slide' : 'Create Slide'}</span>
+                <i className="fas fa-save mr-2"></i>
+                Save Slide
               </>
             )}
           </button>

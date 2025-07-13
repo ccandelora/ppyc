@@ -7,15 +7,18 @@ import { fileURLToPath, URL } from 'node:url'
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 // Simple, performance-focused Vite config
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
   
   build: {
     // Output directory
     outDir: 'dist',
     
-    // Basic rollup options with minimal chunking
+    // Use production template
     rollupOptions: {
+      input: command === 'serve' 
+        ? resolve(__dirname, 'index.html')
+        : resolve(__dirname, 'index.prod.html'),
       output: {
         manualChunks: {
           // Only essential chunks
@@ -66,7 +69,8 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      'axios'
+      'axios',
+      '@tinymce/tinymce-react'
     ]
   }
-})
+}))

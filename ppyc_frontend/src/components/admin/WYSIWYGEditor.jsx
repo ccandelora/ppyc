@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
-import api from '../../services/api';
+import { adminAPI } from '../../services/api';
 
 const WYSIWYGEditor = ({ 
   value, 
@@ -17,7 +17,7 @@ const WYSIWYGEditor = ({
       formData.append('file', blobInfo.blob());
       formData.append('folder', 'editor');
 
-      api.post('/admin/images', formData, {
+      adminAPI.post('/admin/images', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -57,10 +57,10 @@ const WYSIWYGEditor = ({
                   'bold italic forecolor | alignleft aligncenter ' +
                   'alignright alignjustify | bullist numlist outdent indent | ' +
                   'removeformat | link image | code | help',
-          content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:14px }',
+          content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:14px; color: #1a202c; }',
           placeholder,
-          skin: 'oxide-dark',
-          content_css: 'dark',
+          skin: 'oxide',
+          content_css: 'default',
           // Custom styles to match our yacht club theme
           body_class: 'ppyc-editor-content',
           images_upload_handler: handleImageUpload,
@@ -81,7 +81,7 @@ const WYSIWYGEditor = ({
                   formData.append('file', file);
                   formData.append('folder', 'editor');
                   
-                  api.post('/admin/images', formData, {
+                  adminAPI.post('/admin/images', formData, {
                     headers: {
                       'Content-Type': 'multipart/form-data',
                     },
