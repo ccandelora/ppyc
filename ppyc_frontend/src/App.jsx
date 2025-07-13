@@ -7,6 +7,7 @@ import AdminProtection from './components/AdminProtection';
 import SEOHelmet from './components/SEOHelmet';
 import { AuthProvider } from './contexts/AuthContext';
 import { ContactProvider } from './contexts/ContactProvider';
+import { SettingsProvider } from './contexts/SettingsContext';
 
 // Initialize FontAwesome icons
 import './config/fontawesome';
@@ -97,7 +98,8 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <ContactProvider>
-          <Router>
+          <SettingsProvider>
+            <Router>
             <ScrollToTop />
             <AdminProtection />
             <SEOHelmet />
@@ -180,7 +182,8 @@ function App() {
                 <CacheDebugger />
               </Suspense>
             )}
-          </Router>
+            </Router>
+          </SettingsProvider>
         </ContactProvider>
       </AuthProvider>
     </ErrorBoundary>

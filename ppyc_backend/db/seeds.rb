@@ -8,6 +8,18 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+# Initialize default settings
+puts "Initializing default settings..."
+Setting.initialize_defaults!
+puts "Default settings initialized successfully!"
+
+# Print summary
+settings_count = Setting.count
+puts "Total settings: #{settings_count}"
+Setting.grouped_by_category.each do |category, settings|
+  puts "  #{category}: #{settings.keys.count} settings"
+end
+
 puts "🌊 Seeding Pleasant Park Yacht Club Database..."
 
 # Create admin user

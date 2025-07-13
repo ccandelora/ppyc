@@ -51,6 +51,17 @@ Rails.application.routes.draw do
             get :all
           end
         end
+
+        # Settings management endpoints
+        resources :settings, param: :key, only: [:index, :show, :create, :destroy] do
+          collection do
+            post :initialize_defaults
+            put :update_multiple
+          end
+        end
+
+        # Individual setting update
+        put 'settings/:key', to: 'settings#update'
       end
     end
   end

@@ -129,6 +129,9 @@ export const cacheInvalidators = {
   invalidateImages: () => {
     apiCache.invalidate('images-all');
   },
+  invalidateSettings: () => {
+    apiCache.invalidate('settings-all');
+  },
   invalidateAll: () => {
     apiCache.clearAll();
   }
@@ -233,6 +236,25 @@ export const adminAPI = {
       result.then(() => cacheInvalidators.invalidateImages());
       return result;
     },
+  },
+  settings: {
+    getAll: () => authApi.get('/admin/settings'),
+    getByKey: (key) => authApi.get(`/admin/settings/${key}`),
+    update: (key, data) => authApi.put(`/admin/settings/${key}`, data),
+    updateMultiple: (category, settings) => {
+      console.log('Making API call to /admin/settings/update_multiple with:', { category, settings });
+      return authApi.put('/admin/settings/update_multiple', { category, settings });
+    },
+    create: (data) => authApi.post('/admin/settings', data),
+    delete: (key) => authApi.delete(`/admin/settings/${key}`),
+    initializeDefaults: () => authApi.post('/admin/settings/initialize_defaults'),
+  },
+  users: {
+    getAll: () => authApi.get('/admin/users'),
+    getById: (id) => authApi.get(`/admin/users/${id}`),
+    create: (data) => authApi.post('/admin/users', data),
+    update: (id, data) => authApi.put(`/admin/users/${id}`, data),
+    delete: (id) => authApi.delete(`/admin/users/${id}`),
   },
 };
 

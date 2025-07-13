@@ -24,11 +24,12 @@ Disallow: /cms/
 Disallow: /dashboard/
 Disallow: /wp-admin/
 Disallow: /backend/
+Disallow: /auth/
 
 # Disallow TV display (not meant for public search)
 Disallow: /tv-display
 
-# Disallow common technical files
+# Disallow common technical files and directories
 Disallow: /*.json$
 Disallow: /*.js$
 Disallow: /*.css$
@@ -37,6 +38,8 @@ Disallow: /node_modules/
 Disallow: /dist/
 Disallow: /.git/
 Disallow: /.env
+Disallow: /tmp/
+Disallow: /logs/
 
 # Allow specific file types that are good for SEO
 Allow: /*.jpg$
@@ -44,12 +47,13 @@ Allow: /*.jpeg$
 Allow: /*.png$
 Allow: /*.svg$
 Allow: /*.pdf$
+Allow: /*.webp$
 
 # Set crawl delay (be respectful)
 Crawl-delay: 1
 
-# Sitemap location (we'll create this next)
-Sitemap: https://srv894370.hstgr.cloud/sitemap.xml
+# Sitemap location
+Sitemap: /sitemap.xml
 
 # Additional directives for specific bots
 
@@ -57,15 +61,17 @@ Sitemap: https://srv894370.hstgr.cloud/sitemap.xml
 User-agent: Googlebot
 Disallow: /admin/
 Disallow: /api/
+Disallow: /auth/
 Allow: /
 
 # Bing-specific directives  
 User-agent: bingbot
 Disallow: /admin/
 Disallow: /api/
+Disallow: /auth/
 Allow: /
 
-# Block malicious bots
+# Block malicious bots and scrapers
 User-agent: AhrefsBot
 Disallow: /
 
@@ -73,4 +79,10 @@ User-agent: SemrushBot
 Disallow: /
 
 User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: SiteAuditBot
 Disallow: / 

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_NAMES } from '../../config/fontawesome';
 import { useAuth } from '../../contexts/AuthContext';
 import { useContact } from '../../contexts/contactContext';
 import { adminAPI } from '../../services/api';
 
 const SettingsPanel = () => {
   const { canManageUsers } = useAuth();
-  const { contactInfo, updateContactInfo } = useContact();
+  const { updateContactInfo } = useContact();
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,25 +25,9 @@ const SettingsPanel = () => {
   });
 
   const [settings, setSettings] = useState({
-    general: {
-      site_title: 'Pleasant Park Yacht Club',
-      site_description: 'A premier yacht club fostering maritime excellence since 1910',
-      contact_email: 'secretary.ppyc@gmail.com',
-      contact_phone: '(555) 123-4567',
-      address: '123 Marina Drive, Boston, MA 02101'
-    },
-    social: {
-      facebook_url: '',
-      twitter_url: '',
-      instagram_url: '',
-      linkedin_url: ''
-    },
-    tv_display: {
-      default_slide_duration: 8,
-      enable_weather: true,
-      enable_time: true,
-      background_color: '#1e40af'
-    }
+    general: {},
+    social: {},
+    tv_display: {}
   });
 
   const roles = [
@@ -52,12 +37,34 @@ const SettingsPanel = () => {
     { value: 'member', label: 'Member', description: 'Basic access', color: 'text-green-600' }
   ];
 
+  // Fetch settings on component mount
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
   // Fetch users when users tab is selected
   useEffect(() => {
     if (activeTab === 'users') {
       fetchUsers();
     }
   }, [activeTab]);
+
+  const fetchSettings = async () => {
+    try {
+      setLoading(true);
+      const response = await adminAPI.settings.getAll();
+      console.log('Settings API response:', response);
+      if (response.data.success) {
+        setSettings(response.data.data);
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Unknown error';
+      setError(`Failed to fetch settings: ${errorMessage}`);
+      console.error('Error fetching settings:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -93,22 +100,27 @@ const SettingsPanel = () => {
       setLoading(true);
       setError('');
       
-      if (section === 'general') {
-        // Update contact info in context
-        updateContactInfo({
-          email: settings.general.contact_email,
-          phone: settings.general.contact_phone,
-          address: settings.general.address
-        });
+      // Save settings via API
+      const response = await adminAPI.settings.updateMultiple(section, settings[section]);
+      
+      if (response.data.success) {
+        if (section === 'general') {
+          // Update contact info in context
+          updateContactInfo({
+            email: settings.general.contact_email,
+            phone: settings.general.contact_phone,
+            address: settings.general.address
+          });
+        }
+        
+        setSuccess(`${section.charAt(0).toUpperCase() + section.slice(1)} settings saved successfully!`);
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError(response.data.error || 'Failed to save settings');
       }
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSuccess(`${section.charAt(0).toUpperCase() + section.slice(1)} settings saved successfully!`);
-      setTimeout(() => setSuccess(''), 3000);
-    } catch {
-      setError(`Failed to save ${section} settings`);
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Unknown error';
+      setError(`Failed to save ${section} settings: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -193,11 +205,11 @@ const SettingsPanel = () => {
 
   const getRoleIcon = (role) => {
     switch (role) {
-      case 'superuser': return 'crown';
-      case 'admin': return 'user-shield';
-      case 'editor': return 'edit';
-      case 'member': return 'user';
-      default: return 'user';
+      case 'superuser': return ICON_NAMES.CROWN;
+      case 'admin': return ICON_NAMES.USER_SHIELD;
+      case 'editor': return ICON_NAMES.EDIT;
+      case 'member': return ICON_NAMES.USER;
+      default: return ICON_NAMES.USER;
     }
   };
 
@@ -212,17 +224,17 @@ const SettingsPanel = () => {
   };
 
   const tabs = [
-    { id: 'general', name: 'General', icon: 'cog' },
-    { id: 'social', name: 'Social Media', icon: 'facebook' },
-    { id: 'tv_display', name: 'TV Display', icon: 'tv' },
-    { id: 'users', name: 'Users', icon: 'users' }
+    { id: 'general', name: 'General', icon: ICON_NAMES.SETTINGS },
+    { id: 'social', name: 'Social Media', icon: ICON_NAMES.FACEBOOK },
+    { id: 'tv_display', name: 'TV Display', icon: ICON_NAMES.TV },
+    { id: 'users', name: 'Users', icon: ICON_NAMES.USERS }
   ];
 
   if (!canManageUsers()) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="text-center py-8">
-          <FontAwesomeIcon icon="lock" className="text-gray-400 text-4xl mb-4" />
+          <FontAwesomeIcon icon={ICON_NAMES.LOCK} className="text-gray-400 text-4xl mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Access Denied</h3>
           <p className="text-gray-600">You don't have permission to access settings.</p>
         </div>
@@ -235,7 +247,7 @@ const SettingsPanel = () => {
       {/* Header */}
       <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
         <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-          <FontAwesomeIcon icon="cog" className="mr-2 text-blue-500" />
+          <FontAwesomeIcon icon={ICON_NAMES.SETTINGS} className="mr-2 text-blue-500" />
           System Settings
         </h2>
         <p className="text-sm text-gray-600 mt-1">
@@ -246,14 +258,14 @@ const SettingsPanel = () => {
       {/* Messages */}
       {error && (
         <div className="mx-4 sm:mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          <FontAwesomeIcon icon="exclamation-triangle" className="mr-2" />
+          <FontAwesomeIcon icon={ICON_NAMES.WARNING} className="mr-2" />
           {error}
         </div>
       )}
 
       {success && (
         <div className="mx-4 sm:mx-6 mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-          <FontAwesomeIcon icon="check-circle" className="mr-2" />
+          <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="mr-2" />
           {success}
         </div>
       )}
@@ -313,7 +325,7 @@ const SettingsPanel = () => {
                   </label>
                   <input
                     type="text"
-                    value={settings.general.site_title}
+                    value={settings.general.site_title || ''}
                     onChange={(e) => handleInputChange('general', 'site_title', e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                     placeholder="Your site title"
@@ -325,7 +337,7 @@ const SettingsPanel = () => {
                     Site Description
                   </label>
                   <textarea
-                    value={settings.general.site_description}
+                    value={settings.general.site_description || ''}
                     onChange={(e) => handleInputChange('general', 'site_description', e.target.value)}
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
@@ -340,7 +352,7 @@ const SettingsPanel = () => {
                     </label>
                     <input
                       type="email"
-                      value={settings.general.contact_email}
+                      value={settings.general.contact_email || ''}
                       onChange={(e) => handleInputChange('general', 'contact_email', e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                       placeholder="secretary.ppyc@gmail.com"
@@ -353,7 +365,7 @@ const SettingsPanel = () => {
                     </label>
                     <input
                       type="tel"
-                      value={settings.general.contact_phone}
+                      value={settings.general.contact_phone || ''}
                       onChange={(e) => handleInputChange('general', 'contact_phone', e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                       placeholder="(555) 123-4567"
@@ -367,7 +379,7 @@ const SettingsPanel = () => {
                   </label>
                   <input
                     type="text"
-                    value={settings.general.address}
+                    value={settings.general.address || ''}
                     onChange={(e) => handleInputChange('general', 'address', e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                     placeholder="123 Marina Drive, Boston, MA 02101"
@@ -383,12 +395,12 @@ const SettingsPanel = () => {
                 >
                   {loading ? (
                     <>
-                      <FontAwesomeIcon icon="spinner" className="fa-spin mr-2" />
+                      <FontAwesomeIcon icon={ICON_NAMES.LOADING} className="fa-spin mr-2" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <FontAwesomeIcon icon="save" className="mr-2" />
+                      <FontAwesomeIcon icon={ICON_NAMES.SAVE} className="mr-2" />
                       Save General Settings
                     </>
                   )}
@@ -405,12 +417,12 @@ const SettingsPanel = () => {
               <div className="grid grid-cols-1 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <FontAwesomeIcon icon="facebook" className="mr-2 text-blue-600" />
+                    <FontAwesomeIcon icon={ICON_NAMES.FACEBOOK} className="mr-2 text-blue-600" />
                     Facebook URL
                   </label>
                   <input
                     type="url"
-                    value={settings.social.facebook_url}
+                    value={settings.social.facebook_url || ''}
                     onChange={(e) => handleInputChange('social', 'facebook_url', e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                     placeholder="https://facebook.com/ppyc"
@@ -419,12 +431,12 @@ const SettingsPanel = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <FontAwesomeIcon icon="twitter" className="mr-2 text-blue-400" />
+                    <FontAwesomeIcon icon={ICON_NAMES.TWITTER} className="mr-2 text-blue-400" />
                     Twitter URL
                   </label>
                   <input
                     type="url"
-                    value={settings.social.twitter_url}
+                    value={settings.social.twitter_url || ''}
                     onChange={(e) => handleInputChange('social', 'twitter_url', e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                     placeholder="https://twitter.com/ppyc"
@@ -433,15 +445,29 @@ const SettingsPanel = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <FontAwesomeIcon icon="instagram" className="mr-2 text-pink-500" />
+                    <FontAwesomeIcon icon={ICON_NAMES.INSTAGRAM} className="mr-2 text-pink-500" />
                     Instagram URL
                   </label>
                   <input
                     type="url"
-                    value={settings.social.instagram_url}
+                    value={settings.social.instagram_url || ''}
                     onChange={(e) => handleInputChange('social', 'instagram_url', e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                     placeholder="https://instagram.com/ppyc"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <FontAwesomeIcon icon={ICON_NAMES.LINKEDIN} className="mr-2 text-blue-700" />
+                    LinkedIn URL
+                  </label>
+                  <input
+                    type="url"
+                    value={settings.social.linkedin_url || ''}
+                    onChange={(e) => handleInputChange('social', 'linkedin_url', e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                    placeholder="https://linkedin.com/company/ppyc"
                   />
                 </div>
               </div>
@@ -454,12 +480,12 @@ const SettingsPanel = () => {
                 >
                   {loading ? (
                     <>
-                      <FontAwesomeIcon icon="spinner" className="fa-spin mr-2" />
+                      <FontAwesomeIcon icon={ICON_NAMES.LOADING} className="fa-spin mr-2" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <FontAwesomeIcon icon="save" className="mr-2" />
+                      <FontAwesomeIcon icon={ICON_NAMES.SAVE} className="mr-2" />
                       Save Social Settings
                     </>
                   )}
@@ -482,7 +508,7 @@ const SettingsPanel = () => {
                     type="number"
                     min="3"
                     max="60"
-                    value={settings.tv_display.default_slide_duration}
+                    value={settings.tv_display.default_slide_duration || 8}
                     onChange={(e) => handleInputChange('tv_display', 'default_slide_duration', parseInt(e.target.value))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                   />
@@ -494,7 +520,7 @@ const SettingsPanel = () => {
                   </label>
                   <input
                     type="color"
-                    value={settings.tv_display.background_color}
+                    value={settings.tv_display.background_color || '#1e40af'}
                     onChange={(e) => handleInputChange('tv_display', 'background_color', e.target.value)}
                     className="w-20 h-10 border border-gray-300 rounded-lg"
                   />
@@ -505,7 +531,7 @@ const SettingsPanel = () => {
                     <input
                       type="checkbox"
                       id="enable_weather"
-                      checked={settings.tv_display.enable_weather}
+                      checked={settings.tv_display.enable_weather === true || settings.tv_display.enable_weather === 'true'}
                       onChange={(e) => handleInputChange('tv_display', 'enable_weather', e.target.checked)}
                       className="mr-3"
                     />
@@ -518,7 +544,7 @@ const SettingsPanel = () => {
                     <input
                       type="checkbox"
                       id="enable_time"
-                      checked={settings.tv_display.enable_time}
+                      checked={settings.tv_display.enable_time === true || settings.tv_display.enable_time === 'true'}
                       onChange={(e) => handleInputChange('tv_display', 'enable_time', e.target.checked)}
                       className="mr-3"
                     />
@@ -537,12 +563,12 @@ const SettingsPanel = () => {
                 >
                   {loading ? (
                     <>
-                      <FontAwesomeIcon icon="spinner" className="fa-spin mr-2" />
+                      <FontAwesomeIcon icon={ICON_NAMES.LOADING} className="fa-spin mr-2" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <FontAwesomeIcon icon="save" className="mr-2" />
+                      <FontAwesomeIcon icon={ICON_NAMES.SAVE} className="mr-2" />
                       Save TV Settings
                     </>
                   )}
@@ -560,19 +586,19 @@ const SettingsPanel = () => {
                   onClick={handleCreateUser}
                   className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors"
                 >
-                  <FontAwesomeIcon icon="plus" />
+                  <FontAwesomeIcon icon={ICON_NAMES.ADD} />
                   <span>Add User</span>
                 </button>
               </div>
 
               {loading && !users.length ? (
                 <div className="text-center py-8">
-                  <FontAwesomeIcon icon="spinner" className="fa-spin text-3xl text-blue-500 mb-4" />
+                  <FontAwesomeIcon icon={ICON_NAMES.LOADING} className="fa-spin text-3xl text-blue-500 mb-4" />
                   <p className="text-gray-600">Loading users...</p>
                 </div>
               ) : users.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  <FontAwesomeIcon icon="users" className="text-4xl mb-2 opacity-30" />
+                  <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-4xl mb-2 opacity-30" />
                   <p>No users found.</p>
                 </div>
               ) : (
@@ -633,14 +659,14 @@ const SettingsPanel = () => {
                                   onClick={() => handleEditUser(user)}
                                   className="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg transition-colors"
                                 >
-                                  <FontAwesomeIcon icon="edit" className="mr-1" />
+                                  <FontAwesomeIcon icon={ICON_NAMES.EDIT} className="mr-1" />
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => handleDeleteUser(user.id)}
                                   className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors"
                                 >
-                                  <FontAwesomeIcon icon="trash" className="mr-1" />
+                                  <FontAwesomeIcon icon={ICON_NAMES.DELETE} className="mr-1" />
                                   Delete
                                 </button>
                               </div>
@@ -689,14 +715,14 @@ const SettingsPanel = () => {
                             onClick={() => handleEditUser(user)}
                             className="flex-1 text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
                           >
-                            <FontAwesomeIcon icon="edit" className="mr-1" />
+                            <FontAwesomeIcon icon={ICON_NAMES.EDIT} className="mr-1" />
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteUser(user.id)}
                             className="flex-1 text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
                           >
-                            <FontAwesomeIcon icon="trash" className="mr-1" />
+                            <FontAwesomeIcon icon={ICON_NAMES.DELETE} className="mr-1" />
                             Delete
                           </button>
                         </div>
@@ -723,7 +749,7 @@ const SettingsPanel = () => {
                   onClick={() => setShowUserModal(false)}
                   className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100"
                 >
-                  <FontAwesomeIcon icon="times" />
+                  <FontAwesomeIcon icon={ICON_NAMES.CLOSE} />
                 </button>
               </div>
 
@@ -802,12 +828,12 @@ const SettingsPanel = () => {
                 >
                   {loading ? (
                     <>
-                      <FontAwesomeIcon icon="spinner" className="fa-spin mr-2" />
+                      <FontAwesomeIcon icon={ICON_NAMES.LOADING} className="fa-spin mr-2" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <FontAwesomeIcon icon="save" className="mr-2" />
+                      <FontAwesomeIcon icon={ICON_NAMES.SAVE} className="mr-2" />
                       {editingUser ? 'Update User' : 'Create User'}
                     </>
                   )}

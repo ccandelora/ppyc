@@ -6,12 +6,14 @@ import CloudinaryVideo from './CloudinaryVideo';
 import WeatherWidget from './WeatherWidget';
 import { useApiCache } from '../hooks/useApiCache';
 import { slidesAPI } from '../services/api';
+import { useSettings } from '../hooks/useSettings';
 
 const TVDisplay = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const { data: response, isLoading: slidesLoading, error: slidesError } = useApiCache(slidesAPI.getAll, 'slides-all', { ttl: 30000 });
   const slides = response?.data || [];
+  const { siteTitle, enableWeather, enableTime, defaultSlideDuration } = useSettings();
 
   // Update time every second
   useEffect(() => {
@@ -25,13 +27,13 @@ const TVDisplay = () => {
   useEffect(() => {
     if (slides && slides.length > 0) {
       const currentSlide = slides[currentSlideIndex];
-      const duration = currentSlide?.duration_seconds * 1000 || 10000;
+      const duration = currentSlide?.duration_seconds * 1000 || (defaultSlideDuration * 1000);
       const interval = setInterval(() => {
         setCurrentSlideIndex((prevIndex) => (prevIndex + 1) % slides.length);
       }, duration);
       return () => clearInterval(interval);
     }
-  }, [slides, currentSlideIndex]);
+  }, [slides, currentSlideIndex, defaultSlideDuration]);
 
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
@@ -109,7 +111,7 @@ const TVDisplay = () => {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-black/80 p-12 rounded-3xl backdrop-blur-lg text-center">
             <img src="/ppyc-logo.png" alt="PPYC Logo" className="w-48 h-48 mb-8 mx-auto object-contain" />
-            <div className="text-6xl text-white">Welcome to Pleasant Park Yacht Club</div>
+            <div className="text-6xl text-white">Welcome to {siteTitle}</div>
             <div className="text-3xl text-gray-400 mt-4">Please add slides in the admin panel</div>
           </div>
         </div>
@@ -167,18 +169,22 @@ const TVDisplay = () => {
           <div className="absolute inset-0">
             {/* Header */}
             <div className="p-8 flex justify-between items-start">
-              <div className="flex items-center">
-                <img src="/ppyc-logo.png" alt="PPYC Logo" className="h-16 mr-6 object-contain" />
-                <div>
-                  <div className="text-6xl font-bold text-white">
-                    {formatTime(currentTime)}
-                  </div>
-                  <div className="text-2xl text-gray-300 mt-2">
-                    {formatDate(currentTime)}
-                  </div>
-                </div>
+                          <div className="flex items-center">
+              <img src="/ppyc-logo.png" alt="PPYC Logo" className="h-16 mr-6 object-contain" />
+              <div>
+                {enableTime && (
+                  <>
+                    <div className="text-6xl font-bold text-white">
+                      {formatTime(currentTime)}
+                    </div>
+                    <div className="text-2xl text-gray-300 mt-2">
+                      {formatDate(currentTime)}
+                    </div>
+                  </>
+                )}
               </div>
-              <WeatherWidget className="text-3xl" showMarine={true} />
+            </div>
+            {enableWeather && <WeatherWidget className="text-3xl" showMarine={true} />}
             </div>
 
             {/* Slide Content */}
@@ -204,7 +210,7 @@ const TVDisplay = () => {
               <div className="flex justify-between items-center">
                 <div className="text-3xl text-white">
                   <FontAwesomeIcon icon={ICON_NAMES.SHIP} className="mr-4" />
-                  Pleasant Park Yacht Club
+                  {siteTitle}
                 </div>
                 <div className="text-2xl text-gray-300">
                   <FontAwesomeIcon icon={ICON_NAMES.LOCATION} className="mr-2" />

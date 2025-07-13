@@ -95,7 +95,7 @@ const EventsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Video Background */}
-      <section className="relative text-white py-20 overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden">
         <div className="absolute inset-0">
           <CloudinaryVideo
             publicId={YACHT_CLUB_ASSETS.videos.eventsHero}
@@ -105,20 +105,22 @@ const EventsPage = () => {
             loop
             playsInline
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-blue-900/70 to-slate-800/80"></div>
+          <div className="absolute inset-0 bg-black opacity-50"></div>
         </div>
-        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-          <div className="mb-6">
-            <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-6xl text-blue-300" />
+        
+        {/* Hero Content */}
+        <div className="relative z-10 flex items-center justify-center h-full text-center px-4">
+          <div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+              Club Events
+            </h1>
+            <p className="text-xl text-white max-w-2xl mx-auto">
+              Join us for exciting events throughout the sailing season. From educational seminars to 
+              social gatherings, there's always something happening at Pleasant Park Yacht Club.
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">Club Events</h1>
-          <div className="w-24 h-1 bg-blue-400 mx-auto mb-8"></div>
-          <p className="text-xl font-light max-w-3xl mx-auto leading-relaxed opacity-90">
-            Join us for exciting events throughout the sailing season. From educational seminars to 
-            social gatherings, there's always something happening at Pleasant Park Yacht Club.
-          </p>
         </div>
-      </section>
+      </div>
 
       {/* Events Content */}
       <section className="py-16">
