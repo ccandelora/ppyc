@@ -113,7 +113,11 @@ const SettingsPanel = () => {
           });
         }
         
-        setSuccess(`${section.charAt(0).toUpperCase() + section.slice(1)} settings saved successfully!`);
+        // Clear settings cache so changes are reflected immediately
+        localStorage.removeItem('ppyc_settings_cache');
+        localStorage.removeItem('ppyc_settings_cache_timestamp');
+        
+        setSuccess(`${section.charAt(0).toUpperCase() + section.slice(1)} settings saved successfully! Cache refreshed.`);
         setTimeout(() => setSuccess(''), 3000);
       } else {
         setError(response.data.error || 'Failed to save settings');
@@ -246,13 +250,30 @@ const SettingsPanel = () => {
     <div className="bg-white rounded-lg shadow-md">
       {/* Header */}
       <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-          <FontAwesomeIcon icon={ICON_NAMES.SETTINGS} className="mr-2 text-blue-500" />
-          System Settings
-        </h2>
-        <p className="text-sm text-gray-600 mt-1">
-          Configure your yacht club website and manage users
-        </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+              <FontAwesomeIcon icon={ICON_NAMES.SETTINGS} className="mr-2 text-blue-500" />
+              System Settings
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Configure your yacht club website and manage users
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem('ppyc_settings_cache');
+              localStorage.removeItem('ppyc_settings_cache_timestamp');
+              setSuccess('Settings cache cleared! Changes will be reflected immediately.');
+              setTimeout(() => setSuccess(''), 3000);
+            }}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm transition-colors flex items-center gap-1"
+            title="Clear settings cache to refresh data"
+          >
+            <FontAwesomeIcon icon={ICON_NAMES.SYNC} />
+            Clear Cache
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
