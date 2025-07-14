@@ -2,11 +2,36 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
-import { useContact } from '../contexts/contactContext';
+import { useSettings } from '../hooks/useSettings';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
-  const { contactInfo } = useContact();
+  const { 
+    contactEmail, 
+    contactPhone, 
+    address, 
+    facebookUrl, 
+    twitterUrl, 
+    instagramUrl, 
+    linkedinUrl 
+  } = useSettings();
+
+  // Helper function to render social link if URL exists
+  const renderSocialLink = (url, iconName, label) => {
+    if (!url) return null;
+    
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-slate-400 hover:text-white transition-colors"
+        aria-label={label}
+      >
+        <FontAwesomeIcon icon={iconName} className="text-xl" />
+      </a>
+    );
+  };
 
   return (
     <footer className="bg-slate-900 text-white mt-auto">
@@ -30,36 +55,12 @@ function Footer() {
               marina services, and maritime community on the beautiful waters of Pleasant Park.
             </p>
             
-            {/* Social Links */}
+            {/* Social Links - Only show if URLs are configured */}
             <div className="flex space-x-4">
-              <a
-                href="#"
-                className="text-slate-400 hover:text-white transition-colors"
-                aria-label="Follow us on Facebook"
-              >
-                <FontAwesomeIcon icon={ICON_NAMES.FACEBOOK} className="text-xl" />
-              </a>
-              <a
-                href="#"
-                className="text-slate-400 hover:text-white transition-colors"
-                aria-label="Follow us on Instagram"
-              >
-                <FontAwesomeIcon icon={ICON_NAMES.INSTAGRAM} className="text-xl" />
-              </a>
-              <a
-                href="#"
-                className="text-slate-400 hover:text-white transition-colors"
-                aria-label="Follow us on Twitter"
-              >
-                <FontAwesomeIcon icon={ICON_NAMES.TWITTER} className="text-xl" />
-              </a>
-              <a
-                href="#"
-                className="text-slate-400 hover:text-white transition-colors"
-                aria-label="Connect on LinkedIn"
-              >
-                <FontAwesomeIcon icon={ICON_NAMES.LINKEDIN} className="text-xl" />
-              </a>
+              {renderSocialLink(facebookUrl, ICON_NAMES.FACEBOOK, 'Follow us on Facebook')}
+              {renderSocialLink(instagramUrl, ICON_NAMES.INSTAGRAM, 'Follow us on Instagram')}
+              {renderSocialLink(twitterUrl, ICON_NAMES.TWITTER, 'Follow us on Twitter')}
+              {renderSocialLink(linkedinUrl, ICON_NAMES.LINKEDIN, 'Connect on LinkedIn')}
             </div>
           </div>
 
@@ -107,25 +108,25 @@ function Footer() {
               <li className="flex items-start space-x-3">
                 <FontAwesomeIcon icon={ICON_NAMES.HOME} className="text-amber-500 mt-1" />
                 <span className="text-slate-300">
-                  {contactInfo.address}
+                  {address}
                 </span>
               </li>
               <li className="flex items-center space-x-3">
                 <FontAwesomeIcon icon={ICON_NAMES.PHONE} className="text-amber-500" />
                 <a 
-                  href={`tel:${contactInfo.phone.replace(/[^0-9]/g, '')}`}
+                  href={`tel:${contactPhone.replace(/[^0-9]/g, '')}`}
                   className="text-slate-300 hover:text-white hover:underline transition-colors duration-200"
                 >
-                  {contactInfo.phone}
+                  {contactPhone}
                 </a>
               </li>
               <li className="flex items-center space-x-3">
                 <FontAwesomeIcon icon={ICON_NAMES.ENVELOPE} className="text-amber-500" />
                 <a 
-                  href={`mailto:${contactInfo.email}`}
+                  href={`mailto:${contactEmail}`}
                   className="text-slate-300 hover:text-white hover:underline transition-colors duration-200"
                 >
-                  {contactInfo.email}
+                  {contactEmail}
                 </a>
               </li>
             </ul>
