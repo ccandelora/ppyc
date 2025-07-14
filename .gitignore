@@ -8,6 +8,12 @@ build/
 */dist/
 */build/
 
+# Frontend build artifacts  
+ppyc_frontend/dist/
+ppyc_frontend/build/
+ppyc_frontend/.vite/
+ppyc_frontend/vite.config.js.timestamp-*
+
 # Large video files
 *.mp4
 *.mov
@@ -18,11 +24,19 @@ build/
 *.webm
 
 # Environment files
+.env
+.env.*
+!.env.example
 
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Frontend environment files
+ppyc_frontend/.env
+ppyc_frontend/.env.*
+!ppyc_frontend/.env.example
+
+# Backend environment files
+ppyc_backend/.env
+ppyc_backend/.env.*
+!ppyc_backend/.env.example
 
 # OS generated files
 .DS_Store
@@ -62,13 +76,10 @@ Thumbs.db
 # Ignore Byebug command history file
 .byebug_history
 
-# Ignore test coverage
-coverage/
-
-# Ignore precompiled assets
-*/public/assets/
-*/public/packs/
-*/public/packs-test/
+# Ignore Rails precompiled assets (be specific to backend only)
+ppyc_backend/public/assets/
+ppyc_backend/public/packs/
+ppyc_backend/public/packs-test/
 
 # Ignore yarn files
 yarn-error.log
@@ -91,4 +102,25 @@ logs
 
 # Temp files
 tmp/
-temp/ 
+temp/
+
+# Testing
+coverage/
+.nyc_output/
+.coverage/
+
+# Package manager lockfiles (keep only one)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# SSL certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Database
+*.sqlite3
+*.db 
