@@ -112,14 +112,14 @@ Rails.application.configure do
   # config.content_security_policy_report_only = true
 
   # Security Headers
-  config.force_ssl = true
-  config.ssl_options = {
-    hsts: {
-      expires: 1.year,
-      subdomains: true,
-      preload: true
-    }
-  }
+  config.force_ssl = false
+  # config.ssl_options = {
+  #   hsts: {
+  #     expires: 1.year,
+  #     subdomains: true,
+  #     preload: true
+  #   }
+  # }
 
   # Performance Configuration
   # =========================
