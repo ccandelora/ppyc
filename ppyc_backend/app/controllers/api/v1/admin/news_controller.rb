@@ -55,10 +55,10 @@ class Api::V1::Admin::NewsController < Api::V1::Admin::BaseController
       featured_image_url: news_item.featured_image_url.presence || (news_item.featured_image.attached? ? news_item.featured_image.url : nil),
       created_at: news_item.created_at,
       updated_at: news_item.updated_at,
-      author: {
+      author: news_item.author ? {
         id: news_item.author.id,
         email: news_item.author.email
-      }
+      } : nil
     }
   end
 end
