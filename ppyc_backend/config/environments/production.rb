@@ -151,8 +151,10 @@ Rails.application.configure do
   # CORS Configuration for Production
   # =================================
 
-  # Set allowed origins from environment
-  allowed_origins = ENV.fetch("CORS_ORIGINS", "https://ppyc.com").split(',')
+  # Set allowed origins from environment, including VPS domain and permanent domain
+  default_origins = "https://ppyc.com,http://srv894370.hstgr.cloud,https://ppyc1910.org,http://ppyc1910.org"
+  env_origins = ENV.fetch("CORS_ORIGINS", default_origins)
+  allowed_origins = (env_origins.split(',') + ['http://srv894370.hstgr.cloud', 'https://ppyc1910.org', 'http://ppyc1910.org']).uniq
   config.middleware.insert_before 0, Rack::Cors do
     allow do
       origins allowed_origins

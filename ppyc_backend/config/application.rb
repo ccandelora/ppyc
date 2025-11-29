@@ -89,7 +89,7 @@ module PpycBackend
       end
 
       allow do
-        origins 'http://localhost:5173', 'http://localhost:3000', 'http://srv894370.hstgr.cloud'
+        origins 'http://localhost:5173', 'http://localhost:3000', 'http://srv894370.hstgr.cloud', 'https://ppyc1910.org', 'http://ppyc1910.org'
         resource '/api/v1/admin/*',
           headers: :any,
           methods: [:get, :post, :put, :patch, :delete, :options, :head],
