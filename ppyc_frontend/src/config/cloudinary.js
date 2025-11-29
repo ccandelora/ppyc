@@ -37,13 +37,14 @@ export const YACHT_CLUB_ASSETS = {
     // Marina and facilities - using demo cloud for sample images
     marina: [
       `https://res.cloudinary.com/dqb8hp68j/image/upload/v1751928001/ppyc/people/members/j-farr-pic-2`,
+      `https://res.cloudinary.com/dqb8hp68j/image/upload/ppyc/ppyc/marina/cloudinaryfile_x2upsu`,
       `https://res.cloudinary.com/dqb8hp68j/image/upload/v1751928021/ppyc/general/misc/middaysun.jpg`,
       `https://res.cloudinary.com/demo/image/upload/c_fill,w_800,h_600,q_auto,f_auto/v1/samples/landscapes/water-sunset`,
     ],
     // Events and activities - using demo cloud for sample images
     events: [
       `https://res.cloudinary.com/dqb8hp68j/image/upload/v1751928021/ppyc/events/parties/kickoffparty1.jpg`,
-      `https://res.cloudinary.com/dqb8hp68j/image/upload/v1751928001/ppyc/people/members/j-farr-pic-2`,
+      `https://res.cloudinary.com/dqb8hp68j/image/upload/ppyc/ppyc/marina/cloudinaryfile_wcr0xt`,
       `https://res.cloudinary.com/demo/image/upload/c_fill,w_600,h_400,q_auto,f_auto/v1/samples/landscapes/sea-beach-boardwalk`,
     ],
     // Sailing and racing - using demo cloud for sample images

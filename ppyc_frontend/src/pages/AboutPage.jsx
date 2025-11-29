@@ -215,15 +215,14 @@ function AboutPage() {
                   <h3 className="text-xl font-bold text-slate-800">Full-Service Marina</h3>
                 </div>
                 <p className="text-gray-700">
-                  200+ slips accommodating vessels up to 50 feet, with electricity, water, 
-                  and pump-out services at every slip.
+                  Enjoy our very well-kept marina, offering 103 slips for vessels up to 50 feet, each equipped with electricity and water.
                 </p>
               </div>
             </div>
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <img 
-                src={YACHT_CLUB_ASSETS.gallery.events[0]}
+                src={YACHT_CLUB_ASSETS.gallery.events[1]}
                 alt="Clubhouse dining"
                 className="w-full h-48 object-cover"
               />
@@ -233,26 +232,24 @@ function AboutPage() {
                   <h3 className="text-xl font-bold text-slate-800">Waterfront Dining</h3>
                 </div>
                 <p className="text-gray-700">
-                  Award-winning restaurant and bar with panoramic harbor views, 
-                  serving fresh seafood and classic New England fare.
+                  Our full-service Bar & Grill is open year-round from noon to 1 AM, seven days a week. Take in beautiful views of Boston from our outdoor deck and enjoy a rotating lineup of live entertainment—from bands and educational events to themed parties.
                 </p>
               </div>
             </div>
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <img 
-                src={YACHT_CLUB_ASSETS.gallery.sailing[0]}
-                alt="Sailing programs"
+            <img 
+                src={YACHT_CLUB_ASSETS.gallery.events[0]}
+                alt="Clubhouse dining"
                 className="w-full h-48 object-cover"
               />
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <FontAwesomeIcon icon={ICON_NAMES.SAILBOAT} className="text-xl text-blue-600" />
-                  <h3 className="text-xl font-bold text-slate-800">Sailing Center</h3>
+                  <h3 className="text-xl font-bold text-slate-800">Hall Rental</h3>
                 </div>
                 <p className="text-gray-700">
-                  Professional sailing instruction, racing programs, and a fleet 
-                  of club boats available for member use.
+                  Hall rentals available for members for up to 200 guests. Very spacious hall with AC for the hot summer months and a smaller hall that accommodates up to 40 people.
                 </p>
               </div>
             </div>

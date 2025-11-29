@@ -258,8 +258,7 @@ const EventsPage = () => {
             <h2 className="text-3xl font-bold text-slate-800 mb-4">Life at the Marina</h2>
             <div className="w-16 h-1 bg-blue-600 mx-auto mb-6"></div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              From racing to relaxing, Pleasant Park Yacht Club offers endless opportunities 
-              to enjoy life on the water.
+              Whether you're joining us for a Sister Yacht Club Invasion or simply unwinding on the water, Pleasant Park Yacht Club delivers endless opportunities for fun and relaxation.
             </p>
           </div>
           

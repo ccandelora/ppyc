@@ -29,7 +29,8 @@ import {
   faEllipsisH, faLayerGroup, faImage, faTachometerAlt, 
   faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt, 
   faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown, 
-  faUserShield, faLock, faSave, faBook, faSailboat
+  faUserShield, faLock, faSave, faBook, faSailboat,
+  faHeading, faAlignLeft
 } from '@fortawesome/free-solid-svg-icons';
 
 import { 
@@ -54,6 +55,7 @@ library.add(
   faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt, 
   faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown, 
   faUserShield, faLock, faSave, faBook, faSailboat,
+  faHeading, faAlignLeft,
   faFacebook, faTwitter, faInstagram, faLinkedin, faYoutube
 );
 

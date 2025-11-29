@@ -34,8 +34,15 @@ class Post < ApplicationRecord
 
   def no_duplicate_titles_within_timeframe
     # Check for posts with the same title within 24 hours
+    # Skip validation if published_at is nil (drafts can have duplicate titles)
+    return if published_at.nil?
+
+    # Skip validation if title hasn't changed (editing without changing title is fine)
+    return unless title_changed?
+
     timeframe = 24.hours
     duplicate = self.class.similar_titles(title, id)
+                   .where.not(published_at: nil)
                    .where(published_at: (published_at - timeframe)..(published_at + timeframe))
                    .exists?
 
