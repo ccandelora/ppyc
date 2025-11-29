@@ -36,7 +36,7 @@ class Api::V1::Admin::NewsController < Api::V1::Admin::BaseController
   private
 
   def set_news_item
-    @news_item = Post.find(params[:id])
+    @news_item = Post.includes(:author).find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_error('News article not found', :not_found)
   end
