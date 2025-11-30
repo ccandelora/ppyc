@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
@@ -99,9 +99,9 @@ const EventsPage = () => {
   };
 
   // Close modal
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setSelectedImage(null);
-  };
+  }, []);
 
   // Close modal on ESC key
   useEffect(() => {
@@ -109,12 +109,15 @@ const EventsPage = () => {
     
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
-        setSelectedImage(null);
+        handleCloseModal();
       }
     };
+    
     window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [selectedImage]);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [selectedImage, handleCloseModal]);
 
   return (
     <div className="min-h-screen bg-gray-50">
