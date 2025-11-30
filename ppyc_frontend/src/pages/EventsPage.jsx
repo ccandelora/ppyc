@@ -103,21 +103,25 @@ const EventsPage = () => {
     setSelectedImage(null);
   };
 
-  // Close modal on ESC key
+  // Close modal on ESC key - set up once, check state in handler
   useEffect(() => {
-    if (!selectedImage) return;
-    
     const handleEscape = (e) => {
+      // Check if modal is open by checking if selectedImage state exists
+      // We'll use a closure to access the current state
       if (e.key === 'Escape') {
-        setSelectedImage(null);
+        // Use a function updater to avoid dependency issues
+        setSelectedImage(prev => {
+          if (prev) return null;
+          return prev;
+        });
       }
     };
     
-    window.addEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleEscape);
     return () => {
-      window.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleEscape);
     };
-  }, [selectedImage]);
+  }, []); // Empty deps - set up once, handler uses function updater
 
   return (
     <div className="min-h-screen bg-gray-50">
