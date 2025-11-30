@@ -2,13 +2,31 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { fileURLToPath, URL } from 'node:url'
+import { existsSync, copyFileSync, unlinkSync } from 'fs'
 
 // Define __dirname for ES modules
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 // Simple, performance-focused Vite config
 export default defineConfig(({ command }) => ({
-  plugins: [react()],
+  plugins: [
+    react(),
+    // Custom plugin to rename index.prod.html to index.html after build
+    {
+      name: 'rename-index-html',
+      closeBundle() {
+        if (command === 'build') {
+          const distPath = resolve(__dirname, 'dist');
+          const prodHtml = resolve(distPath, 'index.prod.html');
+          const indexHtml = resolve(distPath, 'index.html');
+          if (existsSync(prodHtml)) {
+            copyFileSync(prodHtml, indexHtml);
+            unlinkSync(prodHtml);
+          }
+        }
+      }
+    }
+  ],
   
   build: {
     // Output directory
