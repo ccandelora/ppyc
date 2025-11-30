@@ -63,7 +63,7 @@ const MembershipPage = () => {
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Premier Marina</h3>
               <p className="text-slate-600 leading-relaxed">
-                Modern floating dock systems, seasonal slip assignments, and comprehensive marina services including maintenance, winter storage, and 24/7 security.
+                Modern floating dock systems, seasonal slip assignments, and comprehensive marina services including maintenance, and winter storage.
               </p>
             </div>
 
@@ -83,7 +83,7 @@ const MembershipPage = () => {
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Year-Round Amenities</h3>
               <p className="text-slate-600 leading-relaxed">
-                Full bar and grill open noon to 1 AM daily, Sunday "Lunch with Cindy", sports viewing on 5 wide-screen TVs, and event hall rentals.
+                Full bar and grill open noon to 1 AM daily, special dining experiences in the members lounge , sports viewing on 5 wide-screen TVs, and event hall rentals.
               </p>
             </div>
           </div>
@@ -170,7 +170,7 @@ const MembershipPage = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-slate-800 mb-1">Special Dining Events</h4>
-                    <p className="text-slate-600 text-sm">Sunday "Lunch with Cindy" and exclusive member dining experiences</p>
+                    <p className="text-slate-600 text-sm">Member cooking and baking competitions and exclusive member dining experiences</p>
                   </div>
                 </div>
 
@@ -197,7 +197,7 @@ const MembershipPage = () => {
             </div>
 
             <div className="mt-8 pt-8 border-t border-gray-200">
-              <div className="grid md:grid-cols-4 gap-6 text-center">
+              <div className="grid md:grid-cols-3 gap-6 text-center">
                 <div className="p-4 bg-blue-50 rounded-lg">
                   <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-2xl text-blue-600 mb-2" />
                   <h4 className="font-semibold text-slate-800 text-sm">Junior Members Program</h4>
@@ -210,10 +210,7 @@ const MembershipPage = () => {
                   <FontAwesomeIcon icon={ICON_NAMES.SAILBOAT} className="text-2xl text-blue-600 mb-2" />
                   <h4 className="font-semibold text-slate-800 text-sm">Sister Club Invasions</h4>
                 </div>
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <FontAwesomeIcon icon={ICON_NAMES.SHIELD} className="text-2xl text-blue-600 mb-2" />
-                  <h4 className="font-semibold text-slate-800 text-sm">24/7 Security</h4>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -318,7 +315,7 @@ const MembershipPage = () => {
             <p className="text-slate-600">Experience the camaraderie and adventure that awaits you</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="group">
               <img 
                 src="/assets/images/ppyc-images/party1.jpg" 
@@ -326,14 +323,6 @@ const MembershipPage = () => {
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Social Events</p>
-            </div>
-            <div className="group">
-              <img 
-                src="/assets/images/ppyc-images/matches.jpg" 
-                alt="Sailing and racing" 
-                className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
-              />
-              <p className="text-sm text-center text-slate-600 mt-2">Racing Program</p>
             </div>
             <div className="group">
               <img 

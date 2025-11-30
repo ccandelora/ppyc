@@ -94,7 +94,7 @@ const MarinaPage = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Ice Always Available</h4>
-                    <p className="text-slate-600">Fresh ice in 5 or 10 lb bags for your boating needs</p>
+                    <p className="text-slate-600">Fresh ice bags for your boating needs</p>
                   </div>
                 </div>
 
@@ -115,8 +115,8 @@ const MarinaPage = () => {
                     <FontAwesomeIcon icon={ICON_NAMES.HEART} className="text-blue-600 text-lg" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-slate-800 mb-2">"Lunch with Cindy" Sundays</h4>
-                    <p className="text-slate-600">Special Sunday dining experience in the Members Lounge</p>
+                    <h4 className="text-lg font-semibold text-slate-800 mb-2">"Daily Dining in the Lounge</h4>
+                    <p className="text-slate-600">Join us for lunch or dinner in the Members Lounge, with exceptional bartenders and exclusive featured items from our food and drink menu.</p>
                   </div>
                 </div>
 
@@ -136,7 +136,7 @@ const MarinaPage = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-slate-800 mb-2">Hall Rental Available</h4>
-                    <p className="text-slate-600">Event space for members, civic groups and general public</p>
+                    <p className="text-slate-600">Event space for members.</p>
                   </div>
                 </div>
 
@@ -185,11 +185,6 @@ const MarinaPage = () => {
                 </div>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <FontAwesomeIcon icon={ICON_NAMES.SHIELD} className="text-2xl text-blue-600 mb-3" />
-                <h4 className="font-semibold text-slate-800 mb-2">Service Areas</h4>
-                <p className="text-sm text-slate-600">Pump-out station, and maintenance facilities</p>
-              </div>
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-2xl text-blue-600 mb-3" />
                 <h4 className="font-semibold text-slate-800 mb-2">Mooring Options</h4>
                 <p className="text-sm text-slate-600">Seasonal and transient slips for vessels of all sizes</p>
@@ -233,15 +228,11 @@ const MarinaPage = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
-                  <span className="text-slate-700">Pump-out station for sanitary systems</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
                   <span className="text-slate-700">Winter storage and haul-out services</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
-                  <span className="text-slate-700">24/7 security and monitoring</span>
+                  <span className="text-slate-700">Very well kept marina</span>
                 </div>
               </div>
             </div>
