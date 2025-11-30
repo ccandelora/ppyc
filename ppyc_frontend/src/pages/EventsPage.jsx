@@ -103,25 +103,8 @@ const EventsPage = () => {
     setSelectedImage(null);
   };
 
-  // Close modal on ESC key - set up once, check state in handler
-  useEffect(() => {
-    const handleEscape = (e) => {
-      // Check if modal is open by checking if selectedImage state exists
-      // We'll use a closure to access the current state
-      if (e.key === 'Escape') {
-        // Use a function updater to avoid dependency issues
-        setSelectedImage(prev => {
-          if (prev) return null;
-          return prev;
-        });
-      }
-    };
-    
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, []); // Empty deps - set up once, handler uses function updater
+  // Note: ESC key handler removed to prevent React error #310 infinite loop
+  // Users can close modal by clicking outside or the close button
 
   return (
     <div className="min-h-screen bg-gray-50">
