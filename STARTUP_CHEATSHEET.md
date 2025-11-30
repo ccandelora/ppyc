@@ -70,7 +70,7 @@ sudo systemctl restart puma
 cd /var/www/ppyc/ppyc_frontend
 npm install
 npm run build
-sudo cp index.prod.html dist/index.html
+# Note: Vite build automatically creates dist/index.html (no manual copy needed)
 sudo chown www-data:www-data dist/index.html
 sudo chmod 644 dist/index.html
 sudo systemctl reload nginx
@@ -202,8 +202,28 @@ sudo systemctl status postgresql
 cd /var/www/ppyc/ppyc_frontend
 rm -rf dist/*
 npm run build
-sudo cp index.prod.html dist/index.html
+# Verify index.html was created (Vite build plugin creates it automatically)
+ls -la dist/index.html
+# Verify script tag references /assets/ files, not /src/main.jsx
+cat dist/index.html | grep -A 2 "script"
 sudo chown -R www-data:www-data dist/
+sudo systemctl reload nginx
+```
+
+#### MIME Type Error (Failed to load module script)
+```bash
+# This error means index.html is missing or has wrong script references
+# Verify index.html exists and has correct script tag
+cd /var/www/ppyc/ppyc_frontend
+ls -la dist/index.html
+cat dist/index.html | grep "script"
+# Should show: <script type="module" src="/assets/index.prod-*.js"></script>
+# NOT: <script type="module" src="/src/main.jsx"></script>
+
+# If wrong, rebuild:
+npm run build
+sudo chown www-data:www-data dist/index.html
+sudo chmod 644 dist/index.html
 sudo systemctl reload nginx
 ```
 
@@ -222,7 +242,9 @@ sudo systemctl reload nginx
 - [ ] Backend dependencies installed (`bundle install`)
 - [ ] Database migrations run (`rails db:migrate`)
 - [ ] Frontend built (`npm run build`)
-- [ ] `index.html` copied and has correct permissions
+- [ ] `index.html` exists in `dist/` (created automatically by Vite)
+- [ ] `index.html` has correct permissions (`www-data:www-data`, `644`)
+- [ ] Script tag in `index.html` references `/assets/index.prod-*.js` (not `/src/main.jsx`)
 - [ ] Services restarted (`systemctl restart puma`, `systemctl reload nginx`)
 - [ ] Site accessible at http://srv894370.hstgr.cloud
 - [ ] No errors in logs
