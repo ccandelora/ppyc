@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_NAMES } from '../../config/fontawesome';
 import WYSIWYGEditor from './WYSIWYGEditor';
 import ImageUpload from '../ImageUpload';
 import { adminAPI } from '../../services/api';
@@ -117,7 +119,7 @@ const EventForm = () => {
   if (loading && isEditing) {
     return (
       <div className="flex justify-center items-center h-64">
-        <i className="fas fa-anchor fa-spin text-3xl text-blue-500"></i>
+        <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} spin className="text-3xl text-blue-500" />
       </div>
     );
   }
@@ -129,7 +131,7 @@ const EventForm = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
-              <i className="fas fa-calendar-alt mr-2 text-green-500"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.CALENDAR_ALT} className="mr-2 text-green-500" />
               {isEditing ? 'Edit Event' : 'Create New Event'}
             </h2>
             <p className="text-sm text-gray-600 mt-1">
@@ -140,7 +142,7 @@ const EventForm = () => {
             onClick={handleCancel}
             className="text-gray-500 hover:text-gray-700 px-3 py-1 rounded-lg transition-colors"
           >
-            <i className="fas fa-times mr-1"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.CLOSE} className="mr-1" />
             Cancel
           </button>
         </div>
@@ -149,14 +151,14 @@ const EventForm = () => {
       {/* Messages */}
       {error && (
         <div className="mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          <i className="fas fa-exclamation-triangle mr-2"></i>
+          <FontAwesomeIcon icon={ICON_NAMES.WARNING} className="mr-2" />
           {error}
         </div>
       )}
 
       {success && (
         <div className="mx-6 mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-          <i className="fas fa-check-circle mr-2"></i>
+          <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="mr-2" />
           {success}
         </div>
       )}
@@ -166,7 +168,7 @@ const EventForm = () => {
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-heading mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.HEADING} className="mr-2 text-gray-400" />
             Event Title *
           </label>
           <input
@@ -184,7 +186,7 @@ const EventForm = () => {
         {/* Description */}
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-align-left mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.ALIGN_LEFT} className="mr-2 text-gray-400" />
             Description
           </label>
           <WYSIWYGEditor
@@ -200,7 +202,7 @@ const EventForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="start_time" className="block text-sm font-medium text-gray-700 mb-2">
-              <i className="fas fa-play mr-2 text-gray-400"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.PLAY} className="mr-2 text-gray-400" />
               Start Time *
             </label>
             <input
@@ -216,7 +218,7 @@ const EventForm = () => {
 
           <div>
             <label htmlFor="end_time" className="block text-sm font-medium text-gray-700 mb-2">
-              <i className="fas fa-stop mr-2 text-gray-400"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.STOP} className="mr-2 text-gray-400" />
               End Time *
             </label>
             <input
@@ -234,7 +236,7 @@ const EventForm = () => {
         {/* Location */}
         <div>
           <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.LOCATION} className="mr-2 text-gray-400" />
             Location
           </label>
           <input
@@ -251,7 +253,7 @@ const EventForm = () => {
         {/* Event Image */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-image mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.IMAGE} className="mr-2 text-gray-400" />
             Event Image
           </label>
           
@@ -292,7 +294,7 @@ const EventForm = () => {
             onClick={handleCancel}
             className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
-            <i className="fas fa-times mr-2"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.CLOSE} className="mr-2" />
             Cancel
           </button>
           <button
@@ -302,12 +304,12 @@ const EventForm = () => {
           >
             {loading ? (
               <>
-                <i className="fas fa-spinner fa-spin mr-2"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.LOADING} spin className="mr-2" />
                 {isEditing ? 'Updating...' : 'Creating...'}
               </>
             ) : (
               <>
-                <i className="fas fa-save mr-2"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.SAVE} className="mr-2" />
                 {isEditing ? 'Update Event' : 'Create Event'}
               </>
             )}

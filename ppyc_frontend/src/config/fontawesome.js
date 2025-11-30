@@ -30,7 +30,7 @@ import {
   faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt, 
   faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown, 
   faUserShield, faLock, faSave, faBook, faSailboat,
-  faHeading, faAlignLeft
+  faHeading, faAlignLeft, faPlay, faStop
 } from '@fortawesome/free-solid-svg-icons';
 
 import { 
@@ -55,7 +55,7 @@ library.add(
   faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt, 
   faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown, 
   faUserShield, faLock, faSave, faBook, faSailboat,
-  faHeading, faAlignLeft,
+  faHeading, faAlignLeft, faPlay, faStop,
   faFacebook, faTwitter, faInstagram, faLinkedin, faYoutube
 );
 
@@ -152,6 +152,8 @@ export const ICON_NAMES = {
   LOCK: 'lock',
   SAVE: 'save',
   BOOK: 'book',
+  PLAY: 'play',
+  STOP: 'stop',
 
   // Social Media
   FACEBOOK: ['fab', 'facebook'],
