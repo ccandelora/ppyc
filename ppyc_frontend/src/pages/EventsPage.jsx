@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
@@ -13,6 +13,7 @@ const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const selectedImageRef = useRef(selectedImage);
 
   // Use cached API call with loading state tracking
   const { data: eventsData, loading: eventsLoading, error: eventsError } = useApiCache(
@@ -93,23 +94,26 @@ const EventsPage = () => {
     return event >= startOfWeek && event <= endOfWeek;
   };
 
+  // Keep ref in sync with state
+  useEffect(() => {
+    selectedImageRef.current = selectedImage;
+  }, [selectedImage]);
+
   // Handle image click to open modal
   const handleImageClick = (imageUrl, eventTitle) => {
     setSelectedImage({ url: imageUrl, title: eventTitle });
   };
 
   // Close modal
-  const handleCloseModal = useCallback(() => {
+  const handleCloseModal = () => {
     setSelectedImage(null);
-  }, []);
+  };
 
-  // Close modal on ESC key
+  // Close modal on ESC key - use ref to avoid dependency issues
   useEffect(() => {
-    if (!selectedImage) return;
-    
     const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        handleCloseModal();
+      if (e.key === 'Escape' && selectedImageRef.current) {
+        setSelectedImage(null);
       }
     };
     
@@ -117,7 +121,7 @@ const EventsPage = () => {
     return () => {
       window.removeEventListener('keydown', handleEscape);
     };
-  }, [selectedImage, handleCloseModal]);
+  }, []); // Empty dependency array - only set up listener once
 
   return (
     <div className="min-h-screen bg-gray-50">
