@@ -17,6 +17,7 @@ const EventForm = () => {
     location: '',
     image: null // Will be handled by ImageUpload component
   });
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState('');
@@ -41,6 +42,7 @@ const EventForm = () => {
         location: event.location || '',
         image: null
       });
+      setExistingImageUrl(event.image_url || null);
     } catch (err) {
       setError('Failed to fetch event');
       console.error('Error fetching event:', err);
@@ -252,6 +254,26 @@ const EventForm = () => {
             <i className="fas fa-image mr-2 text-gray-400"></i>
             Event Image
           </label>
+          
+          {/* Thumbnail Preview */}
+          {(existingImageUrl || formData.image?.secure_url) && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">Current Image:</p>
+              <div className="inline-block relative">
+                <img
+                  src={formData.image?.secure_url || existingImageUrl}
+                  alt="Event thumbnail"
+                  className="w-32 h-32 object-cover rounded-lg border border-gray-200 shadow-sm"
+                />
+                {formData.image?.secure_url && (
+                  <span className="absolute top-1 right-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                    New
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+          
           <ImageUpload 
             onUploadSuccess={handleImageUpload}
             onUploadError={(error) => setError(`Image upload failed: ${error}`)}
