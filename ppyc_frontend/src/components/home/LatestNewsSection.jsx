@@ -85,15 +85,6 @@ const LatestNewsSection = () => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-800 mb-3">{article.title}</h3>
                 <p className="text-gray-600 leading-relaxed line-clamp-3">{article.content?.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}</p>
-                <div className="mt-4">
-                  <Link 
-                    to={`/news/${article.slug}`}
-                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                  >
-                    <span>Read More</span>
-                    <FontAwesomeIcon icon="chevron-right" />
-                  </Link>
-                </div>
               </div>
             </div>
           ))}
