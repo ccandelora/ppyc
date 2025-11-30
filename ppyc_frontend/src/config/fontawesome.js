@@ -154,6 +154,8 @@ export const ICON_NAMES = {
   BOOK: 'book',
   PLAY: 'play',
   STOP: 'stop',
+  HEADING: 'heading',
+  ALIGN_LEFT: 'align-left',
 
   // Social Media
   FACEBOOK: ['fab', 'facebook'],
