@@ -105,9 +105,11 @@ const EventsPage = () => {
 
   // Close modal on ESC key
   useEffect(() => {
+    if (!selectedImage) return;
+    
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && selectedImage) {
-        handleCloseModal();
+      if (e.key === 'Escape') {
+        setSelectedImage(null);
       }
     };
     window.addEventListener('keydown', handleEscape);
