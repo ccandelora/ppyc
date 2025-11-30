@@ -69,6 +69,9 @@ sudo systemctl restart puma
 ```bash
 cd /var/www/ppyc/ppyc_frontend
 npm install
+# IMPORTANT: Build WITHOUT VITE_API_BASE_URL to use relative URLs (/api/v1)
+# This avoids CORS issues by making requests to the same origin
+unset VITE_API_BASE_URL
 npm run build
 # Note: Vite build automatically creates dist/index.html (no manual copy needed)
 sudo chown www-data:www-data dist/index.html
@@ -179,7 +182,17 @@ ls -la /var/www/ppyc/ppyc_frontend/dist/index.html
 
 #### CORS Errors
 ```bash
-# Verify CORS config in Rails
+# Most CORS errors are caused by frontend using absolute API URLs
+# Check if frontend was built with VITE_API_BASE_URL set
+cd /var/www/ppyc/ppyc_frontend
+echo $VITE_API_BASE_URL
+# If it shows a URL like https://ppyc1910.org, rebuild without it:
+unset VITE_API_BASE_URL
+npm run build
+sudo chown www-data:www-data dist/index.html
+sudo systemctl reload nginx
+
+# Also verify CORS config in Rails
 grep -r "allowed_origins" /var/www/ppyc/ppyc_backend/config/
 
 # Check Nginx CORS headers
