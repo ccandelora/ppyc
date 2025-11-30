@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../../config/fontawesome';
+import { faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import WYSIWYGEditor from './WYSIWYGEditor';
 import ImageUpload from '../ImageUpload';
 import { adminAPI } from '../../services/api';
@@ -202,7 +203,7 @@ const EventForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="start_time" className="block text-sm font-medium text-gray-700 mb-2">
-              <FontAwesomeIcon icon={ICON_NAMES.PLAY} className="mr-2 text-gray-400" />
+              <FontAwesomeIcon icon={faPlay} className="mr-2 text-gray-400" />
               Start Time *
             </label>
             <input
@@ -218,7 +219,7 @@ const EventForm = () => {
 
           <div>
             <label htmlFor="end_time" className="block text-sm font-medium text-gray-700 mb-2">
-              <FontAwesomeIcon icon={ICON_NAMES.STOP} className="mr-2 text-gray-400" />
+              <FontAwesomeIcon icon={faStop} className="mr-2 text-gray-400" />
               End Time *
             </label>
             <input
