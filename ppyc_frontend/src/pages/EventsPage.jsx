@@ -12,6 +12,7 @@ import { useApiCache } from '../hooks/useApiCache';
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   // Use cached API call with loading state tracking
   const { data: eventsData, loading: eventsLoading, error: eventsError } = useApiCache(
@@ -92,6 +93,27 @@ const EventsPage = () => {
     return event >= startOfWeek && event <= endOfWeek;
   };
 
+  // Handle image click to open modal
+  const handleImageClick = (imageUrl, eventTitle) => {
+    setSelectedImage({ url: imageUrl, title: eventTitle });
+  };
+
+  // Close modal
+  const handleCloseModal = () => {
+    setSelectedImage(null);
+  };
+
+  // Close modal on ESC key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && selectedImage) {
+        handleCloseModal();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [selectedImage]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Video Background */}
@@ -156,13 +178,22 @@ const EventsPage = () => {
                       >
                         {/* Event Image */}
                         {event.image_url && (
-                          <div className="relative bg-gray-100 flex items-center justify-center overflow-hidden">
+                          <div 
+                            className="relative bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer group"
+                            onClick={() => handleImageClick(event.image_url, event.title)}
+                          >
                             <img 
                               src={event.image_url} 
                               alt={event.title}
-                              className="w-full h-auto object-contain max-h-[500px]"
+                              className="w-full h-auto object-contain max-h-[500px] transition-transform duration-200 group-hover:scale-105"
                               style={{ maxWidth: '100%', display: 'block' }}
                             />
+                            {/* Hover overlay hint */}
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white bg-opacity-90 rounded-full p-2">
+                                <FontAwesomeIcon icon={ICON_NAMES.SEARCH} className="text-blue-600 text-lg" />
+                              </div>
+                            </div>
                             {isThisWeek(event.start_time) && (
                               <div className="absolute top-4 left-4 px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full z-10">
                                 This Week
@@ -322,6 +353,42 @@ const EventsPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Image Modal/Lightbox */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+          onClick={handleCloseModal}
+        >
+          <div 
+            className="relative max-w-7xl max-h-[90vh] w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 rounded-full p-3 z-10 transition-all shadow-lg"
+              aria-label="Close image"
+            >
+              <FontAwesomeIcon icon={ICON_NAMES.CLOSE} className="text-xl" />
+            </button>
+            
+            {/* Image */}
+            <div className="bg-white rounded-lg overflow-hidden shadow-2xl">
+              <img
+                src={selectedImage.url}
+                alt={selectedImage.title}
+                className="w-full h-auto max-h-[90vh] object-contain mx-auto"
+              />
+              {/* Image Title */}
+              <div className="bg-white px-6 py-4 border-t border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800">{selectedImage.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">Click outside or press ESC to close</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
