@@ -118,16 +118,16 @@ const EventsList = () => {
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex items-start space-x-3 sm:space-x-4 flex-1">
-                    <div className="flex-shrink-0 h-12 w-12 sm:h-16 sm:w-16">
+                    <div className="flex-shrink-0 h-20 w-20 sm:h-24 sm:w-24">
                       {event.image_url ? (
                         <img
-                          className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg object-cover"
+                          className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg object-cover border border-gray-200 shadow-sm"
                           src={event.image_url}
                           alt={event.title}
                         />
                       ) : (
-                        <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg bg-gray-200 flex items-center justify-center">
-                          <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-gray-400 text-lg sm:text-xl" />
+                        <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">
+                          <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-gray-400 text-xl sm:text-2xl" />
                         </div>
                       )}
                     </div>
