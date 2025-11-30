@@ -156,14 +156,14 @@ const EventsPage = () => {
                       >
                         {/* Event Image */}
                         {event.image_url && (
-                          <div className="relative bg-gray-100 flex items-center justify-center min-h-[200px] max-h-[300px]">
+                          <div className="relative bg-gray-100 flex items-center justify-center min-h-[200px] max-h-[400px] overflow-hidden">
                             <img 
                               src={event.image_url} 
                               alt={event.title}
-                              className="w-full h-full object-contain"
+                              className="w-full max-h-[400px] object-contain"
                             />
                             {isThisWeek(event.start_time) && (
-                              <div className="absolute top-4 left-4 px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full">
+                              <div className="absolute top-4 left-4 px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full z-10">
                                 This Week
                               </div>
                             )}
