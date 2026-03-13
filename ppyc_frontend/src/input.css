@@ -420,6 +420,21 @@
   }
 }
 
+/* News/Events article body – match card copy color (gray-600) */
+.article-body-copy,
+.article-body-copy p,
+.article-body-copy li,
+.article-body-copy span,
+.article-body-copy div {
+  color: #4b5563 !important; /* gray-600 */
+}
+.article-body-copy a {
+  color: #2563eb !important; /* blue-600 */
+}
+.article-body-copy a:hover {
+  color: #1d4ed8 !important;
+}
+
 /* Scrollbar utilities for mobile navigation */
 @layer utilities {
   .scrollbar-hide {

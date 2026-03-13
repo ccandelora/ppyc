@@ -140,7 +140,7 @@ const EventDetailsPage = () => {
 
               {event.description && (
                 <div
-                  className="prose prose-lg max-w-none text-slate-700"
+                  className="article-body-copy max-w-none text-lg leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
                 />
               )}

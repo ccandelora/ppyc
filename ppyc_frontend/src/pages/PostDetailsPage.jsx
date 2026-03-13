@@ -156,7 +156,7 @@ const PostDetailsPage = () => {
               </h1>
 
               {/* Article Content */}
-              <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: post?.content }} />
+              <div className="article-body-copy max-w-none text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: post?.content }} />
 
               {/* Tags or Categories (if we had them) */}
               <div className="mt-12 pt-8 border-t border-slate-200">
