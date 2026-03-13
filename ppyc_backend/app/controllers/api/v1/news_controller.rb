@@ -10,7 +10,7 @@ class Api::V1::NewsController < Api::V1::BaseController
   end
 
   def show
-    news_item = Post.published.friendly.find(params[:slug])
+    news_item = Post.published.includes(:author).friendly.find(params[:slug])
     render_success(news_json(news_item))
   rescue ActiveRecord::RecordNotFound
     render_error('News article not found', :not_found)
@@ -26,9 +26,7 @@ class Api::V1::NewsController < Api::V1::BaseController
       slug: news_item.slug,
       published_at: news_item.published_at,
       featured_image_url: news_item.featured_image_url,
-      author: {
-        email: news_item.author.email
-      }
+      author: news_item.author.present? ? { email: news_item.author.email } : { email: 'PPYC Staff' }
     }
   end
 end
