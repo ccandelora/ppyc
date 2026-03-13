@@ -22,6 +22,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const NewsPage = lazy(() => import('./pages/NewsPage'));
 const PostDetailsPage = lazy(() => import('./pages/PostDetailsPage'));
 const EventsPage = lazy(() => import('./pages/EventsPage'));
+const EventDetailsPage = lazy(() => import('./pages/EventDetailsPage'));
 const MembershipPage = lazy(() => import('./pages/MembershipPage'));
 const HeritagePage = lazy(() => import('./pages/HeritagePage'));
 const MarinaPage = lazy(() => import('./pages/MarinaPage'));
@@ -147,6 +148,7 @@ function App() {
                   <Route path="news" element={<NewsPage />} />
                   <Route path="news/:slug" element={<PostDetailsPage />} />
                   <Route path="events" element={<EventsPage />} />
+                  <Route path="events/:id" element={<EventDetailsPage />} />
                   <Route path="membership" element={<MembershipPage />} />
                   <Route path="heritage" element={<HeritagePage />} />
                   <Route path="marina" element={<MarinaPage />} />
