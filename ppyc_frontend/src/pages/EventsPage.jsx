@@ -12,7 +12,7 @@ import { useApiCache } from '../hooks/useApiCache';
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null); // { url, title, description? }
 
   // Use cached API call with loading state tracking
   const { data: eventsData, loading: eventsLoading, error: eventsError } = useApiCache(
@@ -93,9 +93,11 @@ const EventsPage = () => {
     return event >= startOfWeek && event <= endOfWeek;
   };
 
-  // Handle image click to open modal
-  const handleImageClick = (imageUrl, eventTitle) => {
-    setSelectedImage({ url: imageUrl, title: eventTitle });
+  // Handle image click to open modal (stops propagation so card link doesn't fire)
+  const handleImageClick = (e, imageUrl, eventTitle, eventDescription) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedImage({ url: imageUrl, title: eventTitle, description: eventDescription });
   };
 
   // Close modal
@@ -164,15 +166,16 @@ const EventsPage = () => {
                   {/* Events Grid */}
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {monthEvents.map((event) => (
-                      <div 
-                        key={event.id} 
-                        className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100"
+                      <Link
+                        key={event.id}
+                        to={`/events/${event.id}`}
+                        className="block bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 group"
                       >
                         {/* Event Image */}
                         {event.image_url && (
                           <div 
-                            className="relative bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer group"
-                            onClick={() => handleImageClick(event.image_url, event.title)}
+                            className="relative bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer"
+                            onClick={(e) => handleImageClick(e, event.image_url, event.title, event.description)}
                           >
                             <img 
                               src={event.image_url} 
@@ -214,12 +217,12 @@ const EventsPage = () => {
                             })}
                           </div>
 
-                          <h3 className="text-xl font-bold text-slate-800 mb-3">{event.title}</h3>
+                          <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-blue-600 transition-colors">{event.title}</h3>
                           
                           {/* Render HTML content properly */}
                           {event.description && (
                             <div 
-                              className="text-gray-600 leading-relaxed mb-4 prose-event"
+                              className="text-gray-600 leading-relaxed mb-4 prose-event line-clamp-3"
                               dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
                             />
                           )}
@@ -231,7 +234,7 @@ const EventsPage = () => {
                             </div>
                           )}
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -346,36 +349,44 @@ const EventsPage = () => {
         </div>
       </section>
 
-      {/* Image Modal/Lightbox */}
+      {/* Image Modal/Lightbox - centered with top padding, image + copy visible */}
       {selectedImage && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center pt-12 pb-12 px-4 overflow-y-auto"
           onClick={handleCloseModal}
         >
           <div 
-            className="relative max-w-7xl max-h-[90vh] w-full"
+            className="relative w-full max-w-4xl flex flex-col items-center my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 rounded-full p-3 z-10 transition-all shadow-lg"
+              className="absolute -top-2 right-0 sm:right-4 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 rounded-full p-3 z-10 transition-all shadow-lg"
               aria-label="Close image"
             >
               <FontAwesomeIcon icon={ICON_NAMES.CLOSE} className="text-xl" />
             </button>
             
-            {/* Image */}
-            <div className="bg-white rounded-lg overflow-hidden shadow-2xl">
-              <img
-                src={selectedImage.url}
-                alt={selectedImage.title}
-                className="w-full h-auto max-h-[90vh] object-contain mx-auto"
-              />
-              {/* Image Title */}
-              <div className="bg-white px-6 py-4 border-t border-gray-200">
+            <div className="bg-white rounded-lg overflow-hidden shadow-2xl w-full flex flex-col max-h-[85vh]">
+              {/* Image - constrained so caption stays in view */}
+              <div className="flex-shrink-0 overflow-hidden">
+                <img
+                  src={selectedImage.url}
+                  alt={selectedImage.title}
+                  className="w-full h-auto max-h-[60vh] object-contain mx-auto block"
+                />
+              </div>
+              {/* Caption / Copy - always visible below image */}
+              <div className="flex-shrink-0 bg-white px-6 py-4 border-t border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800">{selectedImage.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">Click outside or press ESC to close</p>
+                {selectedImage.description && (
+                  <div 
+                    className="text-gray-600 text-sm mt-2 prose-event max-h-32 overflow-y-auto"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedImage.description) }}
+                  />
+                )}
+                <p className="text-gray-400 text-xs mt-2">Click outside or close button to close</p>
               </div>
             </div>
           </div>
