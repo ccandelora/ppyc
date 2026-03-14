@@ -737,7 +737,7 @@ const MediaLibrary = () => {
               >
                 <option value="ppyc/uploads">ppyc/uploads</option>
                 <option value="ppyc/events">ppyc/events</option>
-                <option value="ppyc/marina">ppyc/marina</option>
+                <option value="ppyc/club">ppyc/club</option>
                 <option value="ppyc/historical">ppyc/historical</option>
                 <option value="ppyc/facilities">ppyc/facilities</option>
                 <option value="ppyc/activities">ppyc/activities</option>

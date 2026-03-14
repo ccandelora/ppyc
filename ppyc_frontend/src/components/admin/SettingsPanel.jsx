@@ -398,7 +398,7 @@ const SettingsPanel = () => {
                     value={settings.general.address || ''}
                     onChange={(e) => handleInputChange('general', 'address', e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
-                    placeholder="123 Marina Drive, Boston, MA 02101"
+                    placeholder="123 Yacht Club Drive, Boston, MA 02101"
                   />
                 </div>
               </div>

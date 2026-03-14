@@ -155,7 +155,7 @@ const HeritagePage = () => {
                 alt="Historic PPYC clubhouse" 
                 className="w-full rounded-lg shadow-lg"
               />
-              <p className="text-sm text-gray-500 text-center mt-2 italic">The original clubhouse and marina</p>
+              <p className="text-sm text-gray-500 text-center mt-2 italic">The original clubhouse and club docks</p>
             </div>
           </div>
         </section>
@@ -294,9 +294,9 @@ const HeritagePage = () => {
                 <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-white text-xl" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-800 mb-3 text-center">1967-1971: Marina Development</h3>
+                <h3 className="text-lg font-bold text-slate-800 mb-3 text-center">1967-1971: Club Development</h3>
                 <p className="text-gray-700 text-center">
-                  Under Commodores Al Marley Jr. and Pat Marino, the modern marina took shape with new floats and expanded facilities.
+                  Under Commodores Al Marley Jr. and Pat Marino, the modern club waterfront took shape with new floats and expanded facilities.
                 </p>
               </div>
               
@@ -355,7 +355,7 @@ const HeritagePage = () => {
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-3">Maritime Excellence</h3>
               <p className="text-gray-600">
-                From the Radio Class innovation to modern marina development, always at the forefront of boating.
+                From the Radio Class innovation to modern club development, always at the forefront of boating.
               </p>
             </div>
             

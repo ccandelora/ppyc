@@ -52,7 +52,7 @@ function Footer() {
             </div>
             <p className="text-slate-300 mb-6 max-w-md">
               Join our prestigious yacht club and experience the finest in boating, 
-              marina services, and maritime community on the beautiful waters of Boston Harbor.
+              club services, and maritime community on the beautiful waters of Boston Harbor.
             </p>
             
             {/* Social Links - Only show if URLs are configured */}
@@ -79,8 +79,8 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/marina" className="text-slate-300 hover:text-white transition-colors">
-                  Marina Services
+                <Link to="/club" className="text-slate-300 hover:text-white transition-colors">
+                  Club Services
                 </Link>
               </li>
               <li>

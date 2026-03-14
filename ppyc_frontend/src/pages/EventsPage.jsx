@@ -278,12 +278,12 @@ const EventsPage = () => {
         </div>
       </section>
 
-      {/* Marina Activities Showcase */}
+      {/* Club Activities Showcase */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <FontAwesomeIcon icon={ICON_NAMES.SHIP} className="text-4xl text-blue-600 mb-4" />
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Life at the Marina</h2>
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Life at the Club</h2>
             <div className="w-16 h-1 bg-blue-600 mx-auto mb-6"></div>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Whether you're joining us for a Sister Yacht Club Invasion or simply unwinding on the water, Pleasant Park Yacht Club delivers endless opportunities for fun and relaxation.
@@ -309,12 +309,12 @@ const EventsPage = () => {
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <img 
                   src="/assets/images/ppyc-images/float2.jpg" 
-                  alt="Marina Facilities" 
+                  alt="Club Facilities" 
                   className="w-full h-32 object-cover"
                 />
                 <div className="p-4">
                   <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-blue-600 text-xl mb-2" />
-                  <h3 className="font-semibold text-slate-800 text-sm">Marina Services</h3>
+                  <h3 className="font-semibold text-slate-800 text-sm">Club Services</h3>
                 </div>
               </div>
             </div>

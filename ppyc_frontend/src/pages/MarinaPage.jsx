@@ -10,8 +10,8 @@ const MarinaPage = () => {
   return (
     <div className="min-h-screen bg-white">
       <SEOHelmet
-        title="Marina - Pleasant Park Yacht Club"
-        description="Explore our state-of-the-art marina facilities at Pleasant Park Yacht Club. Safe harbor, modern amenities, and exceptional service."
+        title="Club - Pleasant Park Yacht Club"
+        description="Explore our state-of-the-art club facilities at Pleasant Park Yacht Club. Safe harbor, modern amenities, and exceptional service."
       />
 
       {/* Hero Section with Video Background */}
@@ -28,7 +28,7 @@ const MarinaPage = () => {
         <div className="relative z-10 flex items-center justify-center h-full text-center px-4">
           <div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-              Our Marina
+              Our Club
             </h1>
             <p className="text-xl text-white max-w-2xl mx-auto">
               Experience world-class facilities and services in our protected harbor.
@@ -43,7 +43,7 @@ const MarinaPage = () => {
         <section className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-              Marina Services & Amenities
+              Club Services & Amenities
             </h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
@@ -63,7 +63,7 @@ const MarinaPage = () => {
                     <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-blue-600 text-lg" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-slate-800 mb-2">Summer Marina Slip Assignments</h4>
+                    <h4 className="text-lg font-semibold text-slate-800 mb-2">Summer Club Slip Assignments</h4>
                     <p className="text-slate-600">Secure seasonal moorage for members throughout the boating season</p>
                   </div>
                 </div>
@@ -73,7 +73,7 @@ const MarinaPage = () => {
                     <FontAwesomeIcon icon={ICON_NAMES.CALENDAR} className="text-blue-600 text-lg" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-slate-800 mb-2">Daily and Short Term Marina Slip Rentals</h4>
+                    <h4 className="text-lg font-semibold text-slate-800 mb-2">Daily and Short Term Club Slip Rentals</h4>
                     <p className="text-slate-600">Flexible rental options for visiting boaters and temporary needs</p>
                   </div>
                 </div>
@@ -154,13 +154,13 @@ const MarinaPage = () => {
           </div>
         </section>
 
-        {/* Official Marina Layout */}
+        {/* Official Club Layout */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Official Marina Layout</h2>
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Official Club Layout</h2>
             <div className="w-16 h-1 bg-blue-600 mx-auto mb-6"></div>
             <p className="text-slate-600 max-w-2xl mx-auto">
-              Our detailed marina layout shows slip assignments, facilities, and navigation paths for easy dock access.
+              Our detailed club layout shows slip assignments, facilities, and navigation paths for easy dock access.
             </p>
           </div>
 
@@ -168,11 +168,11 @@ const MarinaPage = () => {
             <div className="text-center mb-8">
               <img 
                 src="/assets/images/ppyc-images/ppyc-marina-layout.png" 
-                alt="PPYC Marina Layout Diagram" 
+                alt="PPYC Club Layout Diagram" 
                 className="w-full max-w-4xl mx-auto rounded-xl shadow-lg border border-gray-200"
               />
               <p className="text-sm text-gray-500 text-center mt-4 italic">
-                Official PPYC Marina Layout - Slip assignments, facilities, and navigation paths
+                Official PPYC Club Layout - Slip assignments, facilities, and navigation paths
               </p>
             </div>
             
@@ -193,10 +193,10 @@ const MarinaPage = () => {
           </div>
         </section>
 
-        {/* Marina Facilities */}
+        {/* Club Facilities */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Marina Facilities</h2>
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Club Facilities</h2>
             <div className="w-16 h-1 bg-blue-600 mx-auto"></div>
           </div>
 
@@ -204,15 +204,15 @@ const MarinaPage = () => {
             <div>
               <img 
                 src="/assets/images/ppyc-images/dockal.jpg" 
-                alt="PPYC Marina Dock Facilities" 
+                alt="PPYC Club Dock Facilities" 
                 className="w-full rounded-xl shadow-lg"
               />
               <p className="text-sm text-gray-500 text-center mt-3 italic">
-                Modern floating dock systems and marina infrastructure
+                Modern floating dock systems and club infrastructure
               </p>
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-6">Modern Marina Amenities</h3>
+              <h3 className="text-2xl font-bold text-slate-800 mb-6">Modern Club Amenities</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
@@ -232,26 +232,26 @@ const MarinaPage = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="text-green-600 text-lg" />
-                  <span className="text-slate-700">Very well kept marina</span>
+                  <span className="text-slate-700">Very well kept club</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Marina Life Gallery */}
+        {/* Club Life Gallery */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Life at the Marina</h2>
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Life at the Club</h2>
             <div className="w-16 h-1 bg-blue-600 mx-auto mb-6"></div>
-            <p className="text-slate-600">Experience the vibrant marina community at Pleasant Park Yacht Club</p>
+            <p className="text-slate-600">Experience the vibrant club community at Pleasant Park Yacht Club</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="group">
               <img 
                 src="/assets/images/ppyc-images/float.jpg" 
-                alt="Marina floating docks" 
+                alt="Club floating docks" 
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Floating Dock System</p>
@@ -259,7 +259,7 @@ const MarinaPage = () => {
             <div className="group">
               <img 
                 src="/assets/images/ppyc-images/dinghy.jpg" 
-                alt="Boats at the marina" 
+                alt="Boats at the club" 
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Boat Moorage</p>
@@ -275,7 +275,7 @@ const MarinaPage = () => {
             <div className="group">
               <img 
                 src="/assets/images/ppyc-images/sunset.jpg" 
-                alt="Marina sunset views" 
+                alt="Club sunset views" 
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Sunset Views</p>
@@ -356,11 +356,11 @@ const MarinaPage = () => {
         <section className="text-center">
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-12 text-white">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Ready to Join Our Marina Community?
+              Ready to Join Our Club Community?
             </h2>
             <div className="w-20 h-1 bg-white mx-auto mb-8"></div>
             <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              Experience world-class marina facilities, exceptional service, and a welcoming community 
+              Experience world-class club facilities, exceptional service, and a welcoming community 
               of fellow boating enthusiasts at Pleasant Park Yacht Club.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
