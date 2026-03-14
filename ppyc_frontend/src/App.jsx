@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
@@ -154,6 +154,7 @@ function App() {
                   <Route path="heritage" element={<HeritagePage />} />
                   <Route path="club" element={<MarinaPage />} />
                   <Route path="marina" element={<MarinaPage />} />
+                  <Route path="contact-page" element={<Navigate to="/" replace />} />
                   <Route path="pages/:slug" element={<StaticPage />} />
                 </Route>
 

@@ -289,35 +289,14 @@ const MarinaPage = () => {
             <div className="bg-white rounded-xl shadow-lg p-8">
               <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
                 <FontAwesomeIcon icon={ICON_NAMES.USER} className="text-blue-600" />
-                Harbormaster Services
+                Dock Master Services
               </h3>
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <FontAwesomeIcon icon={ICON_NAMES.ENVELOPE} className="text-blue-600" />
-                  <div>
-                    <p className="font-medium text-slate-800">Email</p>
-                    <a href="mailto:marina@ppyc.org" className="text-blue-600 hover:text-blue-800">marina@ppyc.org</a>
-                  </div>
-                </div>
                 <div className="flex items-center gap-3">
                   <FontAwesomeIcon icon={ICON_NAMES.PHONE} className="text-blue-600" />
                   <div>
                     <p className="font-medium text-slate-800">Phone</p>
-                    <a href="tel:248-555-3625" className="text-blue-600 hover:text-blue-800">(248) 555-DOCK</a>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FontAwesomeIcon icon={ICON_NAMES.BROADCAST} className="text-blue-600" />
-                  <div>
-                    <p className="font-medium text-slate-800">VHF Radio</p>
-                    <p className="text-slate-600">Channel 68</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FontAwesomeIcon icon={ICON_NAMES.CLOCK} className="text-blue-600" />
-                  <div>
-                    <p className="font-medium text-slate-800">Hours</p>
-                    <p className="text-slate-600">Daily: 6:00 AM - 10:00 PM</p>
+                    <a href="tel:+16178467124" className="text-blue-600 hover:text-blue-800">+1 617-846-7124</a>
                   </div>
                 </div>
               </div>
