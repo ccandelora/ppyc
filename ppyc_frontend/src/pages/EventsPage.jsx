@@ -8,6 +8,7 @@ import CloudinaryVideo from '../components/CloudinaryVideo';
 import { eventsAPI } from '../services/api';
 import { sanitizeHtml } from '../utils/htmlUtils';
 import { useApiCache } from '../hooks/useApiCache';
+import { logError } from '../utils/safeLogger';
 
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
@@ -28,7 +29,7 @@ const EventsPage = () => {
     if (eventsData) {
       setEvents(eventsData.data || []);
     } else if (eventsError) {
-      console.error('Error fetching events:', eventsError);
+      logError('Error fetching events:', eventsError);
       setError('Failed to load events. Please try again later.');
     }
   }, [eventsData, eventsError]);

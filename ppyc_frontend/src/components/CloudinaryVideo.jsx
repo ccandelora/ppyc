@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { generateVideoUrl, generatePosterUrl } from '../config/cloudinary';
+import { logError } from '../utils/safeLogger';
 
 const CloudinaryVideo = ({
   publicId,
@@ -31,7 +32,7 @@ const CloudinaryVideo = ({
       const handleCanPlay = () => {
         setIsLoading(false);
         if (autoPlay && !isPlaying) {
-          video.play().catch(console.error);
+          video.play().catch((e) => logError('Video play failed:', e));
         }
       };
 
@@ -45,7 +46,7 @@ const CloudinaryVideo = ({
       };
 
       const handleError = (error) => {
-        console.error('Video loading error:', error);
+        logError('Video loading error:', error);
         setHasError(true);
         setIsLoading(false);
       };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { adminAPI } from '../../services/api';
+import { logError } from '../../utils/safeLogger';
 
 const SlidesList = () => {
   const [slides, setSlides] = useState([]);
@@ -19,7 +20,7 @@ const SlidesList = () => {
       setSlides(response.data);
     } catch (err) {
       setError('Failed to fetch slides');
-      console.error('Error fetching slides:', err);
+      logError('Error fetching slides:', err);
     } finally {
       setLoading(false);
     }
@@ -35,7 +36,7 @@ const SlidesList = () => {
       setSlides(slides.filter(slide => slide.id !== slideId));
     } catch (err) {
       setError('Failed to delete slide');
-      console.error('Error deleting slide:', err);
+      logError('Error deleting slide:', err);
     }
   };
 
@@ -49,7 +50,7 @@ const SlidesList = () => {
       ));
     } catch (err) {
       setError('Failed to update slide status');
-      console.error('Error updating slide:', err);
+      logError('Error updating slide:', err);
     }
   };
 
@@ -94,7 +95,6 @@ const SlidesList = () => {
       setSlides(response.data);
     } catch (err) {
       setError('Failed to reorder slides');
-      console.error('Error reordering slides:', err);
     }
   };
 

@@ -30,7 +30,6 @@ class ApiCache {
     if (!key) return null;
     const entry = this.cache.get(key);
     if (this.isValid(entry)) {
-      console.log(`📦 Cache hit for: ${key}`);
       return Promise.resolve(entry.data);
     }
     return null;
@@ -41,7 +40,6 @@ class ApiCache {
    */
   set(key, data, ttl = this.defaultTTL) {
     if (!key) return;
-    console.log(`💾 Caching data for: ${key} (TTL: ${ttl}ms)`);
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -55,7 +53,6 @@ class ApiCache {
   async request(key, apiCall, ttl = this.defaultTTL) {
     // If no key provided, just execute the API call without caching
     if (!key) {
-      console.log('⚠️ No cache key provided, executing API call without caching');
       return apiCall();
     }
 
@@ -67,12 +64,10 @@ class ApiCache {
 
     // Check if request is already pending
     if (this.pendingRequests.has(key)) {
-      console.log(`⏳ Deduplicating request for: ${key}`);
       return this.pendingRequests.get(key);
     }
 
     // Execute the API call
-    console.log(`🌐 Making API request for: ${key}`);
     const requestPromise = apiCall()
       .then(response => {
         this.set(key, response, ttl);
@@ -92,7 +87,6 @@ class ApiCache {
    * Clear specific cache entry
    */
   invalidate(key) {
-    console.log(`🗑️ Invalidating cache for: ${key}`);
     this.cache.delete(key);
   }
 
@@ -100,7 +94,6 @@ class ApiCache {
    * Clear all cache entries
    */
   clearAll() {
-    console.log('🗑️ Clearing all cache');
     this.cache.clear();
     this.pendingRequests.clear();
   }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { pagesAPI } from '../services/api';
 import { useApiCache } from '../hooks/useApiCache';
+import { logError } from '../utils/safeLogger';
 
 const StaticPage = ({ slug }) => {
   const [page, setPage] = useState(null);
@@ -23,7 +24,7 @@ const StaticPage = ({ slug }) => {
       setPage(pageData.data);
     } else if (pageError) {
       setError('Page not found');
-      console.error('Error fetching page:', pageError);
+      logError('Error fetching page:', pageError);
     }
   }, [pageData, pageError]);
 

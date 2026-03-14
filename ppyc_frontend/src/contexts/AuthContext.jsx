@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api';
+import { logError } from '../utils/safeLogger';
 
 const AuthContext = createContext();
 
@@ -24,7 +25,7 @@ const AuthProvider = ({ children }) => {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
-        console.error('Error parsing stored user:', error);
+        logError('Error parsing stored user:', error);
         localStorage.removeItem('currentUser');
       }
     }
@@ -45,7 +46,6 @@ const AuthProvider = ({ children }) => {
         localStorage.setItem('currentUser', JSON.stringify(userData));
       }
     } catch {
-      console.log('Auth check: User not authenticated (normal for public pages)');
       setUser(null);
       localStorage.removeItem('currentUser');
     } finally {
@@ -89,7 +89,7 @@ const AuthProvider = ({ children }) => {
     try {
       await authAPI.logout();
     } catch (err) {
-      console.error('Logout error:', err);
+      logError('Logout error:', err);
     } finally {
       setUser(null);
       setError(null);

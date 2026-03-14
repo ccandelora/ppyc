@@ -19,9 +19,6 @@ function AdminProtection() {
       
       // Update page title for admin pages
       document.title = 'Admin Dashboard - PPYC';
-      
-      // Add security warning in console for admin pages
-      console.warn('🔒 Admin area - Unauthorized access is prohibited');
     } else {
       // Remove admin protection meta tags for public pages
       removeMetaTag('robots');

@@ -128,6 +128,7 @@ export const cacheInvalidators = {
   },
   invalidateImages: () => {
     apiCache.invalidate('images-all');
+    apiCache.invalidate('allImages'); // MediaLibrary hook key
   },
   invalidateSettings: () => {
     apiCache.invalidate('settings-all');
@@ -148,7 +149,7 @@ export const adminAPI = {
           'Content-Type': 'multipart/form-data',
         },
       });
-      result.then(() => cacheInvalidators.invalidateNews());
+      result.then(() => cacheInvalidators.invalidateNews()).catch(() => {});
       return result;
     },
     update: (id, data) => {
@@ -157,12 +158,12 @@ export const adminAPI = {
           'Content-Type': 'multipart/form-data',
         },
       });
-      result.then(() => cacheInvalidators.invalidateNews());
+      result.then(() => cacheInvalidators.invalidateNews()).catch(() => {});
       return result;
     },
     delete: (id) => {
       const result = authApi.delete(`/admin/news/${id}`);
-      result.then(() => cacheInvalidators.invalidateNews());
+      result.then(() => cacheInvalidators.invalidateNews()).catch(() => {});
       return result;
     },
   },
@@ -175,7 +176,7 @@ export const adminAPI = {
           'Content-Type': 'multipart/form-data',
         },
       });
-      result.then(() => cacheInvalidators.invalidateEvents());
+      result.then(() => cacheInvalidators.invalidateEvents()).catch(() => {});
       return result;
     },
     update: (id, data) => {
@@ -184,25 +185,25 @@ export const adminAPI = {
           'Content-Type': 'multipart/form-data',
         },
       });
-      result.then(() => cacheInvalidators.invalidateEvents());
+      result.then(() => cacheInvalidators.invalidateEvents()).catch(() => {});
       return result;
     },
     delete: (id) => {
       const result = authApi.delete(`/admin/events/${id}`);
-      result.then(() => cacheInvalidators.invalidateEvents());
+      result.then(() => cacheInvalidators.invalidateEvents()).catch(() => {});
       return result;
     },
   },
   slides: {
     getAll: () => authApi.get('/admin/slides'),
-    getById: (id) => authApi.get(`/admin/slides/${id}`),
+    getById: (id, config) => authApi.get(`/admin/slides/${id}`, config),
     create: (data) => {
       const result = authApi.post('/admin/slides', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      result.then(() => cacheInvalidators.invalidateSlides());
+      result.then(() => cacheInvalidators.invalidateSlides()).catch(() => {});
       return result;
     },
     update: (id, data) => {
@@ -211,29 +212,39 @@ export const adminAPI = {
           'Content-Type': 'multipart/form-data',
         },
       });
-      result.then(() => cacheInvalidators.invalidateSlides());
+      result.then(() => cacheInvalidators.invalidateSlides()).catch(() => {});
       return result;
     },
     delete: (id) => {
       const result = authApi.delete(`/admin/slides/${id}`);
-      result.then(() => cacheInvalidators.invalidateSlides());
+      result.then(() => cacheInvalidators.invalidateSlides()).catch(() => {});
+      return result;
+    },
+    reorder: (slidesData) => {
+      const result = authApi.patch('/admin/slides/reorder', { slides: slidesData });
+      result.then(() => cacheInvalidators.invalidateSlides()).catch(() => {});
       return result;
     },
   },
   images: {
     getAll: () => authApi.get('/admin/images/all'),
+    /** Paginated list: GET /admin/images?limit=&cursor= */
+    getPage: (limit = 24, cursor = null, folder = null) =>
+      authApi.get('/admin/images', {
+        params: { limit, ...(cursor && { cursor }), ...(folder && { folder }) },
+      }),
     upload: (data) => {
       const result = authApi.post('/admin/images', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      result.then(() => cacheInvalidators.invalidateImages());
+      result.then(() => cacheInvalidators.invalidateImages()).catch(() => {});
       return result;
     },
     delete: (publicId) => {
       const result = authApi.delete(`/admin/images/${publicId}`);
-      result.then(() => cacheInvalidators.invalidateImages());
+      result.then(() => cacheInvalidators.invalidateImages()).catch(() => {});
       return result;
     },
   },
@@ -241,10 +252,8 @@ export const adminAPI = {
     getAll: () => authApi.get('/admin/settings'),
     getByKey: (key) => authApi.get(`/admin/settings/${key}`),
     update: (key, data) => authApi.put(`/admin/settings/${key}`, data),
-    updateMultiple: (category, settings) => {
-      console.log('Making API call to /admin/settings/update_multiple with:', { category, settings });
-      return authApi.put('/admin/settings/update_multiple', { category, settings });
-    },
+    updateMultiple: (category, settings) =>
+      authApi.put('/admin/settings/update_multiple', { category, settings }),
     create: (data) => authApi.post('/admin/settings', data),
     delete: (key) => authApi.delete(`/admin/settings/${key}`),
     initializeDefaults: () => authApi.post('/admin/settings/initialize_defaults'),

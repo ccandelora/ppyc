@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ImageUpload from '../ImageUpload';
 import WYSIWYGEditor from './WYSIWYGEditor';
 import { adminAPI } from '../../services/api';
+import { logError } from '../../utils/safeLogger';
+import { ICON_NAMES } from '../../config/fontawesome';
 
 const SlideForm = () => {
   const { id } = useParams();
@@ -17,7 +20,7 @@ const SlideForm = () => {
     active_status: true,
     image: null,
     location: '',
-    weather_type: 'current',
+    weather_type: 'forecast',
     background_video: null,
     background_tint_color: '#000000',
     background_tint_opacity: 0.5
@@ -27,68 +30,52 @@ const SlideForm = () => {
   const [success, setSuccess] = useState('');
 
   const slideTypes = [
-    { 
-      value: 'announcement', 
-      label: 'Announcement', 
-      icon: 'fas fa-bullhorn',
-      description: 'General announcements and news',
-      color: 'text-blue-600'
-    },
-    { 
-      value: 'event_promo', 
-      label: 'Event Promotion', 
-      icon: 'fas fa-calendar-alt',
-      description: 'Promote upcoming events',
-      color: 'text-green-600'
-    },
-    { 
-      value: 'photo', 
-      label: 'Photo Slide', 
-      icon: 'fas fa-image',
-      description: 'Display photos with optional text',
-      color: 'text-purple-600'
-    },
-    { 
-      value: 'weather', 
-      label: 'Weather Display', 
-      icon: 'fas fa-cloud-sun',
-      description: 'Show current weather and marine conditions',
-      color: 'text-orange-600'
-    }
+    { value: 'announcement', label: 'Announcement', icon: ICON_NAMES.ANNOUNCEMENT, color: 'text-blue-600', description: 'General announcements and news' },
+    { value: 'event_promo', label: 'Event Promotion', icon: ICON_NAMES.CALENDAR_ALT, color: 'text-green-600', description: 'Promote upcoming events' },
+    { value: 'photo', label: 'Photo Slide', icon: ICON_NAMES.IMAGE, color: 'text-purple-600', description: 'Display photos with optional text' },
+    { value: 'weather', label: 'Weather Display', icon: ICON_NAMES.CLOUD_SUN, color: 'text-orange-600', description: 'Show 3-day weather forecast' }
   ];
 
   useEffect(() => {
-    if (isEditing) {
-      fetchSlide();
-    }
-  }, [id, isEditing]);
+    if (!isEditing) return;
+    const controller = new AbortController();
+    let cancelled = false;
 
-  const fetchSlide = async () => {
-    try {
-      setLoading(true);
-      const response = await adminAPI.slides.getById(id);
-      const slide = response.data;
-      
-      setFormData({
-        title: slide.title || '',
-        slide_type: slide.slide_type || 'announcement',
-        content: slide.content || '',
-        duration_seconds: slide.duration_seconds || 60,
-        active_status: slide.active_status !== undefined ? slide.active_status : true,
-        image: slide.image_url ? { secure_url: slide.image_url } : null, // Load existing image
-        location: slide.location || '',
-        weather_type: slide.weather_type || 'current',
-        background_video: slide.background_video_url ? { secure_url: slide.background_video_url } : null, // Load existing video
-        background_tint_color: slide.background_tint_color || '#000000',
-        background_tint_opacity: slide.background_tint_opacity !== undefined ? slide.background_tint_opacity : 0.5
-      });
-    } catch (err) {
-      setError('Failed to fetch slide');
-      console.error('Error fetching slide:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchSlide = async () => {
+      try {
+        setLoading(true);
+        const response = await adminAPI.slides.getById(id, { signal: controller.signal });
+        if (cancelled) return;
+        const slide = response.data;
+        setFormData({
+          title: slide.title || '',
+          slide_type: slide.slide_type || 'announcement',
+          content: slide.content || '',
+          duration_seconds: slide.duration_seconds || 60,
+          active_status: slide.active_status !== undefined ? slide.active_status : true,
+          image: slide.image_url ? { secure_url: slide.image_url } : null,
+          location: slide.location || '',
+          weather_type: 'forecast',
+          background_video: slide.background_video_url ? { secure_url: slide.background_video_url } : null,
+          background_tint_color: slide.background_tint_color || '#000000',
+          background_tint_opacity: slide.background_tint_opacity !== undefined ? slide.background_tint_opacity : 0.5
+        });
+      } catch (err) {
+        if (!cancelled && err.name !== 'AbortError') {
+          setError('Failed to fetch slide');
+          logError('Error fetching slide:', err);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchSlide();
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [id, isEditing]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -107,10 +94,7 @@ const SlideForm = () => {
   };
 
   const handleImageUpload = (uploadData) => {
-    console.log('🖼️ handleImageUpload called with:', uploadData);
-    
     if (!uploadData) {
-      console.log('❌ Clearing image data');
       setFormData(prev => ({
         ...prev,
         image: null
@@ -118,7 +102,6 @@ const SlideForm = () => {
       return;
     }
 
-    console.log('✅ Setting image data:', uploadData);
     setFormData(prev => ({
       ...prev,
       image: {
@@ -136,8 +119,6 @@ const SlideForm = () => {
   };
 
   const handleBackgroundVideoUpload = (uploadData) => {
-    console.log('🎥 Background video upload success:', uploadData);
-    console.log('🎥 Video URL:', uploadData?.url || uploadData?.secure_url);
     setFormData(prev => ({
       ...prev,
       background_video: uploadData // This will contain the Cloudinary upload response
@@ -166,18 +147,13 @@ const SlideForm = () => {
       
       // Add image if selected
       if (formData.image && (formData.image.secure_url || formData.image.url)) {
-        console.log('🖼️ Adding image URL:', formData.image.secure_url || formData.image.url);
         formDataToSend.append('slide[image_url]', formData.image.secure_url || formData.image.url);
         if (formData.image.public_id) {
           formDataToSend.append('slide[image_public_id]', formData.image.public_id);
         }
-      } else {
-        console.log('⚠️ No image to add:', formData.image);
       }
 
-      // Add background video if selected
       if (formData.background_video && formData.background_video.secure_url) {
-        console.log('🎥 Adding background video URL:', formData.background_video.secure_url);
         formDataToSend.append('slide[background_video_url]', formData.background_video.secure_url);
       }
 
@@ -192,11 +168,8 @@ const SlideForm = () => {
       // Add weather-specific fields
       if (formData.slide_type === 'weather') {
         formDataToSend.append('slide[location]', formData.location || '');
-        formDataToSend.append('slide[weather_type]', formData.weather_type || 'current');
+        formDataToSend.append('slide[weather_type]', 'forecast');
       }
-
-      // Log form data for debugging
-      console.log('📋 Form data being sent:', Object.fromEntries(formDataToSend));
 
       // Save the slide
       if (isEditing) {
@@ -213,7 +186,7 @@ const SlideForm = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       navigate('/admin/slides');
     } catch (err) {
-      console.error('Error saving slide:', err);
+      logError('Error saving slide:', err);
       setError(err.response?.data?.message || 'Failed to save slide');
       setLoading(false);
     }
@@ -230,7 +203,7 @@ const SlideForm = () => {
   if (loading && isEditing) {
     return (
       <div className="flex justify-center items-center h-64">
-        <i className="fas fa-spinner fa-spin text-3xl text-blue-500"></i>
+        <FontAwesomeIcon icon={ICON_NAMES.LOADING} spin className="text-3xl text-blue-500" />
       </div>
     );
   }
@@ -242,7 +215,7 @@ const SlideForm = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
-              <i className="fas fa-edit mr-2 text-blue-500"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.EDIT} className="mr-2 text-blue-500" />
               {isEditing ? 'Edit Slide' : 'Create New Slide'}
             </h2>
             <p className="text-sm text-gray-600 mt-1">
@@ -253,7 +226,7 @@ const SlideForm = () => {
             onClick={handleCancel}
             className="text-gray-500 hover:text-gray-700 px-3 py-1 rounded-lg transition-colors"
           >
-            <i className="fas fa-times mr-1"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.CLOSE} className="mr-1" />
             Cancel
           </button>
         </div>
@@ -262,14 +235,14 @@ const SlideForm = () => {
       {/* Messages */}
       {error && (
         <div className="mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          <i className="fas fa-exclamation-triangle mr-2"></i>
+          <FontAwesomeIcon icon={ICON_NAMES.WARNING} className="mr-2" />
           {error}
         </div>
       )}
 
       {success && (
         <div className="mx-6 mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-          <i className="fas fa-check-circle mr-2"></i>
+          <FontAwesomeIcon icon={ICON_NAMES.CHECK_CIRCLE} className="mr-2" />
           {success}
         </div>
       )}
@@ -278,7 +251,7 @@ const SlideForm = () => {
       <div className="p-6 border-b border-gray-200">
         <div>
           <label htmlFor="slide_image" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-image mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.IMAGE} className="mr-2 text-gray-400" />
             Slide Image {formData.slide_type === 'photo' && <span className="text-red-500">*</span>}
           </label>
           <div id="slide_image">
@@ -286,7 +259,7 @@ const SlideForm = () => {
               <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <i className="fas fa-image text-blue-600 mr-2"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.IMAGE} className="text-blue-600 mr-2" />
                     <span className="text-blue-700 font-medium">
                       {isEditing ? 'Current slide image' : 'Slide image uploaded'}
                     </span>
@@ -297,7 +270,7 @@ const SlideForm = () => {
                     className="text-red-600 hover:text-red-800 transition-colors"
                     title="Remove slide image"
                   >
-                    <i className="fas fa-times"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.CLOSE} />
                   </button>
                 </div>
                 
@@ -348,7 +321,7 @@ const SlideForm = () => {
       <div className="p-6 border-b border-gray-200">
         <div>
           <label htmlFor="background_video" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-video mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.VIDEO} className="mr-2 text-gray-400" />
             Background Video
           </label>
           <div id="background_video">
@@ -356,7 +329,7 @@ const SlideForm = () => {
               <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <i className="fas fa-video text-green-600 mr-2"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.VIDEO} className="text-green-600 mr-2" />
                     <span className="text-green-700 font-medium">
                       {isEditing ? 'Current background video' : 'Background video uploaded'}
                     </span>
@@ -367,7 +340,7 @@ const SlideForm = () => {
                     className="text-red-600 hover:text-red-800 transition-colors"
                     title="Remove background video"
                   >
-                    <i className="fas fa-times"></i>
+                    <FontAwesomeIcon icon={ICON_NAMES.CLOSE} />
                   </button>
                 </div>
                 
@@ -437,7 +410,7 @@ const SlideForm = () => {
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-heading mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.HEADING} className="mr-2 text-gray-400" />
             Title *
           </label>
           <input
@@ -455,7 +428,7 @@ const SlideForm = () => {
         {/* Slide Type */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-3">
-            <i className="fas fa-layer-group mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.LAYER_GROUP} className="mr-2 text-gray-400" />
             Slide Type *
           </label>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -479,7 +452,7 @@ const SlideForm = () => {
                   }`}
                 >
                   <div className="text-center">
-                    <i className={`${type.icon} ${type.color} text-2xl mb-2`}></i>
+                    <FontAwesomeIcon icon={type.icon} className={`${type.color} text-2xl mb-2`} />
                     <h3 className="font-medium text-gray-900">{type.label}</h3>
                     <p className="text-xs text-gray-600 mt-1">{type.description}</p>
                   </div>
@@ -494,7 +467,7 @@ const SlideForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="weather_location" className="block text-sm font-medium text-gray-700 mb-2">
-                <i className="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.LOCATION} className="mr-2 text-gray-400" />
                 Location *
               </label>
               <input
@@ -512,33 +485,17 @@ const SlideForm = () => {
               </p>
             </div>
 
-            <div>
-              <label htmlFor="weather_type_select" className="block text-sm font-medium text-gray-700 mb-2">
-                <i className="fas fa-thermometer-half mr-2 text-gray-400"></i>
-                Weather Display Type
-              </label>
-              <select
-                id="weather_type_select"
-                name="weather_type"
-                value={formData.weather_type}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-              >
-                <option value="current">Current Weather & Marine</option>
-                <option value="forecast">3-Day Forecast</option>
-                <option value="marine">Marine Conditions</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1">
-                Choose what weather information to display
-              </p>
-            </div>
+            <p className="text-sm text-gray-600">
+              <FontAwesomeIcon icon={ICON_NAMES.CLOUD_SUN} className="mr-2 text-gray-400" />
+              3-day forecast for the location below
+            </p>
           </div>
         )}
 
         {/* Background Tint Color */}
         <div>
           <label htmlFor="background_tint_color" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-palette mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon="palette" className="mr-2 text-gray-400" />
             Background Tint Color
           </label>
           <input
@@ -554,7 +511,7 @@ const SlideForm = () => {
         {/* Background Tint Opacity */}
         <div>
           <label htmlFor="background_tint_opacity" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-adjust mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon="adjust" className="mr-2 text-gray-400" />
             Background Tint Opacity
           </label>
           <input
@@ -577,10 +534,11 @@ const SlideForm = () => {
         {/* Content */}
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-            <i className="fas fa-align-left mr-2 text-gray-400"></i>
+            <FontAwesomeIcon icon={ICON_NAMES.ALIGN_LEFT} className="mr-2 text-gray-400" />
             Content {formData.slide_type === 'announcement' && <span className="text-red-500">*</span>}
           </label>
           <WYSIWYGEditor
+            key={`slide-editor-${id ?? 'new'}`}
             value={formData.content}
             onChange={handleContentChange}
             placeholder={
@@ -604,7 +562,7 @@ const SlideForm = () => {
           {/* Duration */}
           <div>
             <label htmlFor="duration_seconds" className="block text-sm font-medium text-gray-700 mb-2">
-              <i className="fas fa-clock mr-2 text-gray-400"></i>
+              <FontAwesomeIcon icon={ICON_NAMES.CLOCK} className="mr-2 text-gray-400" />
               Display Duration (seconds) *
             </label>
             <input
@@ -626,7 +584,7 @@ const SlideForm = () => {
           {/* Active Status */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              <i className="fas fa-toggle-on mr-2 text-gray-400"></i>
+              <FontAwesomeIcon icon="toggle-on" className="mr-2 text-gray-400" />
               Status
             </label>
             <div className="flex items-center">
@@ -662,7 +620,7 @@ const SlideForm = () => {
         {formData.title && (
           <div className="border-t pt-6">
             <h4 className="text-sm font-medium text-gray-700 mb-3">
-              <i className="fas fa-eye mr-2 text-gray-400"></i>
+              <FontAwesomeIcon icon="eye" className="mr-2 text-gray-400" />
               Preview
             </h4>
             <div className="bg-gray-900 text-white p-6 rounded-lg aspect-video flex items-center justify-center relative overflow-hidden">
@@ -701,7 +659,7 @@ const SlideForm = () => {
               {/* Content */}
               <div className="text-center z-10 relative">
                 <div className="flex items-center justify-center mb-2">
-                  <i className={`${getSelectedSlideType()?.icon} mr-2`}></i>
+                  <FontAwesomeIcon icon={getSelectedSlideType()?.icon} className="mr-2" />
                   <span className="text-xs uppercase tracking-wider opacity-75">
                     {getSelectedSlideType()?.label}
                   </span>
@@ -723,19 +681,19 @@ const SlideForm = () => {
             <div className="mt-3 flex flex-wrap gap-2 text-xs text-gray-600">
               {formData.background_video && formData.background_video.secure_url && (
                 <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
-                  <i className="fas fa-video mr-1"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.VIDEO} className="mr-1" />
                   Background Video
                 </span>
               )}
               {formData.image && formData.image.secure_url && (
                 <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                  <i className="fas fa-image mr-1"></i>
+                  <FontAwesomeIcon icon={ICON_NAMES.IMAGE} className="mr-1" />
                   Background Image
                 </span>
               )}
               {formData.background_tint_opacity > 0 && (
                 <span className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded-full">
-                  <i className="fas fa-palette mr-1"></i>
+                  <FontAwesomeIcon icon="palette" className="mr-1" />
                   Tint: {Math.round(formData.background_tint_opacity * 100)}%
                 </span>
               )}
@@ -765,12 +723,12 @@ const SlideForm = () => {
           >
             {loading ? (
               <>
-                <i className="fas fa-spinner fa-spin mr-2"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.LOADING} spin className="mr-2" />
                 Saving...
               </>
             ) : (
               <>
-                <i className="fas fa-save mr-2"></i>
+                <FontAwesomeIcon icon={ICON_NAMES.SAVE} className="mr-2" />
                 Save Slide
               </>
             )}

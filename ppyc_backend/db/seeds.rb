@@ -328,7 +328,7 @@ slides = [
     active_status: true,
     display_order: 2,
     location: "Boston Harbor, MA",
-    weather_type: "marine",
+    weather_type: "forecast",
     background_tint_color: "#000000",
     background_tint_opacity: 0.6
   },

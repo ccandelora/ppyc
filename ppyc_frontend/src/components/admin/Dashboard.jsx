@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { newsAPI, eventsAPI, slidesAPI } from '../../services/api';
 import { useMultipleApiCache } from '../../hooks/useApiCache';
+import { logError } from '../../utils/safeLogger';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -21,7 +22,7 @@ const Dashboard = () => {
   }, []);
 
   const onError = useCallback((error) => {
-    console.error('Error fetching dashboard data:', error);
+    logError('Error fetching dashboard data:', error);
     setIsInitialLoad(false);
   }, []);
 
@@ -110,13 +111,6 @@ const Dashboard = () => {
       color: 'bg-purple-500',
       link: '/admin/slides'
     },
-    {
-      title: 'Pages',
-      count: stats.pages,
-      icon: 'file-alt',
-      color: 'bg-orange-500',
-      link: '/admin/pages'
-    }
   ];
 
   if (isInitialLoad) {

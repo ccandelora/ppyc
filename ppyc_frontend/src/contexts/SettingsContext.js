@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { adminAPI } from '../services/api';
+import { logError, safeErrorMessage } from '../utils/safeLogger';
 
 export const SettingsContext = createContext();
 
@@ -38,7 +39,7 @@ export const SettingsProvider = ({ children }) => {
       // Try to fetch from admin API
       await fetchSettings();
     } catch (err) {
-      console.error('Error loading settings:', err);
+      logError('Error loading settings:', err);
       setDefaultSettings();
     } finally {
       setLoading(false);
@@ -57,7 +58,7 @@ export const SettingsProvider = ({ children }) => {
         }
       }
     } catch (err) {
-      console.warn('Error reading from cache:', err);
+      console.warn('Error reading from cache:', safeErrorMessage(err) || 'Unknown');
     }
     return null;
   };
@@ -67,7 +68,7 @@ export const SettingsProvider = ({ children }) => {
       localStorage.setItem(CACHE_KEY, JSON.stringify(settingsData));
       localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
     } catch (err) {
-      console.warn('Error writing to cache:', err);
+      console.warn('Error writing to cache:', safeErrorMessage(err) || 'Unknown');
     }
   };
 
@@ -85,7 +86,7 @@ export const SettingsProvider = ({ children }) => {
       }
     } catch (err) {
       // If admin API fails (likely due to auth), use default values
-      console.warn('Could not fetch settings from admin API, using defaults:', err.message);
+      console.warn('Could not fetch settings from admin API, using defaults:', safeErrorMessage(err));
       setDefaultSettings();
     }
   };

@@ -4,6 +4,7 @@ import { ICON_NAMES } from '../config/fontawesome';
 import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
 import CloudinaryVideo from './CloudinaryVideo';
 import WeatherWidget from './WeatherWidget';
+import SlideWeatherWidget from './SlideWeatherWidget';
 import { useApiCache } from '../hooks/useApiCache';
 import { slidesAPI } from '../services/api';
 import { useSettings } from '../hooks/useSettings';
@@ -166,9 +167,9 @@ const TVDisplay = () => {
           />
 
           {/* Content Overlay */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 flex flex-col min-h-0 overflow-hidden">
             {/* Header */}
-            <div className="p-8 flex justify-between items-start">
+            <div className="p-4 md:p-6 flex justify-between items-start flex-shrink-0">
                           <div className="flex items-center">
               <img src="/ppyc-logo.png" alt="PPYC Logo" className="h-16 mr-6 object-contain" />
               <div>
@@ -187,32 +188,54 @@ const TVDisplay = () => {
             {enableWeather && <WeatherWidget className="text-3xl" showMarine={true} />}
             </div>
 
-            {/* Slide Content */}
-            <div className="flex-1 flex items-center justify-center p-16">
-              <div className="text-center max-w-6xl">
-                {slides[currentSlideIndex].slide_type === 'announcement' && (
-                  <div className="text-xl uppercase tracking-widest text-gray-300 mb-4">
-                    ANNOUNCEMENT
-                  </div>
+            {/* Slide Content - flex-1 min-h-0 so it shrinks and doesn't push footer off */}
+            <div className="flex-1 flex items-center justify-center p-4 md:p-6 min-h-0 overflow-auto">
+              <div className="text-center max-w-6xl w-full mx-auto">
+                {slides[currentSlideIndex].slide_type === 'weather' ? (
+                  <>
+                    {slides[currentSlideIndex].title && (
+                      <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 md:mb-4 tracking-tight">
+                        {slides[currentSlideIndex].title}
+                      </h1>
+                    )}
+                    <SlideWeatherWidget
+                      location={slides[currentSlideIndex].location}
+                      weatherType={slides[currentSlideIndex].weather_type || 'current'}
+                    />
+                    {slides[currentSlideIndex].content && (
+                      <div
+                        className="mt-8 text-3xl text-gray-100 leading-relaxed prose prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ __html: slides[currentSlideIndex].content }}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {slides[currentSlideIndex].slide_type === 'announcement' && (
+                      <div className="text-xl uppercase tracking-widest text-gray-300 mb-4">
+                        ANNOUNCEMENT
+                      </div>
+                    )}
+                    <h1 className="text-8xl font-bold text-white mb-8 tracking-tight leading-tight">
+                      {slides[currentSlideIndex].title}
+                    </h1>
+                    <div
+                      className="text-4xl text-gray-100 leading-relaxed prose prose-invert prose-lg max-w-none"
+                      dangerouslySetInnerHTML={{ __html: slides[currentSlideIndex].content }}
+                    />
+                  </>
                 )}
-                <h1 className="text-8xl font-bold text-white mb-8 tracking-tight leading-tight">
-                  {slides[currentSlideIndex].title}
-                </h1>
-                <div 
-                  className="text-4xl text-gray-100 leading-relaxed prose prose-invert prose-lg max-w-none"
-                  dangerouslySetInnerHTML={{ __html: slides[currentSlideIndex].content }}
-                />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 flex-shrink-0">
               <div className="flex justify-between items-center">
-                <div className="text-3xl text-white">
+                <div className="text-xl md:text-2xl text-white">
                   <FontAwesomeIcon icon={ICON_NAMES.SHIP} className="mr-4" />
                   {siteTitle}
                 </div>
-                <div className="text-2xl text-gray-300">
+                <div className="text-lg md:text-xl text-gray-300">
                   <FontAwesomeIcon icon={ICON_NAMES.LOCATION} className="mr-2" />
                   Winthrop, MA
                 </div>

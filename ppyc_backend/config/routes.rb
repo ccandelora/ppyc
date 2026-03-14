@@ -28,6 +28,7 @@ Rails.application.routes.draw do
         get :current
         get :forecast
         get :marine
+        get :marine_debug  # development only: inspect raw marine API response
       end
 
       # Admin endpoints (authentication required)
