@@ -11,10 +11,7 @@ const PerformanceMonitor = () => {
     }
 
     const monitorPerformance = () => {
-      if (!window.performance || !window.performance.timing) {
-        console.warn('Performance API not supported');
-        return;
-      }
+      if (!window.performance || !window.performance.timing) return;
 
       const timing = window.performance.timing;
       const navigation = window.performance.navigation;

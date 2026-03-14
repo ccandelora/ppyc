@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ImageUpload from '../ImageUpload';
 import WYSIWYGEditor from './WYSIWYGEditor';
+import ImageBrowser from './ImageBrowser';
 import { adminAPI } from '../../services/api';
+import { logError } from '../../utils/safeLogger';
+
+const stripHtml = (html = '') =>
+  html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 const NewsForm = () => {
   const { id } = useParams();
@@ -17,9 +25,11 @@ const NewsForm = () => {
     featured_image: null
   });
   const [existingImageUrl, setExistingImageUrl] = useState(null);
+  const [showImagePicker, setShowImagePicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     if (isEditing) {
@@ -31,14 +41,10 @@ const NewsForm = () => {
   const fetchNewsArticle = async () => {
     try {
       setLoading(true);
-      console.log('Fetching news article with ID:', id);
       const response = await adminAPI.news.getById(id);
-      console.log('News article response:', response);
-      
-      // Handle different response structures
+
       const newsArticle = response?.data?.data || response?.data || response;
-      console.log('News article data:', newsArticle);
-      
+
       if (!newsArticle || typeof newsArticle !== 'object') {
         throw new Error('Invalid response format from server');
       }
@@ -51,8 +57,8 @@ const NewsForm = () => {
           if (!isNaN(date.getTime())) {
             publishedAtFormatted = date.toISOString().slice(0, 16);
           }
-        } catch (dateError) {
-          console.warn('Failed to parse published_at date:', dateError);
+        } catch (_dateError) {
+          // use default empty publishedAtFormatted
         }
       }
       
@@ -65,7 +71,7 @@ const NewsForm = () => {
       setExistingImageUrl(newsArticle.featured_image_url || null);
     } catch (err) {
       setError('Failed to fetch news article');
-      console.error('Error fetching news article:', err);
+      logError('Error fetching news article:', err);
       // Re-throw to let ErrorBoundary catch it if it's a critical error
       if (err.response?.status === 404) {
         setError('News article not found');
@@ -83,6 +89,7 @@ const NewsForm = () => {
       ...prev,
       [name]: value
     }));
+    setFieldErrors((prev) => ({ ...prev, [name]: null }));
     setError('');
   };
 
@@ -91,6 +98,7 @@ const NewsForm = () => {
       ...prev,
       content
     }));
+    setFieldErrors((prev) => ({ ...prev, content: null }));
   };
 
   const handleImageUpload = (uploadData) => {
@@ -100,11 +108,49 @@ const NewsForm = () => {
     }));
   };
 
+  const handleImageSelect = (imageData) => {
+    if (!imageData) {
+      setFormData((prev) => ({ ...prev, featured_image: null }));
+      setExistingImageUrl(null);
+      setShowImagePicker(false);
+      return;
+    }
+
+    const normalizedImageData = {
+      url: imageData.url || imageData.secure_url,
+      secure_url: imageData.secure_url || imageData.url,
+      public_id: imageData.public_id,
+      width: imageData.width,
+      height: imageData.height,
+      alt: imageData.alt || imageData.public_id?.split('/').pop()
+    };
+
+    handleImageUpload(normalizedImageData);
+    setExistingImageUrl(null);
+    setShowImagePicker(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
     setSuccess('');
+    setFieldErrors({});
+
+    const nextFieldErrors = {};
+    if (!formData.title.trim()) {
+      nextFieldErrors.title = 'Article title is required.';
+    }
+    if (!stripHtml(formData.content)) {
+      nextFieldErrors.content = 'Article content is required.';
+    }
+
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setFieldErrors(nextFieldErrors);
+      setError('Please fill in the required fields and try again.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const formDataToSend = new FormData();
@@ -130,7 +176,18 @@ const NewsForm = () => {
         navigate('/admin/news');
       }, 2000);
     } catch (err) {
-      setError(err.message || `Failed to ${isEditing ? 'update' : 'create'} news article`);
+      const serverMessage = err?.response?.data?.error || err?.message || `Failed to ${isEditing ? 'update' : 'create'} news article`;
+      const nextServerFieldErrors = {};
+
+      if (/title/i.test(serverMessage)) nextServerFieldErrors.title = serverMessage;
+      if (/content/i.test(serverMessage)) nextServerFieldErrors.content = serverMessage;
+      if (/published/i.test(serverMessage)) nextServerFieldErrors.published_at = serverMessage;
+
+      if (Object.keys(nextServerFieldErrors).length > 0) {
+        setFieldErrors((prev) => ({ ...prev, ...nextServerFieldErrors }));
+      }
+
+      setError(serverMessage);
     } finally {
       setLoading(false);
     }
@@ -201,6 +258,10 @@ const NewsForm = () => {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <p className="text-sm text-gray-600">
+          Fields marked with <span className="text-red-600">*</span> are required.
+        </p>
+
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -214,9 +275,14 @@ const NewsForm = () => {
             value={formData.title}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 ${
+              fieldErrors.title ? 'border-red-400 bg-red-50' : 'border-gray-300'
+            }`}
             placeholder="Enter article title..."
           />
+          {fieldErrors.title && (
+            <p className="mt-1 text-sm text-red-600">{fieldErrors.title}</p>
+          )}
         </div>
 
         {/* Content */}
@@ -232,6 +298,9 @@ const NewsForm = () => {
             height={400}
             disabled={loading}
           />
+          {fieldErrors.content && (
+            <p className="mt-1 text-sm text-red-600">{fieldErrors.content}</p>
+          )}
         </div>
 
         {/* Featured Image */}
@@ -260,14 +329,28 @@ const NewsForm = () => {
             </div>
           )}
           
-          <ImageUpload 
-            onUploadSuccess={handleImageUpload}
-            onUploadError={(error) => setError(`Image upload failed: ${error}`)}
-            folder="news"
-            allowLibraryBrowse={true}
-          />
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setShowImagePicker(true)}
+              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <FontAwesomeIcon icon="images" className="mr-2" />
+              {formData.featured_image?.secure_url || existingImageUrl ? 'Change Image' : 'Choose from Media Library'}
+            </button>
+            {(formData.featured_image?.secure_url || existingImageUrl) && (
+              <button
+                type="button"
+                onClick={() => handleImageSelect(null)}
+                className="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+              >
+                <FontAwesomeIcon icon="times" className="mr-2" />
+                Remove Image
+              </button>
+            )}
+          </div>
           <p className="text-sm text-gray-500 mt-1">
-            Upload a featured image for this article (optional)
+            Pick an existing image from Media Library. Upload new images in Media Library first.
           </p>
         </div>
 
@@ -283,8 +366,13 @@ const NewsForm = () => {
             name="published_at"
             value={formData.published_at}
             onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 ${
+              fieldErrors.published_at ? 'border-red-400 bg-red-50' : 'border-gray-300'
+            }`}
           />
+          {fieldErrors.published_at && (
+            <p className="mt-1 text-sm text-red-600">{fieldErrors.published_at}</p>
+          )}
           <p className="text-sm text-gray-500 mt-1">
             Leave empty to save as draft. Set future date to schedule publication.
           </p>
@@ -319,6 +407,14 @@ const NewsForm = () => {
           </button>
         </div>
       </form>
+
+      {showImagePicker && (
+        <ImageBrowser
+          onImageSelect={handleImageSelect}
+          onClose={() => setShowImagePicker(false)}
+          selectedImage={formData.featured_image || (existingImageUrl ? { public_id: 'existing', url: existingImageUrl } : null)}
+        />
+      )}
     </div>
   );
 };

@@ -53,14 +53,12 @@ const SettingsPanel = () => {
     try {
       setLoading(true);
       const response = await adminAPI.settings.getAll();
-      console.log('Settings API response:', response);
       if (response.data.success) {
         setSettings(response.data.data);
       }
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Unknown error';
       setError(`Failed to fetch settings: ${errorMessage}`);
-      console.error('Error fetching settings:', err);
     } finally {
       setLoading(false);
     }
@@ -70,15 +68,12 @@ const SettingsPanel = () => {
     try {
       setLoading(true);
       const response = await adminAPI.users.getAll();
-      console.log('Users API response:', response);
       if (response.data.success) {
         setUsers(response.data.data);
       }
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Unknown error';
       setError(`Failed to fetch users: ${errorMessage}`);
-      console.error('Error fetching users:', err);
-      console.error('Error response:', err.response);
     } finally {
       setLoading(false);
     }

@@ -18,6 +18,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { adminAPI } from '../../services/api';
+import { logError } from '../../utils/safeLogger';
 import WYSIWYGEditor from './WYSIWYGEditor';
 import ImageUpload from '../ImageUpload';
 
@@ -164,7 +165,7 @@ const SlideBuilder = () => {
       setSlides(response.data || []);
     } catch (err) {
       setError('Failed to load slides');
-      console.error('Error fetching slides:', err);
+      logError('Error fetching slides:', err);
     } finally {
       setLoading(false);
     }

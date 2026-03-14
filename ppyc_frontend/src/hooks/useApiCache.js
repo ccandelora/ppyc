@@ -22,14 +22,17 @@ export const useApiCache = (apiCall, cacheKey, options = {}) => {
   const [error, setError] = useState(null);
   const [cached, setCached] = useState(false);
 
+  // Keep apiCall in a ref so fetchData has a stable identity (inline callers pass new function every render)
+  const apiCallRef = useRef(apiCall);
+  apiCallRef.current = apiCall;
+
   const fetchData = useCallback(async () => {
     if (!enabled) return;
 
     try {
       setLoading(true);
       setError(null);
-      
-      // Check cache first
+
       const cachedData = apiCache.get(cacheKey);
       if (cachedData) {
         const result = await cachedData;
@@ -40,8 +43,7 @@ export const useApiCache = (apiCall, cacheKey, options = {}) => {
         return;
       }
 
-      // Make API call with caching
-      const result = await apiCache.request(cacheKey, apiCall, ttl);
+      const result = await apiCache.request(cacheKey, apiCallRef.current, ttl);
       setData(result);
       setCached(false);
       onSuccess?.(result);
@@ -51,7 +53,7 @@ export const useApiCache = (apiCall, cacheKey, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [apiCall, cacheKey, ttl, enabled]); // Remove onSuccess and onError from dependencies
+  }, [cacheKey, ttl, enabled]);
 
   const refresh = useCallback(() => {
     apiCache.invalidate(cacheKey);

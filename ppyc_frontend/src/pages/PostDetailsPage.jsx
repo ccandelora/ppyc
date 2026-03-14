@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { newsAPI } from '../services/api';
 import { useApiCache } from '../hooks/useApiCache';
+import { logError } from '../utils/safeLogger';
 
 const PostDetailsPage = () => {
   const { slug } = useParams();
@@ -25,7 +26,7 @@ const PostDetailsPage = () => {
       setPost(postData.data);
     } else if (postError) {
       setError('Article not found');
-      console.error('Error fetching post:', postError);
+      logError('Error fetching post:', postError);
     }
   }, [postData, postError]);
 

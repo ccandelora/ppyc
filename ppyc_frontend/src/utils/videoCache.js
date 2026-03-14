@@ -1,3 +1,5 @@
+import { logError } from './safeLogger';
+
 const VIDEO_CACHE_PREFIX = 'ppyc_video_';
 const VIDEO_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
@@ -45,7 +47,7 @@ class VideoCache {
 
       return objectUrl;
     } catch (error) {
-      console.error('Error caching video:', error);
+      logError('Error caching video:', error);
       return videoUrl; // Fallback to original URL if caching fails
     }
   }

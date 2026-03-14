@@ -4,8 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../../config/fontawesome';
 import { faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import WYSIWYGEditor from './WYSIWYGEditor';
-import ImageUpload from '../ImageUpload';
+import ImageBrowser from './ImageBrowser';
 import { adminAPI } from '../../services/api';
+import { logError } from '../../utils/safeLogger';
 
 const EventForm = () => {
   const { id } = useParams();
@@ -21,9 +22,11 @@ const EventForm = () => {
     image: null // Will be handled by ImageUpload component
   });
   const [existingImageUrl, setExistingImageUrl] = useState(null);
+  const [showImagePicker, setShowImagePicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     if (isEditing) {
@@ -48,7 +51,7 @@ const EventForm = () => {
       setExistingImageUrl(event.image_url || null);
     } catch (err) {
       setError('Failed to fetch event');
-      console.error('Error fetching event:', err);
+      logError('Error fetching event:', err);
     } finally {
       setLoading(false);
     }
@@ -60,6 +63,7 @@ const EventForm = () => {
       ...prev,
       [name]: value
     }));
+    setFieldErrors((prev) => ({ ...prev, [name]: null }));
     setError(null);
   };
 
@@ -77,11 +81,49 @@ const EventForm = () => {
     }));
   };
 
+  const handleImageSelect = (imageData) => {
+    if (!imageData) {
+      setFormData((prev) => ({ ...prev, image: null }));
+      setExistingImageUrl(null);
+      setShowImagePicker(false);
+      return;
+    }
+
+    const normalizedImageData = {
+      url: imageData.url || imageData.secure_url,
+      secure_url: imageData.secure_url || imageData.url,
+      public_id: imageData.public_id,
+      width: imageData.width,
+      height: imageData.height,
+      alt: imageData.alt || imageData.public_id?.split('/').pop()
+    };
+
+    handleImageUpload(normalizedImageData);
+    setExistingImageUrl(null);
+    setShowImagePicker(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
     setSuccess('');
+    setFieldErrors({});
+
+    const nextFieldErrors = {};
+    if (!formData.title.trim()) nextFieldErrors.title = 'Event title is required.';
+    if (!formData.start_time) nextFieldErrors.start_time = 'Start time is required.';
+    if (!formData.end_time) nextFieldErrors.end_time = 'End time is required.';
+    if (formData.start_time && formData.end_time && new Date(formData.end_time) < new Date(formData.start_time)) {
+      nextFieldErrors.end_time = 'End time must be after start time.';
+    }
+
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setFieldErrors(nextFieldErrors);
+      setError('Please fix the highlighted fields and try again.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const submitData = new FormData();
@@ -106,8 +148,16 @@ const EventForm = () => {
         navigate('/admin/events');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.error || `Failed to ${isEditing ? 'update' : 'create'} event`);
-      console.error('Error saving event:', err);
+      const serverMessage = err.response?.data?.error || `Failed to ${isEditing ? 'update' : 'create'} event`;
+      const nextServerFieldErrors = {};
+      if (/title/i.test(serverMessage)) nextServerFieldErrors.title = serverMessage;
+      if (/start/i.test(serverMessage)) nextServerFieldErrors.start_time = serverMessage;
+      if (/end/i.test(serverMessage)) nextServerFieldErrors.end_time = serverMessage;
+      if (Object.keys(nextServerFieldErrors).length > 0) {
+        setFieldErrors((prev) => ({ ...prev, ...nextServerFieldErrors }));
+      }
+      setError(serverMessage);
+      logError('Error saving event:', err);
     } finally {
       setLoading(false);
     }
@@ -166,6 +216,10 @@ const EventForm = () => {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <p className="text-sm text-gray-600">
+          Fields marked with <span className="text-red-600">*</span> are required.
+        </p>
+
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -179,9 +233,14 @@ const EventForm = () => {
             value={formData.title}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 ${
+              fieldErrors.title ? 'border-red-400 bg-red-50' : 'border-gray-300'
+            }`}
             placeholder="Enter event title..."
           />
+          {fieldErrors.title && (
+            <p className="mt-1 text-sm text-red-600">{fieldErrors.title}</p>
+          )}
         </div>
 
         {/* Description */}
@@ -213,8 +272,13 @@ const EventForm = () => {
               value={formData.start_time}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 ${
+              fieldErrors.start_time ? 'border-red-400 bg-red-50' : 'border-gray-300'
+            }`}
             />
+            {fieldErrors.start_time && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.start_time}</p>
+            )}
           </div>
 
           <div>
@@ -229,8 +293,13 @@ const EventForm = () => {
               value={formData.end_time}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 ${
+              fieldErrors.end_time ? 'border-red-400 bg-red-50' : 'border-gray-300'
+            }`}
             />
+            {fieldErrors.end_time && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.end_time}</p>
+            )}
           </div>
         </div>
 
@@ -277,14 +346,28 @@ const EventForm = () => {
             </div>
           )}
           
-          <ImageUpload 
-            onUploadSuccess={handleImageUpload}
-            onUploadError={(error) => setError(`Image upload failed: ${error}`)}
-            folder="events"
-            allowLibraryBrowse={true}
-          />
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setShowImagePicker(true)}
+              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <FontAwesomeIcon icon={ICON_NAMES.IMAGES} className="mr-2" />
+              {formData.image?.secure_url || existingImageUrl ? 'Change Image' : 'Choose from Media Library'}
+            </button>
+            {(formData.image?.secure_url || existingImageUrl) && (
+              <button
+                type="button"
+                onClick={() => handleImageSelect(null)}
+                className="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+              >
+                <FontAwesomeIcon icon={ICON_NAMES.CLOSE} className="mr-2" />
+                Remove Image
+              </button>
+            )}
+          </div>
           <p className="text-sm text-gray-500 mt-1">
-            Upload an image to represent this event (optional)
+            Pick an existing image from Media Library. Upload new images in Media Library first.
           </p>
         </div>
 
@@ -317,6 +400,14 @@ const EventForm = () => {
           </button>
         </div>
       </form>
+
+      {showImagePicker && (
+        <ImageBrowser
+          onImageSelect={handleImageSelect}
+          onClose={() => setShowImagePicker(false)}
+          selectedImage={formData.image || (existingImageUrl ? { public_id: 'existing', url: existingImageUrl } : null)}
+        />
+      )}
     </div>
   );
 };

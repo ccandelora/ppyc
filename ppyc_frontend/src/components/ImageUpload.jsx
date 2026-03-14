@@ -11,9 +11,7 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', `ppyc/${folder}`);
-    
-    console.log('🚀 Starting upload for:', file.name, 'Type:', file.type);
-    
+
     // Send to our backend which handles the secure upload
     try {
       const response = await fetch('/api/v1/admin/images', {
@@ -23,16 +21,13 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
       });
 
       const result = await response.json();
-      console.log('📤 Upload response:', result);
-      
+
       if (result.success) {
-        console.log('✅ Upload successful, calling onUploadSuccess with:', result.data);
         onUploadSuccess?.(result.data);
       } else {
         throw new Error(result.error || 'Upload failed');
       }
     } catch (error) {
-      console.error('❌ Upload error:', error);
       onUploadError?.(error.message);
     }
   }, [folder, onUploadSuccess, onUploadError]);
@@ -52,7 +47,6 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
           : file.type.match(acceptTypes);
         
         if (!isValidType) {
-          console.warn(`⚠️ Skipping invalid file type: ${file.type}`);
           continue;
         }
 
@@ -63,12 +57,10 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
         
         if (file.size > maxSize) {
           const errorMessage = `File "${file.name}" (${fileSizeMB}MB) exceeds the ${maxSizeMB}MB limit for ${acceptTypes === 'video/*' ? 'videos' : 'images'}`;
-          console.error(`❌ ${errorMessage}`);
           onUploadError?.(errorMessage);
           continue;
         }
 
-        console.log(`✅ File size OK: ${file.name} (${fileSizeMB}MB)`);
         await uploadToCloudinary(file);
       }
     } finally {
@@ -102,13 +94,8 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
   }, [handleFiles]);
 
   const handleImageSelect = useCallback((imageData) => {
-    if (!imageData) {
-      console.log('❌ No image data received');
-      return;
-    }
-    
-    console.log('🖼️ Image selected:', imageData);
-    
+    if (!imageData) return;
+
     // Normalize the image data
     const normalizedImageData = {
       url: imageData.url || imageData.secure_url,
@@ -118,18 +105,9 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
       height: imageData.height,
       alt: imageData.alt || imageData.public_id.split('/').pop()
     };
-    
-    console.log('🖼️ Setting normalized image data:', normalizedImageData);
-    
-    // Update local state first
+
     setSelectedImage(normalizedImageData);
-    
-    // Then notify parent component
-    console.log('🖼️ Notifying parent component with image data');
     onUploadSuccess?.(normalizedImageData);
-    
-    // Finally close the browser
-    console.log('🖼️ Closing image browser');
     setShowBrowser(false);
   }, [onUploadSuccess]);
 

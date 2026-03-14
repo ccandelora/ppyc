@@ -1,6 +1,9 @@
 import React, { useRef, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Editor } from '@tinymce/tinymce-react';
 import { adminAPI } from '../../services/api';
+import { logError } from '../../utils/safeLogger';
+import { ICON_NAMES } from '../../config/fontawesome';
 
 const WYSIWYGEditor = ({ 
   value, 
@@ -25,7 +28,7 @@ const WYSIWYGEditor = ({
           reject('Upload failed');
         }
       }).catch(error => {
-        console.error('Image upload error:', error);
+        logError('Image upload error:', error);
         reject(error.response?.data?.error || 'Upload failed');
       });
     });
@@ -36,7 +39,7 @@ const WYSIWYGEditor = ({
     return (
       <div className="wysiwyg-editor">
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg mb-4">
-          <i className="fas fa-exclamation-triangle mr-2"></i>
+          <FontAwesomeIcon icon={ICON_NAMES.WARNING} className="mr-2" />
           Rich text editor failed to load. Using basic textarea instead.
         </div>
         <textarea
@@ -63,7 +66,7 @@ const WYSIWYGEditor = ({
             editorRef.current = editor;
             setEditorError(null);
           } catch (error) {
-            console.error('TinyMCE initialization error:', error);
+            logError('TinyMCE initialization error:', error);
             setEditorError(error);
           }
         }}
@@ -73,12 +76,12 @@ const WYSIWYGEditor = ({
               onChange(content);
             }
           } catch (error) {
-            console.error('TinyMCE onChange error:', error);
+            logError('TinyMCE onChange error:', error);
             setEditorError(error);
           }
         }}
         onLoadError={(error) => {
-          console.error('TinyMCE load error:', error);
+          logError('TinyMCE load error:', error);
           setEditorError(new Error('Failed to load TinyMCE editor. Please refresh the page.'));
         }}
         value={value || ''}
@@ -132,11 +135,9 @@ const WYSIWYGEditor = ({
                       });
                     } else {
                       console.error('File picker upload failed: Invalid response structure');
-                      // Don't call callback on failure to prevent TinyMCE validation errors
                     }
                   }).catch(error => {
-                    console.error('File picker upload error:', error);
-                    // Don't call callback on failure to prevent validation errors
+                    logError('File picker upload error:', error);
                   });
                 }
               };

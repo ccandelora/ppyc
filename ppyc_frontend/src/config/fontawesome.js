@@ -22,15 +22,15 @@ import {
   faRedo, faArrowRight, faChevronRight, faSearch, faDownload, 
   faPrint, faShare, faHeart, faStar, faMapMarker, faWater, 
   faLifeRing, faShieldAlt, faUtensils, faBroadcastTower, 
-  faCloud, faCloudRain, faSnowflake, faBolt, faSmog, faSun, 
-  faWaveSquare, faDroplet, faThermometerHalf, faImages, 
-  faCloudUploadAlt, faFolderOpen, faSyncAlt, faTh, faList, 
-  faCopy, faCheck, faVideo, faChevronLeft, faChevronDown, 
-  faEllipsisH, faLayerGroup, faImage, faTachometerAlt, 
-  faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt, 
-  faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown, 
+  faCloud, faCloudRain, faCloudSun, faSnowflake, faBolt, faSmog, faSun,
+  faWaveSquare, faDroplet, faThermometerHalf, faImages,
+  faCloudUploadAlt, faFolderOpen, faSyncAlt, faTh, faList,
+  faCopy, faCheck, faVideo, faChevronLeft, faChevronDown,
+  faEllipsisH, faLayerGroup, faImage, faTachometerAlt,
+  faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt,
+  faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown,
   faUserShield, faLock, faSave, faBook, faSailboat,
-  faHeading, faAlignLeft, faPlay, faStop
+  faHeading, faAlignLeft, faPlay, faStop, faPalette, faAdjust, faToggleOn, faEye
 } from '@fortawesome/free-solid-svg-icons';
 
 import { 
@@ -47,15 +47,15 @@ library.add(
   faRedo, faArrowRight, faChevronRight, faSearch, faDownload, 
   faPrint, faShare, faHeart, faStar, faMapMarker, faWater, 
   faLifeRing, faShieldAlt, faUtensils, faBroadcastTower, 
-  faCloud, faCloudRain, faSnowflake, faBolt, faSmog, faSun, 
-  faWaveSquare, faDroplet, faThermometerHalf, faImages, 
-  faCloudUploadAlt, faFolderOpen, faSyncAlt, faTh, faList, 
-  faCopy, faCheck, faVideo, faChevronLeft, faChevronDown, 
-  faEllipsisH, faLayerGroup, faImage, faTachometerAlt, 
-  faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt, 
-  faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown, 
+  faCloud, faCloudRain, faCloudSun, faSnowflake, faBolt, faSmog, faSun,
+  faWaveSquare, faDroplet, faThermometerHalf, faImages,
+  faCloudUploadAlt, faFolderOpen, faSyncAlt, faTh, faList,
+  faCopy, faCheck, faVideo, faChevronLeft, faChevronDown,
+  faEllipsisH, faLayerGroup, faImage, faTachometerAlt,
+  faDesktop, faCog, faPhotoVideo, faChevronUp, faSignOutAlt,
+  faSignInAlt, faExternalLinkAlt, faBullhorn, faCrown,
   faUserShield, faLock, faSave, faBook, faSailboat,
-  faHeading, faAlignLeft, faPlay, faStop,
+  faHeading, faAlignLeft, faPlay, faStop, faPalette, faAdjust, faToggleOn, faEye,
   faFacebook, faTwitter, faInstagram, faLinkedin, faYoutube
 );
 
@@ -83,6 +83,7 @@ export const ICON_NAMES = {
   // Weather Icons
   SUN: 'sun',
   CLOUD: 'cloud',
+  CLOUD_SUN: 'cloud-sun',
   RAIN: 'cloud-rain',
   SNOW: 'snowflake',
   THUNDER: 'bolt',
@@ -156,6 +157,7 @@ export const ICON_NAMES = {
   STOP: 'stop',
   HEADING: 'heading',
   ALIGN_LEFT: 'align-left',
+  EYE: 'eye',
 
   // Social Media
   FACEBOOK: ['fab', 'facebook'],

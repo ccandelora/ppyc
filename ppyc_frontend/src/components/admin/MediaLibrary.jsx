@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { adminAPI } from '../../services/api';
-import { useApiCache } from '../../hooks/useApiCache';
+import { logError } from '../../utils/safeLogger';
 import cloudinaryConfig from '../../config/cloudinary';
+
+const PAGE_SIZE = 24;
 
 const MediaLibrary = () => {
   // State management
@@ -20,40 +22,66 @@ const MediaLibrary = () => {
   const [uploadQueue, setUploadQueue] = useState([]);
   const [uploadFolder, setUploadFolder] = useState('');
   const [localError, setLocalError] = useState(null);
+  const [resources, setResources] = useState([]);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [cacheError, setCacheError] = useState(null);
+  const [cacheLoading, setCacheLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // Refs
   const fileInputRef = useRef(null);
 
-  // Use API cache for fetching images
-  const { data: allImages, error: cacheError, isLoading: cacheLoading, refetch } = useApiCache(
-    () => adminAPI.images.getAll(),
-    'allImages'
-  );
+  const loadPage = useCallback(async ({ cursor = null, append = false } = {}) => {
+    try {
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setCacheLoading(true);
+      }
+      setCacheError(null);
 
-  // Filter images based on search and media type
-  useEffect(() => {
-    if (allImages?.data?.resources) {
-      let filtered = [...allImages.data.resources];
-      
-      // Apply search filter
-      if (searchTerm) {
-        filtered = filtered.filter(img => 
-          img.public_id.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-      
-      // Apply media type filter
-      if (mediaFilter !== 'all') {
-        filtered = filtered.filter(img => 
-          mediaFilter === 'videos' ? isVideo(img) : !isVideo(img)
-        );
-      }
-      
-      setFilteredImages(filtered);
-    } else {
-      setFilteredImages([]);
+      const response = await adminAPI.images.getPage(PAGE_SIZE, cursor);
+      const data = response?.data?.data;
+      const pageResources = data?.resources ?? [];
+
+      setResources((prev) => (append ? [...prev, ...pageResources] : pageResources));
+      setNextCursor(data?.next_cursor ?? null);
+    } catch (error) {
+      logError('Media fetch error:', error);
+      setCacheError(error?.message ?? 'Failed to fetch media files');
+    } finally {
+      setCacheLoading(false);
+      setLoadingMore(false);
     }
-  }, [allImages, searchTerm, mediaFilter]);
+  }, []);
+
+  const refresh = useCallback(() => {
+    loadPage({ cursor: null, append: false });
+  }, [loadPage]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  // Filter images based on loaded resources and active filters.
+  useEffect(() => {
+    if (resources.length === 0) {
+      setFilteredImages([]);
+      return;
+    }
+    let filtered = [...resources];
+    if (searchTerm) {
+      filtered = filtered.filter(img =>
+        (img.public_id || '').toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    if (mediaFilter !== 'all') {
+      filtered = filtered.filter(img =>
+        mediaFilter === 'videos' ? isVideo(img) : !isVideo(img)
+      );
+    }
+    setFilteredImages(filtered);
+  }, [resources, searchTerm, mediaFilter]);
 
   // Error display component
   const ErrorDisplay = () => {
@@ -90,13 +118,6 @@ const MediaLibrary = () => {
 
   // Effects
   useEffect(() => {
-    console.log('🔄 MediaLibrary mounted');
-    console.log('🌐 Current URL:', window.location.href);
-    console.log('🍪 Document cookies:', document.cookie);
-    console.log('📦 Using cached data approach...');
-  }, []);
-
-  useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
         setSelectedVideoModal(null);
@@ -130,10 +151,10 @@ const MediaLibrary = () => {
       setSuccess(`Successfully deleted ${selectedImages.length} media file(s)`);
       setSelectedImages([]);
       // Refresh the cache after deletion
-      refetch();
+      refresh();
     } catch (error) {
-      console.error('Delete error:', error);
-      setLocalError(`Failed to delete media files: ${error.message}`);
+      logError('Delete error:', error);
+      setLocalError(`Failed to delete media files: ${error?.message ?? 'Unknown'}`);
     }
   };
 
@@ -220,15 +241,15 @@ const MediaLibrary = () => {
           
           setUploadProgress(((i + 1) / uploadPreview.length) * 100);
         } catch (fileError) {
-          console.error(`Failed to upload ${preview.name}:`, fileError);
-          setLocalError(`Failed to upload ${preview.name}: ${fileError.message}`);
+          logError(`Failed to upload ${preview.name}:`, fileError);
+          setLocalError(`Failed to upload ${preview.name}: ${fileError?.message ?? 'Unknown'}`);
         }
       }
       
       if (uploadResults.length > 0) {
         setSuccess(`Successfully uploaded ${uploadResults.length} of ${uploadPreview.length} file(s)`);
         // Invalidate cache and refresh the images list
-        refetch();
+        refresh();
       }
       
       setShowUploadModal(false);
@@ -240,7 +261,7 @@ const MediaLibrary = () => {
       });
       
     } catch (error) {
-      console.error('Upload error:', error);
+      logError('Upload error:', error);
       setLocalError('Failed to upload files');
     } finally {
       setIsUploading(false);
@@ -326,7 +347,7 @@ const MediaLibrary = () => {
                 className="hidden"
               />
               <button
-                onClick={refetch}
+                onClick={refresh}
                 className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
                 title="Refresh"
               >
@@ -424,19 +445,19 @@ const MediaLibrary = () => {
             </div>
             <div className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
               <span className="hidden sm:inline">
-                {filteredImages.length} of {allImages?.data?.resources?.length || 0} total
+                {filteredImages.length} of {resources?.length || 0} total
               </span>
               <span className="sm:hidden">
-                {filteredImages.length}/{allImages?.data?.resources?.length || 0}
+                {filteredImages.length}/{resources?.length || 0}
               </span>
               <div className="text-xs text-gray-400 mt-1">
                 <span className="mr-2">
                   <FontAwesomeIcon icon="image" className="mr-1" />
-                  {allImages?.data?.resources?.filter(f => !isVideo(f))?.length || 0}
+                  {resources?.filter(f => !isVideo(f))?.length || 0}
                 </span>
                 <span>
                   <FontAwesomeIcon icon="video" className="mr-1" />
-                  {allImages?.data?.resources?.filter(f => isVideo(f))?.length || 0}
+                  {resources?.filter(f => isVideo(f))?.length || 0}
                 </span>
               </div>
             </div>
@@ -470,7 +491,7 @@ const MediaLibrary = () => {
               This library displays both images and videos from your Cloudinary account
             </p>
             <button
-              onClick={refetch}
+              onClick={refresh}
               className="text-purple-600 hover:text-purple-800 font-medium"
             >
               Refresh Media Library
@@ -651,12 +672,21 @@ const MediaLibrary = () => {
         )}
 
         {/* Media Count Display */}
-        {allImages?.data?.resources?.length > 0 && (
+        {resources?.length > 0 && (
           <div className="flex items-center justify-center py-6 mt-6 border-t border-gray-200">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 flex items-center gap-3">
               <span>
-                Showing {filteredImages.length} of {allImages?.data?.resources?.length} media files
+                Showing {filteredImages.length} of {resources?.length} loaded media files
               </span>
+              {nextCursor && (
+                <button
+                  onClick={() => loadPage({ cursor: nextCursor, append: true })}
+                  disabled={loadingMore}
+                  className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {loadingMore ? 'Loading...' : 'Load more'}
+                </button>
+              )}
             </div>
           </div>
         )}

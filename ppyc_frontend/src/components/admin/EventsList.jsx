@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../../config/fontawesome';
 import { adminAPI } from '../../services/api';
+import { logError } from '../../utils/safeLogger';
 import { truncateText } from '../../utils/htmlUtils';
 
 const EventsList = () => {
@@ -17,7 +18,7 @@ const EventsList = () => {
       setEvents(response.data);
     } catch (err) {
       setError('Failed to fetch events');
-      console.error('Error fetching events:', err);
+      logError('Error fetching events:', err);
     } finally {
       setLoading(false);
     }
@@ -34,7 +35,7 @@ const EventsList = () => {
         setEvents(events.filter(event => event.id !== eventId));
       } catch (err) {
         setError('Failed to delete event');
-        console.error('Error deleting event:', err);
+        logError('Error deleting event:', err);
       }
     }
   };

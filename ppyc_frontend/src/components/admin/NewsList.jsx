@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { adminAPI } from '../../services/api';
+import { logError } from '../../utils/safeLogger';
 
 const NewsList = () => {
   const [news, setNews] = useState([]);
@@ -19,7 +20,7 @@ const NewsList = () => {
       setNews(response.data);
     } catch (err) {
       setError('Failed to fetch news');
-      console.error('Error fetching news:', err);
+      logError('Error fetching news:', err);
     } finally {
       setLoading(false);
     }
@@ -35,7 +36,7 @@ const NewsList = () => {
       setNews(news.filter(item => item.id !== newsId));
     } catch (err) {
       setError('Failed to delete news article');
-      console.error('Error deleting news:', err);
+      logError('Error deleting news:', err);
     }
   };
 

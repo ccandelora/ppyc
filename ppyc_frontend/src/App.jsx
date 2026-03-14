@@ -65,8 +65,9 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Application Error:', error, errorInfo);
-    // In production, you might want to send this to an error reporting service
+    // Log only the message; full error/errorInfo can expose state or stack details
+    console.error('Application Error:', error?.message ?? 'Unknown error');
+    // In production, send error + errorInfo.componentStack to a reporting service (e.g. Sentry)
   }
 
   render() {
