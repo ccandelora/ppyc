@@ -86,9 +86,11 @@ function Navigation() {
             <Link
               to="/tv-display"
               className="hidden md:inline-flex btn-tertiary"
+              aria-label="TV Display"
+              title="TV Display"
             >
-              <FontAwesomeIcon icon={ICON_NAMES.HOME} className="mr-2" />
-              TV Display
+              <FontAwesomeIcon icon={ICON_NAMES.TV} />
+              <span className="sr-only">TV Display</span>
             </Link>
 
             {/* Mobile Menu Button */}
@@ -133,7 +135,7 @@ function Navigation() {
                 className="mobile-nav-link mobile-nav-link-default"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <FontAwesomeIcon icon={ICON_NAMES.HOME} className="mr-3" />
+                <FontAwesomeIcon icon={ICON_NAMES.TV} className="mr-3" />
                 TV Display
               </Link>
             </div>
