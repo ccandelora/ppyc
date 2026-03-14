@@ -6,18 +6,18 @@ function SEOHelmet({ title, description, image, keywords, type = 'website' }) {
 
   // Default SEO values
   const defaultSEO = {
-    title: 'Pleasant Park Yacht Club - Premier Boston Marina & Sailing Community Est. 1910',
-    description: 'Pleasant Park Yacht Club, established 1910, offers premier marina services, sailing instruction, yacht club dining, and maritime community in Boston. Join our sailing legacy!',
+    title: 'Pleasant Park Yacht Club - Premier Boston Yacht Club & Sailing Community Est. 1910',
+    description: 'Pleasant Park Yacht Club, established 1910, offers premier club services, sailing instruction, yacht club dining, and maritime community in Boston. Join our sailing legacy!',
     image: 'https://srv894370.hstgr.cloud/assets/images/ppyc-images/ppyc-hero.png',
-    keywords: 'yacht club, marina, Boston sailing, boat slips, sailing instruction, waterfront dining, maritime community, yacht services, boat storage, Boston harbor'
+    keywords: 'yacht club, Boston sailing, boat slips, sailing instruction, waterfront dining, maritime community, yacht services, boat storage, Boston harbor'
   };
 
   // Page-specific SEO data
   const pageSEO = {
     '/': {
-      title: 'Pleasant Park Yacht Club - Premier Boston Marina & Sailing Community Est. 1910',
-      description: 'Discover Pleasant Park Yacht Club, Boston\'s premier marina community since 1910. Full-service marina, sailing instruction, waterfront dining, and maritime heritage.',
-      keywords: 'PPYC, yacht club Boston, marina services, sailing lessons, boat slips Boston, waterfront dining'
+      title: 'Pleasant Park Yacht Club - Premier Boston Yacht Club & Sailing Community Est. 1910',
+      description: 'Discover Pleasant Park Yacht Club, Boston\'s premier yacht club community since 1910. Full-service club amenities, sailing instruction, waterfront dining, and maritime heritage.',
+      keywords: 'PPYC, yacht club Boston, club services, sailing lessons, boat slips Boston, waterfront dining'
     },
     '/about': {
       title: 'About PPYC - Boston\'s Premier Yacht Club Since 1910',
@@ -31,23 +31,28 @@ function SEOHelmet({ title, description, image, keywords, type = 'website' }) {
     },
     '/events': {
       title: 'Events & Activities - Pleasant Park Yacht Club',
-      description: 'Join PPYC for exciting yacht club events, regattas, social gatherings, and sailing activities. View our calendar of upcoming marina and clubhouse events.',
-      keywords: 'yacht club events, sailing regattas, marina activities, boat club social events, PPYC calendar'
+      description: 'Join PPYC for exciting yacht club events, regattas, social gatherings, and sailing activities. View our calendar of upcoming club and clubhouse events.',
+      keywords: 'yacht club events, sailing regattas, club activities, boat club social events, PPYC calendar'
     },
     '/news': {
       title: 'News & Updates - Pleasant Park Yacht Club Boston',
-      description: 'Stay updated with the latest news, announcements, and stories from Pleasant Park Yacht Club. Marina updates, sailing news, and community highlights.',
-      keywords: 'yacht club news, marina updates, sailing announcements, PPYC stories, boat club updates'
+      description: 'Stay updated with the latest news, announcements, and stories from Pleasant Park Yacht Club. Club updates, sailing news, and community highlights.',
+      keywords: 'yacht club news, club updates, sailing announcements, PPYC stories, boat club updates'
+    },
+    '/club': {
+      title: 'Club Services - Full Service Boston Harbor Yacht Club | PPYC',
+      description: 'Complete club services at Pleasant Park Yacht Club. 200 boat slips, fuel dock, maintenance, winter storage, and professional harbor services in Boston.',
+      keywords: 'Boston yacht club, boat slips, club services, fuel dock, boat storage, harbor services, yacht services'
     },
     '/marina': {
-      title: 'Marina Services - Full Service Boston Harbor Marina | PPYC',
-      description: 'Complete marina services at Pleasant Park Yacht Club. 200 boat slips, fuel dock, maintenance, winter storage, and professional harbor services in Boston.',
-      keywords: 'Boston marina, boat slips, marina services, fuel dock, boat storage, harbor services, yacht services'
+      title: 'Club Services - Full Service Boston Harbor Yacht Club | PPYC',
+      description: 'Complete club services at Pleasant Park Yacht Club. 200 boat slips, fuel dock, maintenance, winter storage, and professional harbor services in Boston.',
+      keywords: 'Boston yacht club, boat slips, club services, fuel dock, boat storage, harbor services, yacht services'
     },
     '/membership': {
       title: 'Membership - Join Pleasant Park Yacht Club Boston',
-      description: 'Become a member of Boston\'s premier yacht club. Explore membership benefits, marina privileges, dining access, and sailing community at Pleasant Park Yacht Club.',
-      keywords: 'yacht club membership, join boat club Boston, marina membership, sailing club membership, PPYC member benefits'
+      description: 'Become a member of Boston\'s premier yacht club. Explore membership benefits, club privileges, dining access, and sailing community at Pleasant Park Yacht Club.',
+      keywords: 'yacht club membership, join boat club Boston, club membership, sailing club membership, PPYC member benefits'
     }
   };
 

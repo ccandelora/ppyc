@@ -115,8 +115,8 @@ function AboutPage() {
                   1978
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">Marina Expansion</h3>
-                  <p className="text-gray-700">Major marina renovations added 100 additional slips and modern amenities, establishing PPYC as a premier boating destination.</p>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">Club Expansion</h3>
+                  <p className="text-gray-700">Major club waterfront renovations added 100 additional slips and modern amenities, establishing PPYC as a premier boating destination.</p>
                 </div>
               </div>
             </div>
@@ -206,16 +206,16 @@ function AboutPage() {
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <img 
                 src={YACHT_CLUB_ASSETS.gallery.marina[1]}
-                alt="Marina facilities"
+                alt="Club facilities"
                 className="w-full h-48 object-cover"
               />
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-xl text-blue-600" />
-                  <h3 className="text-xl font-bold text-slate-800">Full-Service Marina</h3>
+                  <h3 className="text-xl font-bold text-slate-800">Full-Service Club</h3>
                 </div>
                 <p className="text-gray-700">
-                  Enjoy our very well-kept marina, offering 103 slips for vessels up to 50 feet, each equipped with electricity and water.
+                  Enjoy our very well-kept club docks, offering 103 slips for vessels up to 50 feet, each equipped with electricity and water.
                 </p>
               </div>
             </div>

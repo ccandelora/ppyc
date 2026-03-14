@@ -41,7 +41,7 @@ function Navigation() {
     { name: 'About', path: '/about', icon: ICON_NAMES.INFO },
     { name: 'News', path: '/news', icon: ICON_NAMES.NEWS },
     { name: 'Events', path: '/events', icon: ICON_NAMES.CALENDAR },
-    { name: 'Marina', path: '/marina', icon: ICON_NAMES.ANCHOR },
+    { name: 'Club', path: '/club', icon: ICON_NAMES.ANCHOR },
     { name: 'Heritage', path: '/heritage', icon: ICON_NAMES.SHIP },
     { name: 'Membership', path: '/membership', icon: ICON_NAMES.USERS },
   ];

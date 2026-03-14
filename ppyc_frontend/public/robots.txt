@@ -10,6 +10,7 @@ Allow: /about
 Allow: /heritage
 Allow: /events
 Allow: /news
+Allow: /club
 Allow: /marina
 Allow: /membership
 Allow: /pages/

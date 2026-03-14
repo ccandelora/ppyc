@@ -153,7 +153,7 @@ const StaticPage = ({ slug }) => {
                 <div className="p-6 bg-blue-50 rounded-lg">
                   <h4 className="text-xl font-semibold text-slate-800 mb-3 flex items-center gap-2">
                     <i className="fas fa-anchor text-blue-600"></i>
-                    Marina Services
+                    Club Services
                   </h4>
                   <ul className="space-y-2 text-slate-700">
                     <li className="flex items-center gap-2">

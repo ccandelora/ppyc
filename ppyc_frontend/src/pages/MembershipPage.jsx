@@ -61,9 +61,9 @@ const MembershipPage = () => {
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-3xl text-blue-600" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Premier Marina</h3>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">Premier Club</h3>
               <p className="text-slate-600 leading-relaxed">
-                Modern floating dock systems, seasonal slip assignments, and comprehensive marina services including maintenance, and winter storage.
+                Modern floating dock systems, seasonal slip assignments, and comprehensive club services including maintenance, and winter storage.
               </p>
             </div>
 
@@ -104,7 +104,7 @@ const MembershipPage = () => {
               <div className="space-y-6">
                 <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
                   <FontAwesomeIcon icon={ICON_NAMES.SHIP} className="text-blue-600" />
-                  Marina & Boating
+                  Club & Boating
                 </h3>
                 
                 <div className="flex items-start gap-4">
@@ -112,7 +112,7 @@ const MembershipPage = () => {
                     <FontAwesomeIcon icon={ICON_NAMES.CHECK} className="text-blue-600 text-sm" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">Summer Marina Slip Assignments</h4>
+                    <h4 className="font-semibold text-slate-800 mb-1">Summer Club Slip Assignments</h4>
                     <p className="text-slate-600 text-sm">Priority seasonal moorage for the entire boating season</p>
                   </div>
                 </div>
@@ -132,7 +132,7 @@ const MembershipPage = () => {
                     <FontAwesomeIcon icon={ICON_NAMES.CHECK} className="text-blue-600 text-sm" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">Modern Marina Facilities</h4>
+                    <h4 className="font-semibold text-slate-800 mb-1">Modern Club Facilities</h4>
                     <p className="text-slate-600 text-sm">30 & 50 amp electrical, fresh water, pump-out station, winter storage</p>
                   </div>
                 </div>
@@ -335,7 +335,7 @@ const MembershipPage = () => {
             <div className="group">
               <img 
                 src="/assets/images/ppyc-images/sunset.jpg" 
-                alt="Marina sunsets" 
+                alt="Club sunsets" 
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Scenic Location</p>
@@ -366,11 +366,11 @@ const MembershipPage = () => {
                 Get Application Form
               </a>
               <Link 
-                to="/marina" 
+                to="/club" 
                 className="px-8 py-4 border-2 border-blue-400 text-blue-400 font-semibold rounded-lg hover:bg-blue-400 hover:text-white transition-all duration-300 inline-flex items-center justify-center"
               >
                 <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="mr-2" />
-                Tour Our Marina
+                Tour Our Club
               </Link>
             </div>
           </div>

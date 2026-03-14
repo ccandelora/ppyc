@@ -152,6 +152,7 @@ function App() {
                   <Route path="events/:id" element={<EventDetailsPage />} />
                   <Route path="membership" element={<MembershipPage />} />
                   <Route path="heritage" element={<HeritagePage />} />
+                  <Route path="club" element={<MarinaPage />} />
                   <Route path="marina" element={<MarinaPage />} />
                   <Route path="pages/:slug" element={<StaticPage />} />
                 </Route>
