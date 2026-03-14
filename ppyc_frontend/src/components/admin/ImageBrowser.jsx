@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { adminAPI } from '../../services/api';
 
@@ -15,13 +15,17 @@ const normalizeResource = (image) => ({
   created_at: image.created_at,
 });
 
-const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null }) => {
+const isImageResource = (resource) => resource?.resource_type !== 'video';
+
+const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null, uploadFolder = 'general' }) => {
   const [images, setImages] = useState([]);
   const [nextCursor, setNextCursor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const fileInputRef = useRef(null);
 
   const loadPage = useCallback(async (cursor = null, append = false) => {
     try {
@@ -31,7 +35,7 @@ const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null }) => {
       const response = await adminAPI.images.getPage(PAGE_SIZE, cursor);
       const data = response?.data?.data;
       if (!data?.resources) throw new Error('Invalid response format from server');
-      const list = data.resources.map(normalizeResource);
+      const list = data.resources.filter(isImageResource).map(normalizeResource);
       setImages((prev) => (append ? [...prev, ...list] : list));
       setNextCursor(data.next_cursor ?? null);
     } catch (err) {
@@ -45,6 +49,41 @@ const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null }) => {
   useEffect(() => {
     loadPage();
   }, [loadPage]);
+
+  const handleUploadFiles = useCallback(async (event) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const uploaded = [];
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) {
+          continue;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', uploadFolder);
+        const response = await adminAPI.images.upload(formData);
+        const resource = response?.data?.data;
+        if (resource) {
+          uploaded.push(normalizeResource(resource));
+        }
+      }
+
+      if (uploaded.length === 0) {
+        setError('No valid image files were uploaded. Please use PNG, JPG, GIF, or WEBP.');
+        return;
+      }
+
+      setImages((prev) => [...uploaded, ...prev]);
+    } catch (err) {
+      setError(err?.response?.data?.error || err.message || 'Failed to upload image');
+    } finally {
+      setUploading(false);
+      event.target.value = '';
+    }
+  }, [uploadFolder]);
 
   const handleImageSelect = (image) => {
     const selectedImageData = {
@@ -96,17 +135,36 @@ const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null }) => {
               Choose an image from your media library
             </p>
           </div>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onClose();
-            }}
-            className="text-gray-400 hover:text-gray-600 p-2"
-          >
-            <FontAwesomeIcon icon="times" className="text-xl" />
-          </button>
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+              multiple
+              onChange={handleUploadFiles}
+              className="hidden"
+            />
+            <button
+              type="button"
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors text-sm"
+            >
+              <FontAwesomeIcon icon={uploading ? 'spinner' : 'cloud-upload-alt'} spin={uploading} className="mr-2" />
+              {uploading ? 'Uploading...' : 'Upload Image'}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onClose();
+              }}
+              className="text-gray-400 hover:text-gray-600 p-2"
+            >
+              <FontAwesomeIcon icon="times" className="text-xl" />
+            </button>
+          </div>
         </div>
 
         {/* Search Bar */}

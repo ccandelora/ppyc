@@ -9,7 +9,8 @@ class Event < ApplicationRecord
   validate :end_time_after_start_time
 
   # Scopes
-  scope :upcoming, -> { where('start_time > ?', Time.current) }
+  # Include future and currently-running events on public listings.
+  scope :upcoming, -> { where('end_time >= ?', Time.current) }
   scope :past, -> { where('end_time < ?', Time.current) }
   scope :by_start_time, -> { order(:start_time) }
 

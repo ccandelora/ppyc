@@ -350,7 +350,7 @@ const NewsForm = () => {
             )}
           </div>
           <p className="text-sm text-gray-500 mt-1">
-            Pick an existing image from Media Library. Upload new images in Media Library first.
+            Pick an image from the library or upload a new PNG/JPG directly in the picker.
           </p>
         </div>
 
@@ -412,6 +412,7 @@ const NewsForm = () => {
         <ImageBrowser
           onImageSelect={handleImageSelect}
           onClose={() => setShowImagePicker(false)}
+          uploadFolder="news"
           selectedImage={formData.featured_image || (existingImageUrl ? { public_id: 'existing', url: existingImageUrl } : null)}
         />
       )}

@@ -8,6 +8,21 @@ import ImageBrowser from './ImageBrowser';
 import { adminAPI } from '../../services/api';
 import { logError } from '../../utils/safeLogger';
 
+const toDatetimeLocalValue = (value) => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = (num) => String(num).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+const localDatetimeToIsoUtc = (value) => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toISOString();
+};
+
 const EventForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -43,8 +58,8 @@ const EventForm = () => {
       setFormData({
         title: event.title || '',
         description: event.description || '',
-        start_time: event.start_time ? new Date(event.start_time).toISOString().slice(0, 16) : '',
-        end_time: event.end_time ? new Date(event.end_time).toISOString().slice(0, 16) : '',
+        start_time: toDatetimeLocalValue(event.start_time),
+        end_time: toDatetimeLocalValue(event.end_time),
         location: event.location || '',
         image: null
       });
@@ -129,8 +144,8 @@ const EventForm = () => {
       const submitData = new FormData();
       submitData.append('event[title]', formData.title);
       submitData.append('event[description]', formData.description);
-      submitData.append('event[start_time]', formData.start_time);
-      submitData.append('event[end_time]', formData.end_time);
+      submitData.append('event[start_time]', localDatetimeToIsoUtc(formData.start_time));
+      submitData.append('event[end_time]', localDatetimeToIsoUtc(formData.end_time));
       submitData.append('event[location]', formData.location);
       
       if (formData.image && formData.image.secure_url) {
@@ -367,7 +382,7 @@ const EventForm = () => {
             )}
           </div>
           <p className="text-sm text-gray-500 mt-1">
-            Pick an existing image from Media Library. Upload new images in Media Library first.
+            Pick an image from the library or upload a new PNG/JPG directly in the picker.
           </p>
         </div>
 
@@ -405,6 +420,7 @@ const EventForm = () => {
         <ImageBrowser
           onImageSelect={handleImageSelect}
           onClose={() => setShowImagePicker(false)}
+          uploadFolder="events"
           selectedImage={formData.image || (existingImageUrl ? { public_id: 'existing', url: existingImageUrl } : null)}
         />
       )}
