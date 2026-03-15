@@ -25,7 +25,12 @@ const authApi = axios.create({
 authApi.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const requestUrl = error.config?.url || '';
+    const isAuthEndpoint = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/me') || requestUrl.includes('/auth/logout');
+    const isOnLoginPage = window.location.pathname.startsWith('/admin/login');
+
+    if (status === 401 && !isAuthEndpoint && !isOnLoginPage) {
       // Clear any stored user data and redirect to login
       localStorage.removeItem('currentUser');
       window.location.href = '/admin/login';

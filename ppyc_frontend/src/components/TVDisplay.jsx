@@ -12,7 +12,7 @@ import { useSettings } from '../hooks/useSettings';
 const TVDisplay = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const { data: response, isLoading: slidesLoading, error: slidesError } = useApiCache(slidesAPI.getAll, 'slides-all', { ttl: 30000 });
+  const { data: response, isLoading: slidesLoading, error: slidesError, refresh: refreshSlides } = useApiCache(slidesAPI.getAll, 'slides-all', { ttl: 30000 });
   const slides = response?.data || [];
   const { siteTitle, enableWeather, enableTime, defaultSlideDuration } = useSettings();
 
@@ -23,6 +23,25 @@ const TVDisplay = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Keep TV content in sync with admin changes without manual page refresh.
+  useEffect(() => {
+    const refreshTimer = setInterval(() => {
+      refreshSlides();
+    }, 15000);
+
+    return () => clearInterval(refreshTimer);
+  }, [refreshSlides]);
+
+  // Ensure current index stays valid if slides are removed.
+  useEffect(() => {
+    if (slides.length === 0) {
+      setCurrentSlideIndex(0);
+      return;
+    }
+
+    setCurrentSlideIndex((prevIndex) => (prevIndex >= slides.length ? 0 : prevIndex));
+  }, [slides.length]);
 
   // Rotate slides based on their duration
   useEffect(() => {
