@@ -104,7 +104,7 @@ export const weatherAPI = {
   getMarine: createCachedCall(
     () => api.get('/weather/marine?days=3'),
     'weather-marine',
-    10 * 60 * 1000 // 10 minutes cache for marine data
+    6 * 60 * 60 * 1000 // 6 hours cache for marine data (protects low daily API quotas)
   ),
 };
 

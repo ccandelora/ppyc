@@ -33,7 +33,8 @@ const SlideForm = () => {
     { value: 'announcement', label: 'Announcement', icon: ICON_NAMES.ANNOUNCEMENT, color: 'text-blue-600', description: 'General announcements and news' },
     { value: 'event_promo', label: 'Event Promotion', icon: ICON_NAMES.CALENDAR_ALT, color: 'text-green-600', description: 'Promote upcoming events' },
     { value: 'photo', label: 'Photo Slide', icon: ICON_NAMES.IMAGE, color: 'text-purple-600', description: 'Display photos with optional text' },
-    { value: 'weather', label: 'Weather Display', icon: ICON_NAMES.CLOUD_SUN, color: 'text-orange-600', description: 'Show 3-day weather forecast' }
+    { value: 'weather', label: 'Weather Display', icon: ICON_NAMES.CLOUD_SUN, color: 'text-orange-600', description: 'Show 3-day weather forecast' },
+    { value: 'tides', label: 'Tides', icon: ICON_NAMES.WATER, color: 'text-cyan-600', description: 'Show tide times and trends' }
   ];
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const SlideForm = () => {
         const slide = response.data;
         setFormData({
           title: slide.title || '',
-          slide_type: slide.slide_type || 'announcement',
+          slide_type: slide.slide_type === 'marine_weather' ? 'tides' : (slide.slide_type || 'announcement'),
           content: slide.content || '',
           duration_seconds: slide.duration_seconds || 60,
           active_status: slide.active_status !== undefined ? slide.active_status : true,
@@ -166,9 +167,9 @@ const SlideForm = () => {
       }
 
       // Add weather-specific fields
-      if (formData.slide_type === 'weather') {
+      if (formData.slide_type === 'weather' || formData.slide_type === 'tides') {
         formDataToSend.append('slide[location]', formData.location || '');
-        formDataToSend.append('slide[weather_type]', 'forecast');
+        formDataToSend.append('slide[weather_type]', formData.slide_type === 'tides' ? 'marine' : 'forecast');
       }
 
       // Save the slide
@@ -431,7 +432,7 @@ const SlideForm = () => {
             <FontAwesomeIcon icon={ICON_NAMES.LAYER_GROUP} className="mr-2 text-gray-400" />
             Slide Type *
           </label>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {slideTypes.map((type) => (
               <div key={type.value}>
                 <input
@@ -463,7 +464,7 @@ const SlideForm = () => {
         </div>
 
         {/* Weather-specific fields */}
-        {formData.slide_type === 'weather' && (
+        {(formData.slide_type === 'weather' || formData.slide_type === 'tides') && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="weather_location" className="block text-sm font-medium text-gray-700 mb-2">
@@ -476,7 +477,7 @@ const SlideForm = () => {
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                required={formData.slide_type === 'weather'}
+                required={formData.slide_type === 'weather' || formData.slide_type === 'tides'}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 placeholder="e.g., Boston, MA or 42.3601,-71.0589"
               />
@@ -486,8 +487,10 @@ const SlideForm = () => {
             </div>
 
             <p className="text-sm text-gray-600">
-              <FontAwesomeIcon icon={ICON_NAMES.CLOUD_SUN} className="mr-2 text-gray-400" />
-              3-day forecast for the location below
+              <FontAwesomeIcon icon={formData.slide_type === 'tides' ? ICON_NAMES.WATER : ICON_NAMES.CLOUD_SUN} className="mr-2 text-gray-400" />
+              {formData.slide_type === 'tides'
+                ? 'Tide-focused display for the location below'
+                : '3-day weather forecast for the location below'}
             </p>
           </div>
         )}
@@ -546,6 +549,8 @@ const SlideForm = () => {
                 ? 'Enter your announcement text...'
                 : formData.slide_type === 'event_promo'
                 ? 'Enter event details...'
+                : formData.slide_type === 'tides'
+                ? 'Optional notes for the tide display...'
                 : 'Optional caption for the photo...'
             }
             height={200}
@@ -554,6 +559,8 @@ const SlideForm = () => {
             {formData.slide_type === 'announcement' && 'Main text content for the announcement'}
             {formData.slide_type === 'event_promo' && 'Event description and details'}
             {formData.slide_type === 'photo' && 'Optional caption or description for the photo'}
+            {formData.slide_type === 'weather' && 'Optional notes shown below the weather forecast'}
+            {formData.slide_type === 'tides' && 'Optional notes shown below the tide display'}
           </p>
         </div>
 

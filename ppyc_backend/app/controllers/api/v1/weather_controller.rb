@@ -2,6 +2,7 @@ class Api::V1::WeatherController < Api::V1::BaseController
   require 'net/http'
   require 'uri'
   require 'json'
+  require 'time'
 
   # GET /api/v1/weather/current?location=Winthrop,MA
   def current
@@ -67,68 +68,29 @@ class Api::V1::WeatherController < Api::V1::BaseController
     days = (params[:days] || 3).to_i
 
     begin
-      data = fetch_weather_data('marine', location, days: days)
+      tidecheck_data = fetch_tidecheck_data(location, days)
+      response = format_tidecheck_marine_response(tidecheck_data, location, days)
 
-      # Debug: log marine response structure in development (wave/swell/tides depend on plan & location)
-      if Rails.env.development? && data['forecast'] && data['forecast']['forecastday']&.first
-        fd = data['forecast']['forecastday'].first
-        Rails.logger.info "[Marine API] location=#{location} days=#{days} forecastday_keys=#{fd.keys.inspect} hour_count=#{fd['hour']&.size} first_hour_keys=#{fd['hour']&.first&.keys&.inspect} tides_count=#{fd['tides']&.size}"
+      # TideCheck excels at tides/astronomical data; blend in WeatherAPI marine
+      # wave/swell/wind fields so the UI can show a complete marine card.
+      begin
+        weather_data = fetch_weatherapi_marine_cached(location, days)
+        weather_response = format_weatherapi_marine_response(weather_data, location, days)
+        response = merge_weatherapi_fields(response, weather_response)
+      rescue => blend_error
+        Rails.logger.warn "WeatherAPI blend for marine data failed: #{blend_error.class} #{blend_error.message}"
       end
-
-      # Format the marine response (day-level + first-hour wave/swell when available + tides)
-      response = {
-        location: data['location']['name'],
-        forecasts: data['forecast']['forecastday'].map do |day|
-          raw_tides = day['tides']
-          tide_list = raw_tides.is_a?(Array) ? raw_tides : (raw_tides.is_a?(Hash) ? raw_tides.values : [])
-          tides = tide_list.map do |t|
-            {
-              time: t['tide_time'],
-              height_mt: t['tide_height_mt'],
-              type: t['tide_type']
-            }
-          end
-          # Wave/swell: day level first, then from first available hour (marine API puts wave/swell in hour element)
-          # Tides and marine hour data depend on WeatherAPI subscription and coastal location (lat/lon often works better).
-          raw_hours = day['hour']
-          hours = case raw_hours
-                  when Array then raw_hours
-                  when Hash then raw_hours.values
-                  else []
-                  end
-          day_obj = day['day'] || {}
-          first_hour = hours.first
-          first_hour_with_wave = hours.find { |h| h.key?('sig_ht_mt') && !h['sig_ht_mt'].nil? }
-          first_hour_with_swell = hours.find { |h| (h['swell_ht_ft'].present? || (h.key?('swell_ht_mt') && !h['swell_ht_mt'].nil?)) }
-          first_hour_with_wave ||= first_hour
-          first_hour_with_swell ||= first_hour
-          wave_height = day_obj['wave_height_ft'].presence
-          wave_height ||= (first_hour_with_wave && first_hour_with_wave['sig_ht_mt'] && (first_hour_with_wave['sig_ht_mt'].to_f * 3.28084).round(1))
-          wave_direction = day_obj['wave_dir_16_point'].presence || first_hour_with_wave&.dig('swell_dir_16_point')
-          swell_height = day_obj['swell_height_ft'].presence || first_hour_with_swell&.dig('swell_ht_ft')
-          swell_height ||= (first_hour_with_swell && first_hour_with_swell['swell_ht_mt'] && (first_hour_with_swell['swell_ht_mt'].to_f * 3.28084).round(1))
-          swell_direction = day_obj['swell_dir_16_point'].presence || first_hour_with_swell&.dig('swell_dir_16_point')
-          {
-            date: day['date'],
-            wave_height: wave_height,
-            wave_direction: wave_direction,
-            swell_height: swell_height,
-            swell_direction: swell_direction,
-            wind_speed: day_obj['maxwind_mph'],
-            wind_direction: day_obj['wind_dir'],
-            temperature: day_obj['maxtemp_f'],
-            condition: day_obj.dig('condition', 'text'),
-            icon_url: day_obj.dig('condition', 'icon'),
-            visibility_miles: day_obj['avgvis_miles'],
-            tides: tides
-          }
-        end
-      }
 
       render_success(response)
     rescue => e
-      Rails.logger.error "Weather API Error: #{e.message}"
-      render_error('Marine forecast unavailable', :service_unavailable)
+      Rails.logger.warn "TideCheck marine fetch failed, falling back to WeatherAPI: #{e.class} #{e.message}"
+      begin
+        weather_data = fetch_weather_data('marine', location, days: days)
+        render_success(format_weatherapi_marine_response(weather_data, location, days))
+      rescue => fallback_error
+        Rails.logger.error "Marine API fallback failed: #{fallback_error.class} #{fallback_error.message}"
+        render_error('Marine forecast unavailable', :service_unavailable)
+      end
     end
   end
 
@@ -184,6 +146,302 @@ class Api::V1::WeatherController < Api::V1::BaseController
   end
 
   private
+
+  def format_weatherapi_marine_response(data, _location, days)
+    # Debug: log marine response structure in development (wave/swell/tides depend on plan & location)
+    if Rails.env.development? && data['forecast'] && data['forecast']['forecastday']&.first
+      fd = data['forecast']['forecastday'].first
+      Rails.logger.info "[Marine API] forecastday_keys=#{fd.keys.inspect} hour_count=#{fd['hour']&.size} first_hour_keys=#{fd['hour']&.first&.keys&.inspect} tides_count=#{fd['tides']&.size}"
+    end
+
+    {
+      source: 'weatherapi',
+      location: data['location']['name'],
+      forecasts: data['forecast']['forecastday'].first(days).map do |day|
+        raw_tides = day['tides']
+        tide_list = raw_tides.is_a?(Array) ? raw_tides : (raw_tides.is_a?(Hash) ? raw_tides.values : [])
+        tides = tide_list.map do |t|
+          {
+            time: t['tide_time'],
+            height_mt: t['tide_height_mt'],
+            type: t['tide_type']
+          }
+        end
+
+        # Wave/swell: day level first, then from first available hour.
+        raw_hours = day['hour']
+        hours = case raw_hours
+                when Array then raw_hours
+                when Hash then raw_hours.values
+                else []
+                end
+        day_obj = day['day'] || {}
+        first_hour = hours.first
+        first_hour_with_wave = hours.find { |h| h.key?('sig_ht_mt') && !h['sig_ht_mt'].nil? }
+        first_hour_with_swell = hours.find { |h| (h['swell_ht_ft'].present? || (h.key?('swell_ht_mt') && !h['swell_ht_mt'].nil?)) }
+        first_hour_with_wave ||= first_hour
+        first_hour_with_swell ||= first_hour
+        wave_height = day_obj['wave_height_ft'].presence
+        wave_height ||= (first_hour_with_wave && first_hour_with_wave['sig_ht_mt'] && (first_hour_with_wave['sig_ht_mt'].to_f * 3.28084).round(1))
+        wave_direction = day_obj['wave_dir_16_point'].presence || first_hour_with_wave&.dig('swell_dir_16_point')
+        swell_height = day_obj['swell_height_ft'].presence || first_hour_with_swell&.dig('swell_ht_ft')
+        swell_height ||= (first_hour_with_swell && first_hour_with_swell['swell_ht_mt'] && (first_hour_with_swell['swell_ht_mt'].to_f * 3.28084).round(1))
+        swell_direction = day_obj['swell_dir_16_point'].presence || first_hour_with_swell&.dig('swell_dir_16_point')
+
+        {
+          date: day['date'],
+          wave_height: wave_height,
+          wave_direction: wave_direction,
+          swell_height: swell_height,
+          swell_direction: swell_direction,
+          wind_speed: day_obj['maxwind_mph'],
+          wind_direction: day_obj['wind_dir'],
+          temperature: day_obj['maxtemp_f'],
+          condition: day_obj.dig('condition', 'text'),
+          icon_url: day_obj.dig('condition', 'icon'),
+          visibility_miles: day_obj['avgvis_miles'],
+          tides: tides
+        }
+      end
+    }
+  end
+
+  def format_tidecheck_marine_response(data, location, days)
+    daily_conditions = Array(data['dailyConditions'])
+    forecasts_by_date = {}
+    all_extremes = Array(data['extremes'])
+    now = Time.current
+
+    daily_conditions.each do |day|
+      date = day['date']
+      forecasts_by_date[date] = {
+        date: date,
+        wave_height: nil,
+        wave_direction: nil,
+        swell_height: nil,
+        swell_direction: nil,
+        wind_speed: nil,
+        wind_direction: nil,
+        temperature: nil,
+        condition: nil,
+        icon_url: nil,
+        visibility_miles: nil,
+        tides: [],
+        sunrise: day['sunrise'],
+        sunset: day['sunset'],
+        moon_phase: day['moonPhase'],
+        moon_illumination: day['moonIllumination'],
+        solunar_label: day['solunarLabel'],
+        spring_neap: day['springNeap']
+      }
+    end
+
+    all_extremes.each do |extreme|
+      date = extreme['localDate'] || extreme['time']&.to_date&.iso8601
+      next if date.blank?
+
+      forecasts_by_date[date] ||= {
+        date: date,
+        wave_height: nil,
+        wave_direction: nil,
+        swell_height: nil,
+        swell_direction: nil,
+        wind_speed: nil,
+        wind_direction: nil,
+        temperature: nil,
+        condition: nil,
+        icon_url: nil,
+        visibility_miles: nil,
+        tides: []
+      }
+
+      forecasts_by_date[date][:tides] << {
+        time: extreme['time'],
+        height_mt: extreme['height'],
+        type: extreme['type']
+      }
+    end
+
+    forecasts = forecasts_by_date.values.sort_by { |forecast| forecast[:date] }.first(days)
+    forecasts.each do |forecast|
+      forecast[:tides] = forecast[:tides].sort_by { |t| t[:time].to_s }
+      heights = forecast[:tides].map { |t| t[:height_mt] }.compact
+      forecast[:tidal_range_mt] = heights.any? ? (heights.max - heights.min).round(3) : nil
+    end
+
+    future_extremes = all_extremes
+      .map do |extreme|
+        parsed = parse_iso_time(extreme['time'])
+        next nil unless parsed
+        { time: extreme['time'], parsed_time: parsed, type: extreme['type'], height_mt: extreme['height'] }
+      end
+      .compact
+      .select { |extreme| extreme[:parsed_time] >= now }
+      .sort_by { |extreme| extreme[:parsed_time] }
+
+    next_high = future_extremes.find { |extreme| extreme[:type] == 'high' }
+    next_low = future_extremes.find { |extreme| extreme[:type] == 'low' }
+
+    trend = derive_tide_trend(Array(data['timeSeries']), now)
+
+    {
+      source: 'tidecheck',
+      location: data.dig('station', 'name') || data.dig('station', 'region') || location,
+      station: {
+        id: data.dig('station', 'id'),
+        timezone: data.dig('station', 'timezone'),
+        datum: data['datum']
+      },
+      conditions: {
+        sunrise: data.dig('conditions', 'sunrise'),
+        sunset: data.dig('conditions', 'sunset'),
+        moon_phase: data.dig('conditions', 'moonPhase'),
+        moon_illumination: data.dig('conditions', 'moonIllumination'),
+        spring_neap: data.dig('conditions', 'springNeap'),
+        tidal_strength: data.dig('conditions', 'tidalStrength')
+      },
+      next_tides: {
+        high: next_high&.slice(:time, :height_mt),
+        low: next_low&.slice(:time, :height_mt)
+      },
+      trend: trend,
+      forecasts: forecasts
+    }
+  end
+
+  def derive_tide_trend(time_series, now)
+    points = time_series
+      .map do |point|
+        parsed = parse_iso_time(point['time'])
+        next nil unless parsed
+        { time: point['time'], parsed_time: parsed, height: point['height']&.to_f }
+      end
+      .compact
+      .select { |point| !point[:height].nil? }
+      .sort_by { |point| point[:parsed_time] }
+
+    return { state: nil, current_height_mt: nil } if points.size < 2
+
+    prev_point = points.reverse.find { |point| point[:parsed_time] <= now } || points[-2]
+    next_point = points.find { |point| point[:parsed_time] > prev_point[:parsed_time] } || points[-1]
+    return { state: nil, current_height_mt: prev_point[:height]&.round(3) } if prev_point == next_point
+
+    delta = next_point[:height] - prev_point[:height]
+    state = if delta > 0.01
+              'rising'
+            elsif delta < -0.01
+              'falling'
+            else
+              'slack'
+            end
+
+    {
+      state: state,
+      current_height_mt: prev_point[:height]&.round(3),
+      sampled_at: prev_point[:time]
+    }
+  end
+
+  def parse_iso_time(value)
+    return nil if value.blank?
+    Time.iso8601(value)
+  rescue ArgumentError
+    nil
+  end
+
+  def merge_weatherapi_fields(tidecheck_response, weatherapi_response)
+    merged = tidecheck_response.deep_dup
+    weather_by_date = Array(weatherapi_response[:forecasts]).index_by { |day| day[:date] || day['date'] }
+
+    merged[:forecasts] = Array(merged[:forecasts]).map do |day|
+      weather_day = weather_by_date[day[:date]]
+      next day unless weather_day
+
+      day.merge(
+        wave_height: day[:wave_height].presence || weather_day[:wave_height],
+        wave_direction: day[:wave_direction].presence || weather_day[:wave_direction],
+        swell_height: day[:swell_height].presence || weather_day[:swell_height],
+        swell_direction: day[:swell_direction].presence || weather_day[:swell_direction],
+        wind_speed: day[:wind_speed].presence || weather_day[:wind_speed],
+        wind_direction: day[:wind_direction].presence || weather_day[:wind_direction],
+        temperature: day[:temperature].presence || weather_day[:temperature],
+        condition: day[:condition].presence || weather_day[:condition],
+        icon_url: day[:icon_url].presence || weather_day[:icon_url],
+        visibility_miles: day[:visibility_miles].presence || weather_day[:visibility_miles]
+      )
+    end
+
+    merged[:source] = 'tidecheck+weatherapi'
+    merged
+  end
+
+  def fetch_tidecheck_data(location, days)
+    api_key = ENV['TIDECHECK_API_KEY']
+    station_id = ENV['TIDECHECK_STATION_ID']
+    datum = ENV.fetch('TIDECHECK_DATUM', 'MLLW')
+
+    raise 'TideCheck API key not configured' if api_key.blank?
+    raise 'TideCheck station ID not configured' if station_id.blank?
+
+    normalized_days = [[days.to_i, 1].max, 7].min
+    cache_key = "tidecheck:tides:v1:station:#{station_id}:days:#{normalized_days}:datum:#{datum}"
+
+    marine_cache_fetch(cache_key, expires_in: 6.hours) do
+      uri = URI("https://tidecheck.com/api/station/#{station_id}/tides")
+      uri.query = URI.encode_www_form(days: normalized_days, datum: datum)
+      request = Net::HTTP::Get.new(uri)
+      request['X-API-Key'] = api_key
+
+      response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+        http.request(request)
+      end
+
+      unless response.code == '200'
+        raise "TideCheck returned #{response.code}: #{response.body}"
+      end
+
+      payload = JSON.parse(response.body)
+      Rails.logger.info "[TideCheck] cached tides for station=#{station_id} location=#{location} days=#{normalized_days}"
+      payload
+    end
+  end
+
+  def fetch_weatherapi_marine_cached(location, days)
+    normalized_days = [[days.to_i, 1].max, 7].min
+    normalized_location = location.to_s.strip.downcase
+    cache_key = "weatherapi:marine:v1:location:#{normalized_location}:days:#{normalized_days}"
+
+    marine_cache_fetch(cache_key, expires_in: 1.hour) do
+      fetch_weather_data('marine', location, days: normalized_days)
+    end
+  end
+
+  def marine_cache_fetch(key, expires_in:)
+    # Development may run with NullStore; keep an in-process cache to avoid
+    # exhausting low-rate external API quotas while iterating.
+    if Rails.cache.is_a?(ActiveSupport::Cache::NullStore)
+      self.class.marine_memory_cache ||= {}
+      entry = self.class.marine_memory_cache[key]
+      if entry && entry[:expires_at] > Time.current
+        return entry[:value]
+      end
+
+      value = yield
+      self.class.marine_memory_cache[key] = {
+        value: value,
+        expires_at: Time.current + expires_in
+      }
+      return value
+    end
+
+    Rails.cache.fetch(key, expires_in: expires_in, race_condition_ttl: 30.seconds) do
+      yield
+    end
+  end
+
+  class << self
+    attr_accessor :marine_memory_cache
+  end
 
   def fetch_weather_data(endpoint, location, options = {})
     api_key = ENV['WEATHER_API_KEY']
