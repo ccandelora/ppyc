@@ -1,6 +1,10 @@
 # Weather API Setup Guide
 
-The PPYC website includes weather and marine data integration using WeatherAPI.com. The API key is securely stored on the backend to prevent exposure in the frontend code.
+The PPYC website uses:
+- **WeatherAPI.com** for current weather + forecast
+- **TideCheck** for marine tide data (with strict daily quota caching)
+
+All keys are stored on the backend to prevent exposure in frontend code.
 
 ## Security Implementation
 
@@ -23,10 +27,16 @@ cd ppyc_backend
 cp .env.example .env
 ```
 
-Edit `.env` and add your WeatherAPI key:
+Edit `.env` and add keys:
 ```bash
 WEATHER_API_KEY=your_actual_api_key_here
+TIDECHECK_API_KEY=tc_your_key_here
+TIDECHECK_STATION_ID=8443970
+# Optional (defaults to MLLW)
+TIDECHECK_DATUM=MLLW
 ```
+
+> `TIDECHECK_STATION_ID` should be a TideCheck-supported station id for your location.
 
 ### 3. Restart Rails Server
 
@@ -41,7 +51,16 @@ The backend provides these secure weather endpoints:
 
 - `GET /api/v1/weather/current?location=Boston,MA` - Current weather conditions
 - `GET /api/v1/weather/forecast?location=Boston,MA&days=3` - Weather forecast 
-- `GET /api/v1/weather/marine?location=Boston,MA&days=3` - Marine conditions
+- `GET /api/v1/weather/marine?location=Boston,MA&days=3` - Marine conditions/tides (TideCheck first, WeatherAPI fallback)
+
+## TideCheck Rate-Limit Protection
+
+TideCheck free plan allows only **50 requests/day**. The backend now protects usage by:
+- Caching TideCheck responses server-side for 6 hours per station+datum+days
+- Reusing cached responses across requests
+- Falling back to WeatherAPI marine response if TideCheck is unavailable
+
+Frontend marine calls are also cached for 6 hours to reduce repeated requests.
 
 ## Frontend Usage
 

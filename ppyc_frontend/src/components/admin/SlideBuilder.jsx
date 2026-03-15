@@ -151,6 +151,12 @@ const SlideBuilder = () => {
       name: 'Weather Info',
       icon: 'fas fa-cloud-sun',
       description: 'Display weather information'
+    },
+    {
+      type: 'tides',
+      name: 'Tides',
+      icon: 'fas fa-water',
+      description: 'Display tide times and trends'
     }
   ];
 
@@ -210,7 +216,7 @@ const SlideBuilder = () => {
     setEditingSlide(slide);
     setFormData({
       title: slide.title || '',
-      slide_type: slide.slide_type || 'announcement',
+      slide_type: slide.slide_type === 'marine_weather' ? 'tides' : (slide.slide_type || 'announcement'),
       content: slide.content || '',
       duration_seconds: slide.duration_seconds || 8,
       active_status: slide.active_status,
@@ -412,7 +418,7 @@ const SlideBuilder = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Slide Template
                   </label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     {slideTemplates.map((template) => (
                       <button
                         key={template.type}

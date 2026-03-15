@@ -6,7 +6,7 @@ import { weatherAPI } from '../services/api';
 
 const WeatherWidget = ({ className = '', showMarine = false }) => {
   const { data: weatherResponse, isLoading: weatherLoading, error: weatherError } = useApiCache(weatherAPI.getCurrent, 'weather-current', { ttl: 300000 });
-  const { data: marineResponse, isLoading: marineLoading, error: marineError } = useApiCache(weatherAPI.getMarine, 'weather-marine', { ttl: 600000 });
+  const { data: marineResponse, isLoading: marineLoading, error: marineError } = useApiCache(weatherAPI.getMarine, 'weather-marine', { ttl: 6 * 60 * 60 * 1000 });
 
   // The weather data is in the response.data
   const weather = weatherResponse?.data;

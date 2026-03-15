@@ -5,6 +5,7 @@ import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
 import CloudinaryVideo from './CloudinaryVideo';
 import WeatherWidget from './WeatherWidget';
 import SlideWeatherWidget from './SlideWeatherWidget';
+import SlideMarineWidget from './SlideMarineWidget';
 import { useApiCache } from '../hooks/useApiCache';
 import { slidesAPI } from '../services/api';
 import { useSettings } from '../hooks/useSettings';
@@ -207,8 +208,8 @@ const TVDisplay = () => {
             {enableWeather && <WeatherWidget className="text-3xl" showMarine={true} />}
             </div>
 
-            {/* Slide Content - flex-1 min-h-0 so it shrinks and doesn't push footer off */}
-            <div className="flex-1 flex items-center justify-center p-4 md:p-6 min-h-0 overflow-auto">
+            {/* Slide Content: start higher and reserve footer space in normal flow */}
+            <div className="flex-1 flex items-start justify-center px-4 md:px-6 pt-2 md:pt-4 pb-4 min-h-0 overflow-auto">
               <div className="text-center max-w-6xl w-full mx-auto">
                 {slides[currentSlideIndex].slide_type === 'weather' ? (
                   <>
@@ -221,6 +222,21 @@ const TVDisplay = () => {
                       location={slides[currentSlideIndex].location}
                       weatherType={slides[currentSlideIndex].weather_type || 'current'}
                     />
+                    {slides[currentSlideIndex].content && (
+                      <div
+                        className="mt-8 text-3xl text-gray-100 leading-relaxed prose prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ __html: slides[currentSlideIndex].content }}
+                      />
+                    )}
+                  </>
+                ) : (slides[currentSlideIndex].slide_type === 'marine_weather' || slides[currentSlideIndex].slide_type === 'tides') ? (
+                  <>
+                    {slides[currentSlideIndex].title && (
+                      <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 md:mb-4 tracking-tight">
+                        {slides[currentSlideIndex].title}
+                      </h1>
+                    )}
+                    <SlideMarineWidget location={slides[currentSlideIndex].location} />
                     {slides[currentSlideIndex].content && (
                       <div
                         className="mt-8 text-3xl text-gray-100 leading-relaxed prose prose-invert max-w-none"
@@ -248,7 +264,7 @@ const TVDisplay = () => {
             </div>
 
             {/* Footer */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 flex-shrink-0">
+            <div className="p-4 md:p-6 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <div className="text-xl md:text-2xl text-white">
                   <FontAwesomeIcon icon={ICON_NAMES.SHIP} className="mr-4" />

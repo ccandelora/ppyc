@@ -5,7 +5,7 @@ class Slide < ApplicationRecord
 
   # Validations
   validates :title, presence: true
-  validates :slide_type, presence: true, inclusion: { in: %w[announcement event_promo photo weather] }
+  validates :slide_type, presence: true, inclusion: { in: %w[announcement event_promo photo weather tides marine_weather] }
   validates :display_order, presence: true, uniqueness: true
   validates :duration_seconds, presence: true, numericality: { greater_than: 0 }
   validates :background_tint_opacity, numericality: { greater_than_or_equal_to: 0.0, less_than_or_equal_to: 1.0 }, allow_nil: true
