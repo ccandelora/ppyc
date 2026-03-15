@@ -49,6 +49,32 @@ ssh root@31.97.148.52
 # Password: 00hdn0Bn@i#aoPw3D3g&
 ```
 
+### Production Env Vars (important)
+
+This server loads Puma env vars from a wrapper script:
+- Systemd service: `/etc/systemd/system/puma.service`
+- ExecStart script: `/usr/local/bin/puma-with-env.sh`
+- Env file sourced by script: `/root/ppyc_env.sh`
+
+So, for backend API keys (Rails runtime), update `/root/ppyc_env.sh`:
+```bash
+export WEATHER_API_KEY="..."
+export TIDECHECK_API_KEY="..."
+export TIDECHECK_STATION_ID="8444012"
+export TIDECHECK_DATUM="MLLW"
+```
+
+Then restart Puma:
+```bash
+sudo systemctl restart puma
+```
+
+Verify env vars are loaded in the running Puma process:
+```bash
+PID=$(sudo systemctl show puma --property=MainPID --value)
+sudo tr '\0' '\n' < /proc/$PID/environ | grep -E '^TIDECHECK|^WEATHER_API_KEY|^RAILS_ENV'
+```
+
 ### After Repository Update
 
 #### 1. Pull Latest Code
@@ -163,6 +189,54 @@ lsof -i :3000
 ```
 
 ### VPS Production
+
+#### Tide endpoint falls back to WeatherAPI (no tide data)
+If `/api/v1/weather/marine` returns `"source":"weatherapi"` in production:
+
+```bash
+# 1) Test TideCheck directly with current server env
+source /root/ppyc_env.sh
+curl -i -s -H "X-API-Key: $TIDECHECK_API_KEY" \
+  "https://tidecheck.com/api/station/$TIDECHECK_STATION_ID/tides?days=3&datum=${TIDECHECK_DATUM:-MLLW}" | sed -n '1,40p'
+```
+
+If direct TideCheck call is 200 but app still falls back, Solid Cache is likely broken.
+
+```bash
+# 2) Verify Rails cache write
+cd /var/www/ppyc/ppyc_backend
+RAILS_ENV=production bundle exec rails runner 'Rails.cache.write("probe","ok",expires_in:60); puts Rails.cache.read("probe").inspect'
+```
+
+If you see `No unique index found for key_hash`, fix Solid Cache table/indexes:
+
+```bash
+RAILS_ENV=production bundle exec rails runner '
+conn = SolidCache::Entry.connection
+conn.execute <<~SQL
+  CREATE TABLE IF NOT EXISTS solid_cache_entries (
+    id bigserial PRIMARY KEY,
+    key bytea NOT NULL,
+    value bytea NOT NULL,
+    created_at timestamp NOT NULL,
+    key_hash bigint NOT NULL,
+    byte_size integer NOT NULL
+  );
+SQL
+conn.execute "CREATE INDEX IF NOT EXISTS index_solid_cache_entries_on_byte_size ON solid_cache_entries (byte_size);"
+conn.execute "CREATE INDEX IF NOT EXISTS index_solid_cache_entries_on_key_hash_and_byte_size ON solid_cache_entries (key_hash, byte_size);"
+conn.execute "DROP INDEX IF EXISTS index_solid_cache_entries_on_key_hash;"
+conn.execute "CREATE UNIQUE INDEX index_solid_cache_entries_on_key_hash ON solid_cache_entries (key_hash);"
+puts "Solid cache table/index ensured."
+'
+sudo systemctl restart puma
+```
+
+Re-test endpoint:
+```bash
+curl -s "http://localhost:3000/api/v1/weather/marine?location=Winthrop,MA&days=3"
+# Expect: source is "tidecheck" or "tidecheck+weatherapi"
+```
 
 #### 500 Internal Server Error
 ```bash
