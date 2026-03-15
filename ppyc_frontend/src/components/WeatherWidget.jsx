@@ -39,20 +39,42 @@ const WeatherWidget = ({ className = '', showMarine = false }) => {
     );
   }
 
-  const getWeatherIcon = (condition) => {
-    if (!condition) return ICON_NAMES.SUN;
+  const getWeatherVisual = (condition) => {
+    if (!condition) {
+      return { icon: ICON_NAMES.SUN, colorClass: 'text-yellow-400' };
+    }
+
     const conditionLower = condition.toLowerCase();
-    if (conditionLower.includes('rain')) return ICON_NAMES.RAIN;
-    if (conditionLower.includes('cloud') || conditionLower.includes('overcast')) return ICON_NAMES.CLOUD;
-    if (conditionLower.includes('snow')) return ICON_NAMES.SNOW;
-    if (conditionLower.includes('thunder')) return ICON_NAMES.THUNDER;
-    if (conditionLower.includes('wind')) return ICON_NAMES.WIND;
-    if (conditionLower.includes('fog')) return ICON_NAMES.FOG;
-    return ICON_NAMES.SUN;
+
+    if (conditionLower.includes('thunder') || conditionLower.includes('storm') || conditionLower.includes('lightning')) {
+      return { icon: ICON_NAMES.THUNDER, colorClass: 'text-purple-300' };
+    }
+    if (conditionLower.includes('snow') || conditionLower.includes('ice') || conditionLower.includes('sleet') || conditionLower.includes('blizzard') || conditionLower.includes('freezing')) {
+      return { icon: ICON_NAMES.SNOW, colorClass: 'text-sky-300' };
+    }
+    if (conditionLower.includes('rain') || conditionLower.includes('drizzle') || conditionLower.includes('shower')) {
+      return { icon: ICON_NAMES.RAIN, colorClass: 'text-blue-300' };
+    }
+    if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze') || conditionLower.includes('smoke')) {
+      return { icon: ICON_NAMES.FOG, colorClass: 'text-slate-300' };
+    }
+    if (conditionLower.includes('wind') || conditionLower.includes('breezy') || conditionLower.includes('gust')) {
+      return { icon: ICON_NAMES.WIND, colorClass: 'text-teal-300' };
+    }
+    if (conditionLower.includes('partly') || conditionLower.includes('mostly')) {
+      return { icon: ICON_NAMES.CLOUD_SUN, colorClass: 'text-amber-300' };
+    }
+    if (conditionLower.includes('cloud') || conditionLower.includes('overcast')) {
+      return { icon: ICON_NAMES.CLOUD, colorClass: 'text-gray-300' };
+    }
+
+    return { icon: ICON_NAMES.SUN, colorClass: 'text-yellow-400' };
   };
 
   // Get today's marine forecast
   const todayMarine = marine?.forecasts?.[0] || {};
+
+  const weatherVisual = getWeatherVisual(weather.condition);
 
   return (
     <div className={`flex flex-col space-y-4 ${className}`}>
@@ -61,8 +83,8 @@ const WeatherWidget = ({ className = '', showMarine = false }) => {
         {/* Temperature */}
         <div className="flex items-center text-white">
           <FontAwesomeIcon
-            icon={getWeatherIcon(weather.condition)}
-            className="mr-3 text-yellow-400 text-4xl"
+            icon={weatherVisual.icon}
+            className={`mr-3 text-4xl ${weatherVisual.colorClass}`}
           />
           <span className="text-4xl">{weather.temperature ? `${Math.round(weather.temperature)}°F` : 'N/A'}</span>
         </div>

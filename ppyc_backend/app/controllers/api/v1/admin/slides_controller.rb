@@ -43,17 +43,43 @@ class Api::V1::Admin::SlidesController < Api::V1::Admin::BaseController
 
   # Bulk update display order
   def reorder
-    slides_data = params[:slides] || []
+    slides_data = Array(params[:slides])
+    if slides_data.empty?
+      return render_error('No slides provided', :bad_request)
+    end
 
-    slides_data.each do |slide_data|
-      slide = Slide.find(slide_data[:id])
-      slide.update(display_order: slide_data[:display_order])
+    Slide.transaction do
+      normalized_data = slides_data.map do |slide_data|
+        {
+          id: slide_data[:id].to_i,
+          display_order: slide_data[:display_order].to_i
+        }
+      end
+
+      slide_ids = normalized_data.map { |slide| slide[:id] }
+      slides_by_id = Slide.where(id: slide_ids).index_by(&:id)
+
+      missing_ids = slide_ids - slides_by_id.keys
+      raise ActiveRecord::RecordNotFound if missing_ids.any?
+
+      # Temporarily move all selected slides out of the current order range so
+      # we can safely re-assign unique display_order values in a second pass.
+      offset = (Slide.maximum(:display_order) || 0) + normalized_data.size + 10
+      normalized_data.each do |slide_data|
+        slides_by_id[slide_data[:id]].update_columns(display_order: slide_data[:display_order] + offset)
+      end
+
+      normalized_data.each do |slide_data|
+        slides_by_id[slide_data[:id]].update!(display_order: slide_data[:display_order])
+      end
     end
 
     slides = Slide.order(:display_order)
     render_success(slides.map { |slide| admin_slide_json(slide) })
   rescue ActiveRecord::RecordNotFound
     render_error('Slide not found', :not_found)
+  rescue ActiveRecord::RecordInvalid => e
+    render_error("Failed to reorder slides: #{e.record.errors.full_messages.join(', ')}")
   end
 
   private

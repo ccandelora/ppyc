@@ -7,6 +7,13 @@ import api from '../services/api';
 const cacheKeySlug = (location, type) =>
   `${(location || 'default').replace(/[^a-zA-Z0-9.-]/g, '_')}_${type}`;
 
+const formatLocalDateYYYYMMDD = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const SlideWeatherWidget = ({ location, weatherType, className = '' }) => {
   const effectiveLocation = (location && location.trim()) || 'Winthrop, MA';
   const slug = cacheKeySlug(effectiveLocation, 'forecast');
@@ -38,21 +45,42 @@ const SlideWeatherWidget = ({ location, weatherType, className = '' }) => {
     );
   }
 
-  const getWeatherIcon = (condition) => {
-    if (!condition) return ICON_NAMES.SUN;
+  const getWeatherVisual = (condition) => {
+    if (!condition) {
+      return { icon: ICON_NAMES.SUN, colorClass: 'text-yellow-400' };
+    }
+
     const c = condition.toLowerCase();
-    if (c.includes('rain')) return ICON_NAMES.RAIN;
-    if (c.includes('cloud') || c.includes('overcast')) return ICON_NAMES.CLOUD;
-    if (c.includes('snow')) return ICON_NAMES.SNOW;
-    if (c.includes('thunder')) return ICON_NAMES.THUNDER;
-    if (c.includes('wind')) return ICON_NAMES.WIND;
-    if (c.includes('fog')) return ICON_NAMES.FOG;
-    return ICON_NAMES.SUN;
+
+    if (c.includes('thunder') || c.includes('storm') || c.includes('lightning')) {
+      return { icon: ICON_NAMES.THUNDER, colorClass: 'text-purple-300' };
+    }
+    if (c.includes('snow') || c.includes('ice') || c.includes('sleet') || c.includes('blizzard') || c.includes('freezing')) {
+      return { icon: ICON_NAMES.SNOW, colorClass: 'text-sky-300' };
+    }
+    if (c.includes('rain') || c.includes('drizzle') || c.includes('shower')) {
+      return { icon: ICON_NAMES.RAIN, colorClass: 'text-blue-300' };
+    }
+    if (c.includes('fog') || c.includes('mist') || c.includes('haze') || c.includes('smoke')) {
+      return { icon: ICON_NAMES.FOG, colorClass: 'text-slate-300' };
+    }
+    if (c.includes('wind') || c.includes('breezy') || c.includes('gust')) {
+      return { icon: ICON_NAMES.WIND, colorClass: 'text-teal-300' };
+    }
+    if (c.includes('partly') || c.includes('mostly')) {
+      return { icon: ICON_NAMES.CLOUD_SUN, colorClass: 'text-amber-300' };
+    }
+    if (c.includes('cloud') || c.includes('overcast')) {
+      return { icon: ICON_NAMES.CLOUD, colorClass: 'text-gray-300' };
+    }
+
+    return { icon: ICON_NAMES.SUN, colorClass: 'text-yellow-400' };
   };
 
   // 3-Day Forecast
   if (data.forecasts && data.forecasts.length > 0) {
-    const todayStr = new Date().toISOString().slice(0, 10);
+    // Use local date instead of UTC so evening hours do not skip "today".
+    const todayStr = formatLocalDateYYYYMMDD(new Date());
     const filtered = data.forecasts.filter((d) => d.date >= todayStr).slice(0, 3);
     const daysToShow = filtered.length ? filtered : data.forecasts.slice(0, 3);
 
@@ -87,6 +115,7 @@ const SlideWeatherWidget = ({ location, weatherType, className = '' }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8">
           {daysToShow.map((day, i) => {
             const isToday = dayLabel(day.date, i) === 'Today';
+            const weatherVisual = getWeatherVisual(day.condition);
             return (
               <div
                 key={day.date || i}
@@ -101,8 +130,8 @@ const SlideWeatherWidget = ({ location, weatherType, className = '' }) => {
                   <span className="text-sm text-white/60">{formatDateShort(day.date)}</span>
                 </div>
                 <FontAwesomeIcon
-                  icon={getWeatherIcon(day.condition)}
-                  className="text-yellow-400 text-5xl mb-3"
+                  icon={weatherVisual.icon}
+                  className={`${weatherVisual.colorClass} text-5xl mb-3`}
                 />
                 <div className="text-3xl font-bold text-white">
                   {day.max_temp != null ? `${Math.round(day.max_temp)}°` : '—'}

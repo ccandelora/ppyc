@@ -174,33 +174,35 @@ const SlideBuilder = () => {
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
-      const oldIndex = slides.findIndex(slide => slide.id === active.id);
-      const newIndex = slides.findIndex(slide => slide.id === over.id);
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = slides.findIndex(slide => slide.id === active.id);
+    const newIndex = slides.findIndex(slide => slide.id === over.id);
+    
+    const newSlides = arrayMove(slides, oldIndex, newIndex);
+    
+    // Update display_order for all slides
+    const updatedSlides = newSlides.map((slide, index) => ({
+      ...slide,
+      display_order: index + 1
+    }));
+    
+    setSlides(updatedSlides);
+    
+    try {
+      // Update order on server
+      await adminAPI.slides.reorder(updatedSlides.map(slide => ({
+        id: slide.id,
+        display_order: slide.display_order
+      })));
       
-      const newSlides = arrayMove(slides, oldIndex, newIndex);
-      
-      // Update display_order for all slides
-      const updatedSlides = newSlides.map((slide, index) => ({
-        ...slide,
-        display_order: index + 1
-      }));
-      
-      setSlides(updatedSlides);
-      
-      try {
-        // Update order on server
-        await adminAPI.slides.updateOrder(updatedSlides.map(slide => ({
-          id: slide.id,
-          display_order: slide.display_order
-        })));
-        
-        setSuccess('Slide order updated successfully!');
-        setTimeout(() => setSuccess(''), 3000);
-      } catch (err) {
-        setError(`Failed to update slide order: ${err.message || err}`);
-        fetchSlides(); // Revert on error
-      }
+      setSuccess('Slide order updated successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(`Failed to update slide order: ${err.message || err}`);
+      fetchSlides(); // Revert on error
     }
   };
 
