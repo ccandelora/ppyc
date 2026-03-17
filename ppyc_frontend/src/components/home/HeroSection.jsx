@@ -31,7 +31,7 @@ const HeroSection = () => {
           />
         </div>
         
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white">
           Pleasant Park
           <span className="block text-4xl md:text-6xl font-light text-blue-200">Yacht Club</span>
         </h1>
