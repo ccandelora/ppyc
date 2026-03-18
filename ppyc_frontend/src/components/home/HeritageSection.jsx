@@ -34,7 +34,7 @@ const HeritageSection = () => {
             <h3 className="text-2xl font-bold text-slate-800 mb-4">Maritime Community</h3>
             <p className="text-gray-600 leading-relaxed">
               Building lasting friendships through shared adventures on the water. Proud member of 
-              the <a href="https://www.mbyca.org/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Massachusetts Boating & Yacht Clubs Association</a>.
+              the <a href="https://www.mbyca.org/" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline hover:text-blue-900">Massachusetts Boating & Yacht Clubs Association</a>.
             </p>
           </div>
           
