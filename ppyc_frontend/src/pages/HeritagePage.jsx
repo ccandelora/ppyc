@@ -14,7 +14,7 @@ const HeritagePage = () => {
       />
 
       {/* Hero Section with Video Background */}
-      <div className="relative h-[60vh] overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
           <CloudinaryVideo
             publicId={YACHT_CLUB_ASSETS.videos.bostonWaterfront}
@@ -143,7 +143,7 @@ const HeritagePage = () => {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <img
-                src="/assets/images/ppyc-images/ppyc1920a-768x518.jpg"
+                src="/assets/images/ppyc-images/ppyc1920a-768x518.webp"
                 alt="PPYC in 1920"
                 className="w-full rounded-lg shadow-lg"
                 loading="lazy"
@@ -153,7 +153,7 @@ const HeritagePage = () => {
             </div>
             <div>
               <img
-                src="/assets/images/ppyc-images/ppycclub.jpg"
+                src="/assets/images/ppyc-images/ppycclub.webp"
                 alt="Historic PPYC clubhouse"
                 className="w-full rounded-lg shadow-lg"
                 loading="lazy"
@@ -225,7 +225,7 @@ const HeritagePage = () => {
             </div>
             <div>
               <img
-                src="/assets/images/ppyc-images/ppyc-1921a-768x558.jpg"
+                src="/assets/images/ppyc-images/ppyc-1921a-768x558.webp"
                 alt="PPYC in the 1920s"
                 className="w-full rounded-lg shadow-lg"
                 loading="lazy"

@@ -53,7 +53,7 @@ const NewsPage = () => {
       />
 
       {/* Hero Section with Video Background */}
-      <div className="relative h-[60vh] overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
           <CloudinaryVideo
             publicId={YACHT_CLUB_ASSETS.videos.harborView}
