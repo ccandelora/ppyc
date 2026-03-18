@@ -1,25 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
-  const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
-    // Defer video loading until after critical content renders
-    const loadVideo = () => {
+    // Short delay to let critical content paint first, then load video
+    const timer = setTimeout(() => {
       if (videoRef.current) {
-        videoRef.current.src = "https://res.cloudinary.com/dqb8hp68j/video/upload/q_auto,f_auto/v1751693180/ppyc/ppyc/slides/videos/cloudinaryfile_wttzjq.mp4";
-        videoRef.current.load();
-        setVideoLoaded(true);
+        const video = videoRef.current;
+        video.src = "https://res.cloudinary.com/dqb8hp68j/video/upload/q_auto,f_auto/v1751693180/ppyc/ppyc/slides/videos/cloudinaryfile_wttzjq.mp4";
+        video.load();
+        video.play().catch(() => {});
       }
-    };
+    }, 100);
 
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(loadVideo);
-    } else {
-      setTimeout(loadVideo, 1000);
-    }
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -36,7 +32,6 @@ const HeroSection = () => {
           poster="https://res.cloudinary.com/dqb8hp68j/video/upload/q_auto:low,f_auto,w_960,so_0/v1751693180/ppyc/ppyc/slides/videos/cloudinaryfile_wttzjq.jpg"
           className="w-full h-full object-cover"
         >
-          {/* Source set dynamically via useEffect */}
           Your browser does not support the video tag.
         </video>
         {/* Overlay for text readability */}
