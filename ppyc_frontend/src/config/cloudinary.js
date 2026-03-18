@@ -113,7 +113,7 @@ export const generateVideoUrl = (publicId, options = {}) => {
 // Generate a high-quality poster
 export const generatePosterUrl = (publicId) => {
   const posterParams = [
-    'q_auto:best',    // Best quality for the poster
+    'q_auto:low',     // Low quality is fine for a video poster placeholder
     'f_auto',         // Auto format
     'w_960',          // Match video width
     'c_scale',        // Scale transformation
@@ -157,6 +157,23 @@ export const createOptimizedImageProps = (publicId, alt, transformations = {}) =
     decoding: 'async',
     style: { aspectRatio: transformations.aspectRatio || 'auto' },
   };
+};
+
+// Add transforms to an existing Cloudinary URL (for dynamic API content)
+export const optimizeCloudinaryUrl = (url, { width = 800, height, quality = 'auto', format = 'auto', crop = 'fill' } = {}) => {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  // Don't double-transform URLs that already have params
+  if (url.includes('/c_fill') || url.includes('/c_scale') || url.includes('/q_auto')) return url;
+
+  const transforms = [
+    `c_${crop}`,
+    `w_${width}`,
+    height && `h_${height}`,
+    `q_${quality}`,
+    `f_${format}`,
+  ].filter(Boolean).join(',');
+
+  return url.replace('/upload/', `/upload/${transforms}/`);
 };
 
 export default cloudinaryConfig; 

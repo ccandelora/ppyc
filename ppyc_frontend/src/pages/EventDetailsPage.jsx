@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import SEOHelmet from '../components/SEOHelmet';
 import { eventsAPI } from '../services/api';
+import { optimizeCloudinaryUrl } from '../config/cloudinary';
 import { useApiCache } from '../hooks/useApiCache';
 import { sanitizeHtml } from '../utils/htmlUtils';
 
@@ -106,7 +107,7 @@ const EventDetailsPage = () => {
             {event.image_url && (
               <div className="w-full h-80 sm:h-96 overflow-hidden">
                 <img
-                  src={event.image_url}
+                  src={optimizeCloudinaryUrl(event.image_url, { width: 800, height: 600 })}
                   alt={event.title}
                   className="w-full h-full object-cover"
                   loading="lazy"

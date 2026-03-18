@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import SEOHelmet from '../components/SEOHelmet';
-import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
+import { YACHT_CLUB_ASSETS, optimizeCloudinaryUrl } from '../config/cloudinary';
 import CloudinaryVideo from '../components/CloudinaryVideo';
 import { eventsAPI } from '../services/api';
 import { sanitizeHtml } from '../utils/htmlUtils';
@@ -179,7 +179,7 @@ const EventsPage = () => {
                             onClick={(e) => handleImageClick(e, event.image_url, event.title, event.description)}
                           >
                             <img
-                              src={event.image_url}
+                              src={optimizeCloudinaryUrl(event.image_url, { width: 640, height: 480 })}
                               alt={event.title}
                               className="w-full h-auto object-contain max-h-[500px] transition-transform duration-200 group-hover:scale-105"
                               style={{ maxWidth: '100%', display: 'block' }}
