@@ -38,11 +38,13 @@ Rails.application.configure do
   # config.action_cable.url = "wss://example.com/cable"
   # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy (nginx).
+  # nginx handles SSL termination and passes X-Forwarded-Proto to Rails.
   config.assume_ssl = true
 
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  # Do NOT set force_ssl here — nginx handles HTTPS redirect and HSTS.
+  # Setting force_ssl causes redirect loops when nginx proxies HTTP to Puma.
+  config.force_ssl = false
 
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new(STDOUT)
