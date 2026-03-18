@@ -15,7 +15,7 @@ const MarinaPage = () => {
       />
 
       {/* Hero Section with Video Background */}
-      <div className="relative h-[60vh] overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
           <CloudinaryVideo
             publicId={YACHT_CLUB_ASSETS.videos.diveBoat}
@@ -205,7 +205,7 @@ const MarinaPage = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <div>
               <img
-                src="/assets/images/ppyc-images/dockal.jpg"
+                src="/assets/images/ppyc-images/dockal.webp"
                 alt="PPYC Club Dock Facilities"
                 className="w-full rounded-xl shadow-lg"
                 loading="lazy"
@@ -254,7 +254,7 @@ const MarinaPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="group">
               <img
-                src="/assets/images/ppyc-images/float.jpg"
+                src="/assets/images/ppyc-images/float.webp"
                 alt="Club floating docks"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
                 loading="lazy"
@@ -264,7 +264,7 @@ const MarinaPage = () => {
             </div>
             <div className="group">
               <img
-                src="/assets/images/ppyc-images/dinghy.jpg"
+                src="/assets/images/ppyc-images/dinghy.webp"
                 alt="Boats at the club"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
                 loading="lazy"
@@ -274,7 +274,7 @@ const MarinaPage = () => {
             </div>
             <div className="group">
               <img
-                src="/assets/images/ppyc-images/deck.jpg"
+                src="/assets/images/ppyc-images/deck.webp"
                 alt="Club deck area"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
                 loading="lazy"
@@ -284,7 +284,7 @@ const MarinaPage = () => {
             </div>
             <div className="group">
               <img
-                src="/assets/images/ppyc-images/sunset.jpg"
+                src="/assets/images/ppyc-images/sunset.webp"
                 alt="Club sunset views"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
                 loading="lazy"

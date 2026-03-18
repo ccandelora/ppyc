@@ -112,7 +112,7 @@ const EventsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Video Background */}
-      <div className="relative h-[60vh] overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
           <CloudinaryVideo
             publicId={YACHT_CLUB_ASSETS.videos.eventsHero}
@@ -253,7 +253,7 @@ const EventsPage = () => {
           <div className="mb-6">
             <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-5xl text-blue-300" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
             Stay Connected with PPYC
           </h2>
           <div className="w-20 h-1 bg-blue-400 mx-auto mb-8"></div>
@@ -296,7 +296,7 @@ const EventsPage = () => {
             <div className="text-center">
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <img
-                  src="/assets/images/ppyc-images/float2.jpg"
+                  src="/assets/images/ppyc-images/float2.webp"
                   alt="Club Facilities"
                   className="w-full h-32 object-cover"
                   loading="lazy"
@@ -312,7 +312,7 @@ const EventsPage = () => {
             <div className="text-center">
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <img
-                  src="/assets/images/ppyc-images/deck.jpg"
+                  src="/assets/images/ppyc-images/deck.webp"
                   alt="Deck Life"
                   className="w-full h-32 object-cover"
                   loading="lazy"
@@ -328,7 +328,7 @@ const EventsPage = () => {
             <div className="text-center">
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <img
-                  src="/assets/images/ppyc-images/middaysun.jpg"
+                  src="/assets/images/ppyc-images/middaysun.webp"
                   alt="Perfect Day"
                   className="w-full h-32 object-cover"
                   loading="lazy"

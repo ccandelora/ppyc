@@ -18,7 +18,7 @@ const MembershipPage = () => {
       />
 
       {/* Hero Section with Video Background */}
-      <div className="relative h-[60vh] overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
           <CloudinaryVideo
             publicId={YACHT_CLUB_ASSETS.videos.bostonBridge}
@@ -318,7 +318,7 @@ const MembershipPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="group">
               <img
-                src="/assets/images/ppyc-images/party1.jpg"
+                src="/assets/images/ppyc-images/party1.webp"
                 alt="Club social events"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
                 loading="lazy"
@@ -328,7 +328,7 @@ const MembershipPage = () => {
             </div>
             <div className="group">
               <img
-                src="/assets/images/ppyc-images/deck.jpg"
+                src="/assets/images/ppyc-images/deck.webp"
                 alt="Club facilities"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
                 loading="lazy"
@@ -338,7 +338,7 @@ const MembershipPage = () => {
             </div>
             <div className="group">
               <img
-                src="/assets/images/ppyc-images/sunset.jpg"
+                src="/assets/images/ppyc-images/sunset.webp"
                 alt="Club sunsets"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
                 loading="lazy"
