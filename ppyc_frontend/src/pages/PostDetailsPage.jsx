@@ -4,6 +4,7 @@ import { newsAPI } from '../services/api';
 import { useApiCache } from '../hooks/useApiCache';
 import { logError } from '../utils/safeLogger';
 import { sanitizeHtml } from '../utils/htmlUtils';
+import { optimizeCloudinaryUrl } from '../config/cloudinary';
 
 const PostDetailsPage = () => {
   const { slug } = useParams();
@@ -106,7 +107,7 @@ const PostDetailsPage = () => {
             {post?.featured_image_url && (
               <div className="w-full h-96 overflow-hidden">
                 <img
-                  src={post.featured_image_url}
+                  src={optimizeCloudinaryUrl(post.featured_image_url, { width: 800, height: 600 })}
                   alt={post.title}
                   className="w-full h-full object-cover"
                   loading="lazy"

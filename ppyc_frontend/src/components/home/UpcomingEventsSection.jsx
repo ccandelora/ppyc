@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../../config/fontawesome';
 import { eventsAPI } from '../../services/api';
 import { useApiCache } from '../../hooks/useApiCache';
+import { optimizeCloudinaryUrl } from '../../config/cloudinary';
 
 const UpcomingEventsSection = () => {
   const [events, setEvents] = useState([]);
@@ -61,7 +62,7 @@ const UpcomingEventsSection = () => {
                   onClick={() => setSelectedImage({ url: event.image_url, title: event.title })}
                 >
                   <img
-                    src={event.image_url}
+                    src={optimizeCloudinaryUrl(event.image_url, { width: 640, height: 480 })}
                     alt={event.title}
                     className="w-full h-auto object-contain max-h-[300px] transition-transform duration-200 group-hover:scale-105"
                     style={{ maxWidth: '100%', display: 'block' }}
