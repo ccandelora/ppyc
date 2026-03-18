@@ -5,7 +5,7 @@
 import { config, library } from '@fortawesome/fontawesome-svg-core';
 
 // Configure FontAwesome to work with the kit
-config.autoAddCss = true; // Let React handle CSS for components
+config.autoAddCss = false; // CSS is bundled by Vite, no need for runtime injection
 config.searchPseudoElements = false; // Kit handles pseudo elements
 
 // Since we're using a kit, we need to tell the library about the icons
