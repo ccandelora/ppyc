@@ -42,14 +42,14 @@ function Footer() {
           <div className="lg:col-span-2">
             <div className="mb-4">
               <img
-                src="/assets/images/ppyclogo.png"
+                src="/assets/images/ppyclogo.webp"
                 alt="Pleasant Park Yacht Club"
                 className="h-16 w-auto mb-2 bg-white rounded-lg p-2"
                 width="64"
                 height="64"
                 loading="lazy"
               />
-              <div className="text-slate-400 text-sm">
+              <div className="text-slate-300 text-sm">
                 Excellence in Boating Since 1910
               </div>
             </div>
@@ -69,7 +69,7 @@ function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-display text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="font-display text-lg font-semibold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/about" className="text-slate-300 hover:text-white transition-colors">
@@ -106,7 +106,7 @@ function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h3 className="font-display text-lg font-semibold mb-4">Contact Us</h3>
+            <h3 className="font-display text-lg font-semibold mb-4 text-white">Contact Us</h3>
             <ul className="space-y-3">
               <li className="flex items-start space-x-3">
                 <FontAwesomeIcon icon={ICON_NAMES.HOME} className="text-amber-500 mt-1" />

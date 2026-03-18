@@ -55,7 +55,7 @@ function Navigation() {
           {/* Professional Logo */}
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img
-              src="/assets/images/ppyclogo.png"
+              src="/assets/images/ppyclogo.webp"
               alt="Pleasant Park Yacht Club"
               className="h-12 w-auto"
               width="48"

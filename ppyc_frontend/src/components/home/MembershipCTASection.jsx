@@ -6,7 +6,7 @@ const MembershipCTASection = () => {
   return (
     <section className="py-20 bg-slate-900 text-white">
       <div className="max-w-4xl mx-auto px-6 text-center">
-        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
           Join Our Maritime Community
         </h2>
         <div className="w-24 h-1 bg-blue-400 mx-auto mb-8"></div>

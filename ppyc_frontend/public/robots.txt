@@ -54,7 +54,7 @@ Allow: /*.webp$
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: /sitemap.xml
+Sitemap: https://ppyc1910.org/sitemap.xml
 
 # Additional directives for specific bots
 
