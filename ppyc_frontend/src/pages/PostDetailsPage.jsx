@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { newsAPI } from '../services/api';
 import { useApiCache } from '../hooks/useApiCache';
 import { logError } from '../utils/safeLogger';
+import { sanitizeHtml } from '../utils/htmlUtils';
 
 const PostDetailsPage = () => {
   const { slug } = useParams();
@@ -108,6 +109,8 @@ const PostDetailsPage = () => {
                   src={post.featured_image_url}
                   alt={post.title}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             )}
@@ -157,7 +160,7 @@ const PostDetailsPage = () => {
               </h1>
 
               {/* Article Content */}
-              <div className="article-body-copy max-w-none text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: post?.content }} />
+              <div className="article-body-copy max-w-none text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: sanitizeHtml(post?.content) }} />
 
               {/* Tags or Categories (if we had them) */}
               <div className="mt-12 pt-8 border-t border-slate-200">

@@ -5,6 +5,7 @@ import ImageUpload from '../ImageUpload';
 import WYSIWYGEditor from './WYSIWYGEditor';
 import { adminAPI } from '../../services/api';
 import { logError } from '../../utils/safeLogger';
+import { sanitizeHtml } from '../../utils/htmlUtils';
 import { ICON_NAMES } from '../../config/fontawesome';
 
 const SlideForm = () => {
@@ -281,6 +282,8 @@ const SlideForm = () => {
                     src={formData.image.secure_url}
                     alt="Slide preview"
                     className="w-full h-32 object-cover rounded border border-blue-200"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 
@@ -649,6 +652,8 @@ const SlideForm = () => {
                   className="absolute inset-0 w-full h-full object-cover"
                   src={formData.image.secure_url}
                   alt="Background"
+                  loading="lazy"
+                  decoding="async"
                 />
               )}
 
@@ -675,7 +680,7 @@ const SlideForm = () => {
                 {formData.content && (
                   <div 
                     className="text-lg opacity-90 prose prose-invert prose-sm max-w-none drop-shadow-lg"
-                    dangerouslySetInnerHTML={{ __html: formData.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(formData.content) }}
                   />
                 )}
                 <div className="text-xs opacity-60 mt-4 drop-shadow">

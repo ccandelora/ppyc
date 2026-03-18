@@ -125,6 +125,8 @@ const EventsList = () => {
                           className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg object-cover border border-gray-200 shadow-sm"
                           src={event.image_url}
                           alt={event.title}
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">

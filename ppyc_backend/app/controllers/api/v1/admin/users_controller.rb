@@ -93,7 +93,9 @@ class Api::V1::Admin::UsersController < Api::V1::Admin::BaseController
   end
 
   def user_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :role)
+    allowed = [:email, :password, :password_confirmation]
+    allowed << :role if current_user&.superuser?
+    params.require(:user).permit(*allowed)
   end
 
   def user_json(user)

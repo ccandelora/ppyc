@@ -319,6 +319,8 @@ const NewsForm = () => {
                   src={formData.featured_image?.secure_url || existingImageUrl}
                   alt="Article thumbnail"
                   className="w-32 h-32 object-cover rounded-lg border border-gray-200 shadow-sm"
+                  loading="lazy"
+                  decoding="async"
                 />
                 {formData.featured_image?.secure_url && (
                   <span className="absolute top-1 right-1 bg-green-500 text-white text-xs px-2 py-1 rounded">

@@ -42,7 +42,13 @@ export default defineConfig(({ command }) => ({
           // Only essential chunks
           react: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          vendor: ['axios', 'date-fns']
+          vendor: ['axios', 'date-fns'],
+          fontawesome: [
+            '@fortawesome/fontawesome-svg-core',
+            '@fortawesome/free-solid-svg-icons',
+            '@fortawesome/free-brands-svg-icons',
+            '@fortawesome/react-fontawesome'
+          ]
         }
       }
     },

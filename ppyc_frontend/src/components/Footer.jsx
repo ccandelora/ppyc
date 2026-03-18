@@ -41,10 +41,13 @@ function Footer() {
           {/* Logo & Description */}
           <div className="lg:col-span-2">
             <div className="mb-4">
-              <img 
+              <img
                 src="/assets/images/ppyclogo.png"
                 alt="Pleasant Park Yacht Club"
                 className="h-16 w-auto mb-2 bg-white rounded-lg p-2"
+                width="64"
+                height="64"
+                loading="lazy"
               />
               <div className="text-slate-400 text-sm">
                 Excellence in Boating Since 1910
