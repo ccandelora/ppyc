@@ -3,7 +3,7 @@
 
 // Base Cloudinary configuration
 const cloudinaryConfig = {
-  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'demo',
+  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dqb8hp68j',
   apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY || '',
   apiSecret: import.meta.env.VITE_CLOUDINARY_API_SECRET || '',
 };
