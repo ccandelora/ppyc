@@ -101,6 +101,8 @@ const NewsPage = () => {
                       alt={post.title}
                       className="w-full h-auto object-contain max-h-[300px] transition-transform duration-200 group-hover:scale-105"
                       style={{ maxWidth: '100%', display: 'block' }}
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 )}

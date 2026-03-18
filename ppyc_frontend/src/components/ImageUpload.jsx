@@ -136,6 +136,8 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, folder = 'general', allow
               src={selectedImage.url}
               alt={selectedImage.alt}
               className="w-16 h-16 object-cover rounded"
+              loading="lazy"
+              decoding="async"
             />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900">{selectedImage.alt}</p>

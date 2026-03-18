@@ -48,48 +48,23 @@ module PpycBackend
     # Add CSRF protection for session-based authentication
     config.middleware.use ActionDispatch::ContentSecurityPolicy::Middleware
 
-    # Explicitly add CORS middleware
+    # CORS middleware
+    # Development: allow localhost; Production: allow only production domains
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins '*'
-        resource '/api/v1/slides',
-          headers: :any,
-          methods: [:get],
-          credentials: false
+        origins 'https://ppyc1910.org', 'https://www.ppyc1910.org',
+                *(Rails.env.development? ? ['http://localhost:5173', 'http://localhost:3000'] : [])
 
-        resource '/api/v1/news',
-          headers: :any,
-          methods: [:get],
-          credentials: false
+        # Public read-only endpoints
+        %w[/api/v1/slides /api/v1/news /api/v1/news/* /api/v1/events /api/v1/events/*
+           /api/v1/pages/* /api/v1/weather/*].each do |path|
+          resource path,
+            headers: :any,
+            methods: [:get],
+            credentials: false
+        end
 
-        resource '/api/v1/news/*',
-          headers: :any,
-          methods: [:get],
-          credentials: false
-
-        resource '/api/v1/events',
-          headers: :any,
-          methods: [:get],
-          credentials: false
-
-        resource '/api/v1/events/*',
-          headers: :any,
-          methods: [:get],
-          credentials: false
-
-        resource '/api/v1/pages/*',
-          headers: :any,
-          methods: [:get],
-          credentials: false
-
-        resource '/api/v1/weather/*',
-          headers: :any,
-          methods: [:get],
-          credentials: false
-      end
-
-      allow do
-        origins 'http://localhost:5173', 'http://localhost:3000', 'http://srv894370.hstgr.cloud', 'https://ppyc1910.org', 'http://ppyc1910.org'
+        # Authenticated endpoints
         resource '/api/v1/admin/*',
           headers: :any,
           methods: [:get, :post, :put, :patch, :delete, :options, :head],

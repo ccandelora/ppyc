@@ -67,10 +67,12 @@ function AboutPage() {
             </div>
             
             <div>
-              <img 
+              <img
                 src={YACHT_CLUB_ASSETS.gallery.marina[0]}
                 alt="Historic yacht club photo"
                 className="rounded-lg shadow-lg w-full"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
@@ -204,10 +206,12 @@ function AboutPage() {
           
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <img 
+              <img
                 src={YACHT_CLUB_ASSETS.gallery.marina[1]}
                 alt="Club facilities"
                 className="w-full h-48 object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
@@ -221,10 +225,12 @@ function AboutPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <img 
+              <img
                 src={YACHT_CLUB_ASSETS.gallery.events[1]}
                 alt="Clubhouse dining"
                 className="w-full h-48 object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
@@ -238,10 +244,12 @@ function AboutPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <img 
+            <img
                 src={YACHT_CLUB_ASSETS.gallery.events[0]}
                 alt="Clubhouse dining"
                 className="w-full h-48 object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">

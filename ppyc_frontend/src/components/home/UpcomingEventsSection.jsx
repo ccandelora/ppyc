@@ -60,11 +60,13 @@ const UpcomingEventsSection = () => {
                   className="relative bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer group"
                   onClick={() => setSelectedImage({ url: event.image_url, title: event.title })}
                 >
-                  <img 
-                    src={event.image_url} 
+                  <img
+                    src={event.image_url}
                     alt={event.title}
                     className="w-full h-auto object-contain max-h-[300px] transition-transform duration-200 group-hover:scale-105"
                     style={{ maxWidth: '100%', display: 'block' }}
+                    loading="lazy"
+                    decoding="async"
                   />
                   {/* Hover overlay hint */}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">

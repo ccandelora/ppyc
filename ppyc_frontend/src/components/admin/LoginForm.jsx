@@ -51,6 +51,8 @@ const LoginForm = () => {
               className="mx-auto h-16 w-auto"
               src="/assets/images/ppyclogo.png"
               alt="Pleasant Park Yacht Club"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <h2 className="text-3xl font-bold text-white">Admin Login</h2>

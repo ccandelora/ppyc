@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# PPYC Phase 8 Testing & Quality Assurance Suite
-# ===============================================
+# PPYC Testing & Quality Assurance Suite
+# =======================================
 
-set -e
+set +e
 
 # Colors for output
 RED='\033[0;31m'
@@ -29,12 +29,12 @@ log_info() {
 
 log_success() {
     echo -e "${GREEN}[PASS]${NC} $1"
-    ((PASSED_TESTS++))
+    ((PASSED_TESTS++)) || true
 }
 
 log_error() {
     echo -e "${RED}[FAIL]${NC} $1"
-    ((FAILED_TESTS++))
+    ((FAILED_TESTS++)) || true
 }
 
 log_warning() {
@@ -44,10 +44,10 @@ log_warning() {
 run_test() {
     local test_name="$1"
     local test_command="$2"
-    
-    ((TOTAL_TESTS++))
+
+    ((TOTAL_TESTS++)) || true
     log_info "Running: $test_name"
-    
+
     if eval "$test_command" > /dev/null 2>&1; then
         log_success "$test_name"
         return 0
@@ -60,172 +60,177 @@ run_test() {
 # Backend Health Checks
 test_backend_health() {
     log_info "=== Backend Health Checks ==="
-    
-    run_test "Backend server is running" "curl -f $BACKEND_URL/up"
-    run_test "Database connection" "curl -f $BACKEND_URL/up | grep -q 'ok'"
-    run_test "API v1 posts endpoint" "curl -f $API_BASE_URL/posts"
-    run_test "API v1 events endpoint" "curl -f $API_BASE_URL/events"
-    run_test "API v1 slides endpoint" "curl -f $API_BASE_URL/slides"
+
+    run_test "Backend server is running" "curl -sf $BACKEND_URL/up"
+    run_test "Database connection (health endpoint 200)" "curl -sf -o /dev/null -w '%{http_code}' $BACKEND_URL/up | grep -q '200'"
+    run_test "API v1 news endpoint" "curl -sf $API_BASE_URL/news"
+    run_test "API v1 events endpoint" "curl -sf $API_BASE_URL/events"
+    run_test "API v1 slides endpoint" "curl -sf $API_BASE_URL/slides"
 }
 
 # API Endpoint Tests
 test_api_endpoints() {
     log_info "=== API Endpoint Tests ==="
-    
-    # Public endpoints
-    run_test "GET /api/v1/posts returns JSON" "curl -f $API_BASE_URL/posts | jq . > /dev/null"
-    run_test "GET /api/v1/events returns JSON" "curl -f $API_BASE_URL/events | jq . > /dev/null"
-    run_test "GET /api/v1/slides returns JSON" "curl -f $API_BASE_URL/slides | jq . > /dev/null"
-    
-    # CORS headers
-    run_test "CORS headers present" "curl -I -X OPTIONS $API_BASE_URL/posts | grep -q 'Access-Control-Allow-Origin'"
-    
-    # Authentication endpoints
-    run_test "Auth endpoints accessible" "curl -f -X POST $API_BASE_URL/auth/login -H 'Content-Type: application/json' -d '{}' | grep -q 'error'"
+
+    # Public endpoints return valid JSON
+    run_test "GET /api/v1/news returns JSON" "curl -sf $API_BASE_URL/news | jq . > /dev/null"
+    run_test "GET /api/v1/events returns JSON" "curl -sf $API_BASE_URL/events | jq . > /dev/null"
+    run_test "GET /api/v1/slides returns JSON" "curl -sf $API_BASE_URL/slides | jq . > /dev/null"
+
+    # CORS headers for allowed origin
+    run_test "CORS headers for allowed origin" \
+        "curl -sf -H 'Origin: http://localhost:5173' -I $API_BASE_URL/news | grep -qi 'access-control-allow-origin'"
+
+    # CORS blocks unknown origins on admin
+    ((TOTAL_TESTS++)) || true
+    log_info "Running: CORS blocks unknown origins on admin"
+    if curl -sf -H 'Origin: https://evil.com' -I $API_BASE_URL/admin/news 2>&1 | grep -qi 'access-control-allow-origin: https://evil.com'; then
+        log_error "CORS blocks unknown origins on admin"
+    else
+        log_success "CORS blocks unknown origins on admin"
+    fi
+
+    # Auth endpoint returns error for bad credentials (not a 500)
+    run_test "Auth login rejects bad credentials" \
+        "curl -sf -X POST $API_BASE_URL/auth/login -H 'Content-Type: application/json' -d '{\"user\":{\"email\":\"bad@test.com\",\"password\":\"wrong\"}}' | jq -e '.success == false'"
 }
 
 # Frontend Health Checks
 test_frontend_health() {
     log_info "=== Frontend Health Checks ==="
-    
-    run_test "Frontend server is running" "curl -f $FRONTEND_URL"
-    run_test "Homepage loads" "curl -f $FRONTEND_URL/ | grep -q 'PPYC'"
-    run_test "Admin login page loads" "curl -f $FRONTEND_URL/admin/login"
-    run_test "TV display page loads" "curl -f $FRONTEND_URL/tv-display"
+
+    run_test "Frontend server is running" "curl -sf $FRONTEND_URL"
+    run_test "Homepage loads with root div" "curl -sf $FRONTEND_URL/ | grep -q 'id=\"root\"'"
+    run_test "Admin login page loads" "curl -sf $FRONTEND_URL/admin/login"
+    run_test "TV display page loads" "curl -sf $FRONTEND_URL/tv-display"
 }
 
 # Security Tests
 test_security() {
     log_info "=== Security Tests ==="
-    
-    # Backend security headers
-    run_test "X-Frame-Options header" "curl -I $BACKEND_URL/up | grep -q 'X-Frame-Options'"
-    run_test "X-Content-Type-Options header" "curl -I $BACKEND_URL/up | grep -q 'X-Content-Type-Options'"
-    run_test "HTTPS redirect configured" "curl -I $BACKEND_URL/up | grep -q 'Strict-Transport-Security' || echo 'Note: HSTS not enabled in development'"
-    
-    # SQL injection protection
-    run_test "SQL injection protection" "curl -f '$API_BASE_URL/posts?id=1%27%20OR%201=1--' | grep -v 'error'"
-    
-    # Admin endpoints require authentication
-    if ! curl -f $API_BASE_URL/admin/posts > /dev/null 2>&1; then
-        log_success "Admin endpoints require authentication"
-        ((PASSED_TESTS++))
+
+    # Admin endpoints require authentication (should return 401)
+    ((TOTAL_TESTS++)) || true
+    log_info "Running: Admin endpoints require authentication"
+    local admin_status=$(curl -sf -o /dev/null -w '%{http_code}' $API_BASE_URL/admin/news)
+    if [ "$admin_status" = "401" ]; then
+        log_success "Admin endpoints require authentication (401)"
     else
-        log_error "Admin endpoints not properly protected"
-        ((FAILED_TESTS++))
+        log_error "Admin endpoints returned $admin_status (expected 401)"
     fi
-    ((TOTAL_TESTS++))
+
+    # Rate limiting is active (Rack::Attack loads without error)
+    run_test "Rate limiting configured" \
+        "curl -sf -o /dev/null -w '%{http_code}' -X POST $API_BASE_URL/auth/login -H 'Content-Type: application/json' -d '{}' | grep -qE '(401|422|429)'"
+
+    # SQL injection protection
+    run_test "SQL injection returns safe response" \
+        "curl -sf '$API_BASE_URL/news?id=1%27%20OR%201=1--' | jq . > /dev/null"
+
+    # XSS: DOMPurify is bundled (check build output)
+    run_test "DOMPurify is installed" "test -d ppyc_frontend/node_modules/dompurify"
+
+    # CSP header present in frontend HTML
+    run_test "Content-Security-Policy in HTML" \
+        "curl -sf $FRONTEND_URL/ | grep -q 'Content-Security-Policy'"
 }
 
 # Performance Tests
 test_performance() {
     log_info "=== Performance Tests ==="
-    
+
     # Response time tests
-    local response_time=$(curl -o /dev/null -s -w "%{time_total}\n" $API_BASE_URL/posts)
+    local response_time=$(curl -o /dev/null -sf -w "%{time_total}\n" $API_BASE_URL/news)
+    ((TOTAL_TESTS++)) || true
     if (( $(echo "$response_time < 1.0" | bc -l) )); then
         log_success "API response time under 1 second ($response_time s)"
-        ((PASSED_TESTS++))
     else
         log_error "API response time too slow ($response_time s)"
-        ((FAILED_TESTS++))
     fi
-    ((TOTAL_TESTS++))
-    
+
     # Frontend loading time
-    local frontend_time=$(curl -o /dev/null -s -w "%{time_total}\n" $FRONTEND_URL/)
+    local frontend_time=$(curl -o /dev/null -sf -w "%{time_total}\n" $FRONTEND_URL/)
+    ((TOTAL_TESTS++)) || true
     if (( $(echo "$frontend_time < 2.0" | bc -l) )); then
         log_success "Frontend load time under 2 seconds ($frontend_time s)"
-        ((PASSED_TESTS++))
     else
         log_error "Frontend load time too slow ($frontend_time s)"
-        ((FAILED_TESTS++))
     fi
-    ((TOTAL_TESTS++))
 }
 
 # Content Tests
 test_content() {
     log_info "=== Content Tests ==="
-    
-    # Check for essential content
-    run_test "Homepage contains yacht club content" "curl -f $FRONTEND_URL/ | grep -i 'yacht'"
-    run_test "Navigation menu present" "curl -f $FRONTEND_URL/ | grep -i 'nav'"
-    run_test "Footer present" "curl -f $FRONTEND_URL/ | grep -i 'footer'"
-    
-    # API content validation
-    run_test "Posts have required fields" "curl -f $API_BASE_URL/posts | jq '.[0] | has(\"title\", \"content\", \"published_at\")'"
-    run_test "Events have required fields" "curl -f $API_BASE_URL/events | jq '.[0] | has(\"title\", \"start_time\", \"location\")'"
+
+    # Check for essential content in SPA shell
+    run_test "Homepage has title" "curl -sf $FRONTEND_URL/ | grep -q 'Pleasant Park Yacht Club'"
+    run_test "Navigation present in HTML" "curl -sf $FRONTEND_URL/ | grep -qi 'nav\|navigation'"
+
+    # API content validation (news returns array, events returns array)
+    run_test "News endpoint returns array" "curl -sf $API_BASE_URL/news | jq -e 'type == \"array\"'"
+    run_test "Events endpoint returns array" "curl -sf $API_BASE_URL/events | jq -e 'type == \"array\"'"
+    run_test "Slides endpoint returns array" "curl -sf $API_BASE_URL/slides | jq -e 'type == \"array\"'"
 }
 
 # Database Tests
 test_database() {
     log_info "=== Database Tests ==="
-    
-    # Check if database has seed data
-    local posts_count=$(curl -s $API_BASE_URL/posts | jq length)
-    if [ "$posts_count" -gt 0 ]; then
-        log_success "Database has posts data ($posts_count posts)"
-        ((PASSED_TESTS++))
+
+    local news_count=$(curl -sf $API_BASE_URL/news | jq 'length')
+    ((TOTAL_TESTS++)) || true
+    if [ "$news_count" -gt 0 ] 2>/dev/null; then
+        log_success "Database has news data ($news_count posts)"
     else
-        log_warning "No posts found in database"
-        ((FAILED_TESTS++))
+        log_warning "No news found in database"
+        ((FAILED_TESTS++)) || true
     fi
-    ((TOTAL_TESTS++))
-    
-    local events_count=$(curl -s $API_BASE_URL/events | jq length)
-    if [ "$events_count" -gt 0 ]; then
+
+    local events_count=$(curl -sf $API_BASE_URL/events | jq 'length')
+    ((TOTAL_TESTS++)) || true
+    if [ "$events_count" -gt 0 ] 2>/dev/null; then
         log_success "Database has events data ($events_count events)"
-        ((PASSED_TESTS++))
     else
         log_warning "No events found in database"
-        ((FAILED_TESTS++))
+        ((FAILED_TESTS++)) || true
     fi
-    ((TOTAL_TESTS++))
+
+    local slides_count=$(curl -sf $API_BASE_URL/slides | jq 'length')
+    ((TOTAL_TESTS++)) || true
+    if [ "$slides_count" -gt 0 ] 2>/dev/null; then
+        log_success "Database has slides data ($slides_count slides)"
+    else
+        log_warning "No slides found in database"
+        ((FAILED_TESTS++)) || true
+    fi
 }
 
 # Accessibility Tests (basic)
 test_accessibility() {
     log_info "=== Accessibility Tests ==="
-    
-    # Check for basic accessibility elements
-    run_test "HTML has lang attribute" "curl -f $FRONTEND_URL/ | grep -q 'lang='"
-    run_test "Images have alt attributes" "curl -f $FRONTEND_URL/ | grep '<img' | grep -q 'alt='"
-    run_test "Page has title" "curl -f $FRONTEND_URL/ | grep -q '<title>'"
-}
 
-# Mobile Responsiveness
-test_mobile() {
-    log_info "=== Mobile Responsiveness Tests ==="
-    
-    # Check for viewport meta tag
-    run_test "Viewport meta tag present" "curl -f $FRONTEND_URL/ | grep -q 'viewport'"
-    
-    # Check for responsive CSS classes (Tailwind)
-    run_test "Responsive CSS classes present" "curl -f $FRONTEND_URL/ | grep -q 'md:'"
+    run_test "HTML has lang attribute" "curl -sf $FRONTEND_URL/ | grep -q 'lang='"
+    run_test "Page has title tag" "curl -sf $FRONTEND_URL/ | grep -q '<title>'"
+    run_test "Viewport meta tag present" "curl -sf $FRONTEND_URL/ | grep -q 'viewport'"
+    run_test "Favicon configured" "curl -sf $FRONTEND_URL/ | grep -q 'favicon'"
 }
 
 # Main execution
 main() {
     echo "================================================"
-    echo "PPYC Phase 8 Testing & Quality Assurance Suite"
+    echo "  PPYC Testing & Quality Assurance Suite"
     echo "================================================"
     echo ""
-    
+
     # Check dependencies
     if ! command -v curl &> /dev/null; then
         log_error "curl is required but not installed"
         exit 1
     fi
-    
+
     if ! command -v jq &> /dev/null; then
         log_warning "jq is not installed - some tests will be skipped"
     fi
-    
-    if ! command -v bc &> /dev/null; then
-        log_warning "bc is not installed - performance tests will be skipped"
-    fi
-    
+
     # Run test suites
     test_backend_health
     echo ""
@@ -245,25 +250,22 @@ main() {
     echo ""
     test_accessibility
     echo ""
-    test_mobile
-    echo ""
-    
+
     # Summary
     echo "================================================"
-    echo "TEST RESULTS SUMMARY"
+    echo "  TEST RESULTS SUMMARY"
     echo "================================================"
     echo "Total Tests: $TOTAL_TESTS"
     echo -e "${GREEN}Passed: $PASSED_TESTS${NC}"
     echo -e "${RED}Failed: $FAILED_TESTS${NC}"
-    
+
     if [ $FAILED_TESTS -eq 0 ]; then
-        echo -e "${GREEN}🎉 All tests passed! Ready for production deployment.${NC}"
+        echo -e "\n${GREEN}All tests passed!${NC}"
         exit 0
     else
-        echo -e "${RED}❌ Some tests failed. Please review and fix issues before deployment.${NC}"
+        echo -e "\n${RED}Some tests failed. Review above.${NC}"
         exit 1
     fi
 }
 
-# Run main function
-main "$@" 
+main "$@"

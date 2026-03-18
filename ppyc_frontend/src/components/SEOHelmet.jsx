@@ -8,7 +8,7 @@ function SEOHelmet({ title, description, image, keywords, type = 'website' }) {
   const defaultSEO = {
     title: 'Pleasant Park Yacht Club - Premier Boston Yacht Club & Sailing Community Est. 1910',
     description: 'Pleasant Park Yacht Club, established 1910, offers premier club services, sailing instruction, yacht club dining, and maritime community in Boston. Join our sailing legacy!',
-    image: 'https://srv894370.hstgr.cloud/assets/images/ppyc-images/ppyc-hero.png',
+    image: 'https://ppyc1910.org/assets/images/ppyc-images/ppyc-hero.png',
     keywords: 'yacht club, Boston sailing, boat slips, sailing instruction, waterfront dining, maritime community, yacht services, boat storage, Boston harbor'
   };
 
@@ -75,7 +75,7 @@ function SEOHelmet({ title, description, image, keywords, type = 'website' }) {
     updateMetaProperty('og:title', finalTitle);
     updateMetaProperty('og:description', finalDescription);
     updateMetaProperty('og:image', finalImage);
-    updateMetaProperty('og:url', `https://srv894370.hstgr.cloud${location.pathname}`);
+    updateMetaProperty('og:url', `https://ppyc1910.org${location.pathname}`);
     updateMetaProperty('og:type', type);
 
     // Update Twitter Card tags
@@ -84,7 +84,7 @@ function SEOHelmet({ title, description, image, keywords, type = 'website' }) {
     updateMetaName('twitter:image', finalImage);
 
     // Update canonical URL
-    updateCanonicalUrl(`https://srv894370.hstgr.cloud${location.pathname}`);
+    updateCanonicalUrl(`https://ppyc1910.org${location.pathname}`);
 
   }, [location.pathname, title, description, image, keywords, type]);
 

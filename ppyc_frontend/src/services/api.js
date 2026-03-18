@@ -11,6 +11,23 @@ const api = axios.create({
   withCredentials: false, // Set to false for public endpoints
 });
 
+// Retry interceptor for transient failures (502/503/504 or network errors)
+api.interceptors.response.use(null, async (error) => {
+  const config = error.config;
+  if (!config || config._retryCount >= 2) return Promise.reject(error);
+
+  const isRetryable =
+    !error.response || // network error
+    [502, 503, 504].includes(error.response.status);
+
+  if (isRetryable && config.method === 'get') {
+    config._retryCount = (config._retryCount || 0) + 1;
+    await new Promise((r) => setTimeout(r, config._retryCount * 1000));
+    return api(config);
+  }
+  return Promise.reject(error);
+});
+
 // Create a separate instance for authenticated endpoints
 const authApi = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',

@@ -60,11 +60,13 @@ const LatestNewsSection = () => {
             >
               {article.featured_image_url && (
                 <div className="relative bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <img 
-                    src={article.featured_image_url} 
+                  <img
+                    src={article.featured_image_url}
                     alt={article.title}
                     className="w-full h-auto object-contain max-h-[300px] transition-transform duration-200 group-hover:scale-105"
                     style={{ maxWidth: '100%', display: 'block' }}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               )}

@@ -166,10 +166,12 @@ const MarinaPage = () => {
 
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
             <div className="text-center mb-8">
-              <img 
-                src="/assets/images/ppyc-images/ppyc-marina-layout.png" 
-                alt="PPYC Club Layout Diagram" 
+              <img
+                src="/assets/images/ppyc-images/ppyc-marina-layout.png"
+                alt="PPYC Club Layout Diagram"
                 className="w-full max-w-4xl mx-auto rounded-xl shadow-lg border border-gray-200"
+                loading="lazy"
+                decoding="async"
               />
               <p className="text-sm text-gray-500 text-center mt-4 italic">
                 Official PPYC Club Layout - Slip assignments, facilities, and navigation paths
@@ -202,10 +204,12 @@ const MarinaPage = () => {
 
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <div>
-              <img 
-                src="/assets/images/ppyc-images/dockal.jpg" 
-                alt="PPYC Club Dock Facilities" 
+              <img
+                src="/assets/images/ppyc-images/dockal.jpg"
+                alt="PPYC Club Dock Facilities"
                 className="w-full rounded-xl shadow-lg"
+                loading="lazy"
+                decoding="async"
               />
               <p className="text-sm text-gray-500 text-center mt-3 italic">
                 Modern floating dock systems and club infrastructure
@@ -249,34 +253,42 @@ const MarinaPage = () => {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="group">
-              <img 
-                src="/assets/images/ppyc-images/float.jpg" 
-                alt="Club floating docks" 
+              <img
+                src="/assets/images/ppyc-images/float.jpg"
+                alt="Club floating docks"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Floating Dock System</p>
             </div>
             <div className="group">
-              <img 
-                src="/assets/images/ppyc-images/dinghy.jpg" 
-                alt="Boats at the club" 
+              <img
+                src="/assets/images/ppyc-images/dinghy.jpg"
+                alt="Boats at the club"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Boat Moorage</p>
             </div>
             <div className="group">
-              <img 
-                src="/assets/images/ppyc-images/deck.jpg" 
-                alt="Club deck area" 
+              <img
+                src="/assets/images/ppyc-images/deck.jpg"
+                alt="Club deck area"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Club Deck</p>
             </div>
             <div className="group">
-              <img 
-                src="/assets/images/ppyc-images/sunset.jpg" 
-                alt="Club sunset views" 
+              <img
+                src="/assets/images/ppyc-images/sunset.jpg"
+                alt="Club sunset views"
                 className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
               />
               <p className="text-sm text-center text-slate-600 mt-2">Sunset Views</p>
             </div>
