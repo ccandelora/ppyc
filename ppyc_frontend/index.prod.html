@@ -9,9 +9,9 @@
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
       script-src 'self' https://cdn.tiny.cloud;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tiny.cloud;
+      style-src 'self' 'unsafe-inline' https://cdn.tiny.cloud;
       img-src 'self' data: https://res.cloudinary.com https://cdn.tiny.cloud https://sp.tinymce.com;
-      font-src 'self' https://fonts.gstatic.com https://cdn.tiny.cloud;
+      font-src 'self' https://cdn.tiny.cloud;
       connect-src 'self' https://api.openweathermap.org https://res.cloudinary.com https://cdn.tiny.cloud https://ppyc1910.org;
       media-src 'self' https://res.cloudinary.com;
       frame-src 'self';
@@ -41,10 +41,8 @@
     <!-- Preload Critical Assets -->
     <link rel="preload" href="/assets/images/ppyclogo.webp" as="image" type="image/webp" />
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+    <!-- Self-hosted Fonts (eliminates render-blocking Google Fonts request) -->
+    <link rel="stylesheet" href="/fonts/fonts.css" />
     
     <title>Pleasant Park Yacht Club</title>
   </head>
