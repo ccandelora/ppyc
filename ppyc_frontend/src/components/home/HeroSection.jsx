@@ -33,7 +33,7 @@ const HeroSection = () => {
           loop
           playsInline
           preload="none"
-          poster="https://res.cloudinary.com/dqb8hp68j/image/upload/q_auto,f_auto,w_1280/v1751693180/ppyc/ppyc/slides/videos/cloudinaryfile_wttzjq.jpg"
+          poster="https://res.cloudinary.com/dqb8hp68j/video/upload/q_auto,f_auto,w_1280,so_0/v1751693180/ppyc/ppyc/slides/videos/cloudinaryfile_wttzjq.jpg"
           className="w-full h-full object-cover"
         >
           {/* Source set dynamically via useEffect */}
@@ -47,7 +47,7 @@ const HeroSection = () => {
       <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
         <div className="mb-8">
           <img
-            src="/assets/images/ppyclogo.png"
+            src="/assets/images/ppyclogo.webp"
             alt="Pleasant Park Yacht Club"
             className="w-24 h-24 mx-auto mb-6 opacity-90"
             width="96"

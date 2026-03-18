@@ -19,7 +19,7 @@ const HistoricalPhotosSection = () => {
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <img
-                src="/assets/images/ppyc-images/ppyc-1919a-768x603.jpg"
+                src="/assets/images/ppyc-images/ppyc-1919a-768x603.webp"
                 alt="PPYC 1919"
                 className="w-full h-64 object-cover"
                 loading="lazy"
@@ -37,7 +37,7 @@ const HistoricalPhotosSection = () => {
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <img
-                src="/assets/images/ppyc-images/ppyc1951.jpg"
+                src="/assets/images/ppyc-images/ppyc1951.webp"
                 alt="PPYC 1920"
                 className="w-full h-64 object-cover"
                 loading="lazy"
@@ -55,7 +55,7 @@ const HistoricalPhotosSection = () => {
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <img
-                src="/assets/images/ppyc-images/ppyc1951_men_at_bar-768x563.jpg"
+                src="/assets/images/ppyc-images/ppyc1951_men_at_bar-768x563.webp"
                 alt="PPYC 1951 Social Life"
                 className="w-full h-64 object-cover"
                 loading="lazy"
