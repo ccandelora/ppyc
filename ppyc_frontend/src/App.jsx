@@ -9,8 +9,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ContactProvider } from './contexts/ContactProvider';
 import { SettingsProvider } from './contexts/SettingsContext';
 
-// Initialize FontAwesome icons
-import './config/fontawesome';
+// Defer FontAwesome initialization to reduce main-thread blocking
+import('./config/fontawesome');
 
 // Development-only performance monitoring
 const PerformanceMonitor = lazy(() => import('./components/PerformanceMonitor'));
