@@ -274,7 +274,7 @@ function AboutPage() {
             </p>
             <Link 
               to="/membership" 
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
             >
               <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} />
               Learn About Membership

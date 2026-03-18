@@ -12,7 +12,7 @@ const CloudinaryVideo = ({
   playsInline = true,
   generatePoster = true,
   quality = 'auto',
-  preload = 'auto',
+  preload = 'none',
   ...props
 }) => {
   const [isLoading, setIsLoading] = useState(true);
