@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
+import LocalVideo from './LocalVideo';
 import CloudinaryVideo from './CloudinaryVideo';
 import WeatherWidget from './WeatherWidget';
 import SlideWeatherWidget from './SlideWeatherWidget';
@@ -77,13 +78,10 @@ const TVDisplay = () => {
 
   // Default background video when no slides are available
   const renderDefaultBackground = () => (
-    <CloudinaryVideo
-      publicId={YACHT_CLUB_ASSETS.videos.ultraHD}
+    <LocalVideo
+      src={YACHT_CLUB_ASSETS.videos.ultraHD}
+      poster={YACHT_CLUB_ASSETS.videoPosters.ultraHD}
       className="absolute inset-0 w-full h-full object-cover opacity-50"
-      autoPlay
-      loop
-      muted
-      playsInline
     />
   );
 

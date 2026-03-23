@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import SEOHelmet from '../components/SEOHelmet';
 import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
-import CloudinaryVideo from '../components/CloudinaryVideo';
+import LocalVideo from '../components/LocalVideo';
 import { newsAPI } from '../services/api';
 
 const generateExcerpt = (content, maxLength = 150) => {
@@ -55,8 +55,9 @@ const NewsPage = () => {
       {/* Hero Section with Video Background */}
       <div className="relative h-[60vh] overflow-hidden">
         <div className="absolute inset-0">
-          <CloudinaryVideo
-            publicId={YACHT_CLUB_ASSETS.videos.harborView}
+          <LocalVideo
+            src={YACHT_CLUB_ASSETS.videos.harborView}
+            poster={YACHT_CLUB_ASSETS.videoPosters.harborView}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black opacity-50"></div>

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import SEOHelmet from '../components/SEOHelmet';
 import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
-import CloudinaryVideo from '../components/CloudinaryVideo';
+import LocalVideo from '../components/LocalVideo';
 
 const HeritagePage = () => {
   return (
@@ -16,8 +16,9 @@ const HeritagePage = () => {
       {/* Hero Section with Video Background */}
       <div className="relative h-[60vh] overflow-hidden">
         <div className="absolute inset-0">
-          <CloudinaryVideo
-            publicId={YACHT_CLUB_ASSETS.videos.bostonWaterfront}
+          <LocalVideo
+            src={YACHT_CLUB_ASSETS.videos.bostonWaterfront}
+            poster={YACHT_CLUB_ASSETS.videoPosters.bostonWaterfront}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black opacity-50"></div>

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import SEOHelmet from '../components/SEOHelmet';
 import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
-import CloudinaryVideo from '../components/CloudinaryVideo';
+import LocalVideo from '../components/LocalVideo';
 import { eventsAPI } from '../services/api';
 import { sanitizeHtml } from '../utils/htmlUtils';
 import { useApiCache } from '../hooks/useApiCache';
@@ -114,13 +114,10 @@ const EventsPage = () => {
       {/* Hero Section with Video Background */}
       <div className="relative h-[60vh] overflow-hidden">
         <div className="absolute inset-0">
-          <CloudinaryVideo
-            publicId={YACHT_CLUB_ASSETS.videos.eventsHero}
+          <LocalVideo
+            src={YACHT_CLUB_ASSETS.videos.eventsHero}
+            poster={YACHT_CLUB_ASSETS.videoPosters.eventsHero}
             className="w-full h-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
           />
           <div className="absolute inset-0 bg-black opacity-50"></div>
         </div>
