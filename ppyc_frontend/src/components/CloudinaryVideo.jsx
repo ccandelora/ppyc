@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { generateVideoUrl, generatePosterUrl } from '../config/cloudinary';
+import cloudinaryConfig from '../config/cloudinary';
 import { logError } from '../utils/safeLogger';
 
+// Used only for dynamic CMS slide videos (admin-uploaded content).
+// Static page videos now use LocalVideo component instead.
 const CloudinaryVideo = ({
   publicId,
   className = '',
@@ -19,9 +21,14 @@ const CloudinaryVideo = ({
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef(null);
 
-  // Generate URLs
-  const videoUrl = generateVideoUrl(publicId, { quality });
-  const posterUrl = generatePoster ? generatePosterUrl(publicId) : undefined;
+  // Build Cloudinary URLs directly
+  const cloudName = cloudinaryConfig.cloudName;
+  const videoParams = `q_${quality},f_auto,c_scale,w_960,so_0`;
+  const videoUrl = `https://res.cloudinary.com/${cloudName}/video/upload/${videoParams}/${publicId}`;
+  const posterParams = 'q_auto:best,f_auto,w_960,c_scale,so_0,vs_1';
+  const posterUrl = generatePoster
+    ? `https://res.cloudinary.com/${cloudName}/video/upload/${posterParams}/${publicId}.jpg`
+    : undefined;
 
   // Defer video loading — don't call video.load() eagerly
   useEffect(() => {

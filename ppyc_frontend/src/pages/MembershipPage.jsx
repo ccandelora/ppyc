@@ -5,7 +5,7 @@ import { ICON_NAMES } from '../config/fontawesome';
 import { useContact } from '../contexts/contactContext';
 import SEOHelmet from '../components/SEOHelmet';
 import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
-import CloudinaryVideo from '../components/CloudinaryVideo';
+import LocalVideo from '../components/LocalVideo';
 
 const MembershipPage = () => {
   const { contactInfo } = useContact();
@@ -20,8 +20,9 @@ const MembershipPage = () => {
       {/* Hero Section with Video Background */}
       <div className="relative h-[60vh] overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
-          <CloudinaryVideo
-            publicId={YACHT_CLUB_ASSETS.videos.bostonBridge}
+          <LocalVideo
+            src={YACHT_CLUB_ASSETS.videos.bostonBridge}
+            poster={YACHT_CLUB_ASSETS.videoPosters.bostonBridge}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black opacity-50"></div>

@@ -14,7 +14,7 @@ ppyc_frontend/build/
 ppyc_frontend/.vite/
 ppyc_frontend/vite.config.js.timestamp-*
 
-# Large video files
+# Large raw/source video files
 *.mp4
 *.mov
 *.avi
@@ -22,6 +22,9 @@ ppyc_frontend/vite.config.js.timestamp-*
 *.wmv
 *.flv
 *.webm
+
+# Allow optimized videos for the website
+!ppyc_frontend/public/assets/videos/*.mp4
 
 # Environment files
 .env

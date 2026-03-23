@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { adminAPI } from '../../services/api';
 import { logError } from '../../utils/safeLogger';
-import cloudinaryConfig from '../../config/cloudinary';
 
 const PAGE_SIZE = 24;
 
@@ -173,8 +172,9 @@ const MediaLibrary = () => {
            (resource.format && ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm'].includes(resource.format.toLowerCase()));
   };
 
-  const getVideoThumbnail = (publicId) => {
-    return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/video/upload/w_400,h_300,c_fill,f_jpg/${publicId}.jpg`;
+  const getVideoThumbnail = () => {
+    // Return a placeholder for video thumbnails since videos are now stored locally
+    return null;
   };
 
   const formatFileSize = (bytes) => {
@@ -519,7 +519,7 @@ const MediaLibrary = () => {
                   {isVideo(image) ? (
                     <>
                       <img
-                        src={getVideoThumbnail(image.public_id)}
+                        src={getVideoThumbnail()  || image.url}
                         alt={image.public_id}
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -609,7 +609,7 @@ const MediaLibrary = () => {
                   {isVideo(image) ? (
                     <>
                       <img
-                        src={getVideoThumbnail(image.public_id)}
+                        src={getVideoThumbnail()  || image.url}
                         alt={image.public_id}
                         className="w-12 h-12 object-cover rounded"
                         loading="lazy"

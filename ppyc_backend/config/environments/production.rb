@@ -93,11 +93,11 @@ Rails.application.configure do
   config.content_security_policy do |policy|
     policy.default_src :self, :https
     policy.font_src    :self, :https, :data, 'https://cdnjs.cloudflare.com'
-    policy.img_src     :self, :https, :data, 'https://res.cloudinary.com'
+    policy.img_src     :self, :https, :data
     policy.object_src  :none
     policy.script_src  :self, :https, 'https://kit.fontawesome.com', 'https://cdnjs.cloudflare.com', "'unsafe-eval'"
     policy.style_src   :self, :https, 'https://cdnjs.cloudflare.com', "'unsafe-inline'"
-    policy.connect_src :self, :https, 'https://api.cloudinary.com'
+    policy.connect_src :self, :https
 
     # Specify URI for violation reports
     # policy.report_uri "/csp-violation-report-endpoint"
@@ -163,8 +163,8 @@ Rails.application.configure do
   # Active Storage Configuration
   # ============================
 
-  # Use Cloudinary for file storage in production
-  config.active_storage.service = :cloudinary
+  # Use local disk for file storage in production
+  config.active_storage.service = :local
   config.active_storage.variant_processor = :mini_magick
   config.active_storage.analyzers = [
     ActiveStorage::Analyzer::ImageAnalyzer::Vips,

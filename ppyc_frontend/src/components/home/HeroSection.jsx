@@ -9,7 +9,7 @@ const HeroSection = () => {
     const timer = setTimeout(() => {
       if (videoRef.current) {
         const video = videoRef.current;
-        video.src = "https://res.cloudinary.com/dqb8hp68j/video/upload/q_auto,f_auto/v1751693180/ppyc/ppyc/slides/videos/cloudinaryfile_wttzjq.mp4";
+        video.src = "/assets/videos/heroSlide.mp4";
         video.load();
         video.play().catch(() => {});
       }
@@ -29,9 +29,10 @@ const HeroSection = () => {
           loop
           playsInline
           preload="none"
-          poster="https://res.cloudinary.com/dqb8hp68j/video/upload/q_auto:low,f_auto,w_960,so_0/v1751693180/ppyc/ppyc/slides/videos/cloudinaryfile_wttzjq.jpg"
+          poster="/assets/videos/heroSlide.jpg"
           className="w-full h-full object-cover"
         >
+          {/* Video src set via useEffect for deferred loading */}
           Your browser does not support the video tag.
         </video>
         {/* Overlay for text readability */}

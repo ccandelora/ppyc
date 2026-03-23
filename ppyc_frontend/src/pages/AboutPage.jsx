@@ -3,21 +3,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
 import { Link } from 'react-router-dom';
-import CloudinaryVideo from '../components/CloudinaryVideo';
+import LocalVideo from '../components/LocalVideo';
 
 function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section with Cloudinary Video Background */}
+      {/* Hero Section with Video Background */}
       <div className="relative text-white">
         <div className="absolute inset-0">
-          <CloudinaryVideo
-            publicId={YACHT_CLUB_ASSETS.videos.heroVideo}
+          <LocalVideo
+            src={YACHT_CLUB_ASSETS.videos.heroVideo}
+            poster={YACHT_CLUB_ASSETS.videoPosters.heroVideo}
             className="w-full h-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
           />
           <div className="absolute inset-0 bg-slate-900 bg-opacity-70"></div>
         </div>

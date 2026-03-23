@@ -13,7 +13,7 @@ class Api::V1::Admin::EventsController < Api::V1::Admin::BaseController
   def create
     event = Event.new(event_params)
 
-    # Handle Cloudinary image URL if provided
+    # Handle image URL if provided
     if params[:event][:image_url].present?
       event.image_url = params[:event][:image_url]
     end
@@ -26,7 +26,7 @@ class Api::V1::Admin::EventsController < Api::V1::Admin::BaseController
   end
 
   def update
-    # Handle Cloudinary image URL if provided
+    # Handle image URL if provided
     if params[:event][:image_url].present?
       @event.image_url = params[:event][:image_url]
     end
