@@ -18,9 +18,6 @@ class EnvironmentValidator
   }.freeze
 
   OPTIONAL_VARS = {
-    'CLOUDINARY_CLOUD_NAME' => 'Cloudinary cloud name for image uploads',
-    'CLOUDINARY_API_KEY' => 'Cloudinary API key',
-    'CLOUDINARY_API_SECRET' => 'Cloudinary API secret',
     'RAILS_LOG_LEVEL' => 'Rails log level (debug, info, warn, error, fatal)',
     'RAILS_MAX_THREADS' => 'Maximum number of threads for Puma',
     'PORT' => 'Port for the application server',

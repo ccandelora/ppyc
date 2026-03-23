@@ -45,7 +45,7 @@ gem 'devise-jwt'
 gem 'friendly_id'  # For clean URLs with slugs
 gem 'kaminari'     # For pagination
 gem 'image_processing' # For image variants if needed
-gem 'cloudinary'   # For cloud image storage and CDN
+# gem 'cloudinary'   # Removed - using local file storage instead
 gem 'dotenv-rails' # For loading environment variables from .env file
 
 group :development, :test do
