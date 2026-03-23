@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import SEOHelmet from '../components/SEOHelmet';
-import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
+import { YACHT_CLUB_ASSETS, optimizeCloudinaryUrl } from '../config/cloudinary';
 import LocalVideo from '../components/LocalVideo';
 import { newsAPI } from '../services/api';
 
@@ -53,7 +53,7 @@ const NewsPage = () => {
       />
 
       {/* Hero Section with Video Background */}
-      <div className="relative h-[60vh] overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
           <LocalVideo
             src={YACHT_CLUB_ASSETS.videos.harborView}
@@ -98,10 +98,12 @@ const NewsPage = () => {
                 {post.featured_image_url && (
                   <div className="relative bg-gray-100 flex items-center justify-center overflow-hidden">
                     <img
-                      src={post.featured_image_url}
+                      src={optimizeCloudinaryUrl(post.featured_image_url, { width: 640, height: 480 })}
                       alt={post.title}
                       className="w-full h-auto object-contain max-h-[300px] transition-transform duration-200 group-hover:scale-105"
                       style={{ maxWidth: '100%', display: 'block' }}
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 )}

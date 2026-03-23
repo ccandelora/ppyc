@@ -4,7 +4,7 @@
 
 // Cloudinary config - kept for CMS/admin-uploaded content only
 const cloudinaryConfig = {
-  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'demo',
+  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dqb8hp68j',
   apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY || '',
   apiSecret: import.meta.env.VITE_CLOUDINARY_API_SECRET || '',
 };

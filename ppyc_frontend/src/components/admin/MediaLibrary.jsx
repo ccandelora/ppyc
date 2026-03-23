@@ -522,6 +522,8 @@ const MediaLibrary = () => {
                         src={getVideoThumbnail(image.public_id)}
                         alt={image.public_id}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="bg-black bg-opacity-70 rounded-full p-3 group-hover:bg-opacity-80 transition-all">
@@ -537,6 +539,8 @@ const MediaLibrary = () => {
                       src={image.url}
                       alt={image.public_id}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
                 </div>
@@ -608,6 +612,8 @@ const MediaLibrary = () => {
                         src={getVideoThumbnail(image.public_id)}
                         alt={image.public_id}
                         className="w-12 h-12 object-cover rounded"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <FontAwesomeIcon icon="video" className="text-white text-xs drop-shadow-md" />
@@ -618,6 +624,8 @@ const MediaLibrary = () => {
                       src={image.url}
                       alt={image.public_id}
                       className="w-12 h-12 object-cover rounded"
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
                 </div>
@@ -764,6 +772,8 @@ const MediaLibrary = () => {
                             src={preview.preview}
                             alt={preview.name}
                             className="w-full h-full object-cover"
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">

@@ -38,11 +38,12 @@ Rails.application.configure do
   # config.action_cable.url = "wss://example.com/cable"
   # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
-  config.assume_ssl = false
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy (nginx).
+  # nginx handles SSL termination and passes X-Forwarded-Proto to Rails.
+  config.assume_ssl = true
 
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # Do NOT set force_ssl here — nginx handles HTTPS redirect and HSTS.
+  # Setting force_ssl causes redirect loops when nginx proxies HTTP to Puma.
   config.force_ssl = false
 
   # Log to STDOUT by default
@@ -112,14 +113,13 @@ Rails.application.configure do
   # config.content_security_policy_report_only = true
 
   # Security Headers
-  config.force_ssl = false
-  # config.ssl_options = {
-  #   hsts: {
-  #     expires: 1.year,
-  #     subdomains: true,
-  #     preload: true
-  #   }
-  # }
+  config.ssl_options = {
+    hsts: {
+      expires: 1.year,
+      subdomains: true,
+      preload: true
+    }
+  }
 
   # Performance Configuration
   # =========================
@@ -148,29 +148,11 @@ Rails.application.configure do
     same_site: :lax,
     expire_after: 30.days
 
-  # CORS Configuration for Production
-  # =================================
-
-  # Set allowed origins from environment, including VPS domain and permanent domain
-  default_origins = "https://ppyc.com,http://srv894370.hstgr.cloud,https://ppyc1910.org,http://ppyc1910.org"
-  env_origins = ENV.fetch("CORS_ORIGINS", default_origins)
-  allowed_origins = (env_origins.split(',') + ['http://srv894370.hstgr.cloud', 'https://ppyc1910.org', 'http://ppyc1910.org']).uniq
-  config.middleware.insert_before 0, Rack::Cors do
-    allow do
-      origins allowed_origins
-      resource '*',
-        headers: :any,
-        methods: [:get, :post, :put, :patch, :delete, :options, :head],
-        credentials: true,
-        max_age: 86400
-    end
-  end
+  # CORS is configured in application.rb — no duplicate block here
 
   # Rate Limiting
   # =============
-
-  # Add rate limiting middleware (requires rack-attack gem)
-  # config.middleware.use Rack::Attack
+  config.middleware.use Rack::Attack
 
   # Database Configuration
   # ======================

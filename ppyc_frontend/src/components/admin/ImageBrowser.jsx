@@ -220,6 +220,8 @@ const ImageBrowser = ({ onImageSelect, onClose, selectedImage = null, uploadFold
                       src={image.url}
                       alt={image.public_id}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

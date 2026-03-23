@@ -106,10 +106,12 @@ const NewsList = () => {
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0 w-20 h-20">
                       {item.featured_image_url ? (
-                        <img 
-                          src={item.featured_image_url} 
+                        <img
+                          src={item.featured_image_url}
                           alt={item.title}
                           className="w-20 h-20 rounded-lg object-cover border border-gray-200 shadow-sm"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">
@@ -191,10 +193,12 @@ const NewsList = () => {
                         <div className="flex items-center">
                           <div className="flex-shrink-0 w-12 h-12 mr-3">
                             {item.featured_image_url ? (
-                              <img 
-                                src={item.featured_image_url} 
+                              <img
+                                src={item.featured_image_url}
                                 alt={item.title}
                                 className="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm"
+                                loading="lazy"
+                                decoding="async"
                               />
                             ) : (
                               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">

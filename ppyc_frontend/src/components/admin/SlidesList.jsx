@@ -199,10 +199,12 @@ const SlidesList = () => {
                     {/* Slide Image */}
                     <div className="w-20 h-20 flex-shrink-0 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
                       {slide.image_url ? (
-                        <img 
-                          src={slide.image_url} 
+                        <img
+                          src={slide.image_url}
                           alt={slide.title}
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <FontAwesomeIcon icon={getSlideTypeIcon(slide.slide_type)} className="text-gray-400 text-2xl" />
@@ -311,10 +313,12 @@ const SlidesList = () => {
                   {/* Slide Image */}
                   <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
                     {slide.image_url ? (
-                      <img 
-                        src={slide.image_url} 
+                      <img
+                        src={slide.image_url}
                         alt={slide.title}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <FontAwesomeIcon icon={getSlideTypeIcon(slide.slide_type)} className="text-gray-400 text-xl" />

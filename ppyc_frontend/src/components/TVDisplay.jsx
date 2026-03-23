@@ -9,6 +9,7 @@ import SlideWeatherWidget from './SlideWeatherWidget';
 import SlideMarineWidget from './SlideMarineWidget';
 import { useApiCache } from '../hooks/useApiCache';
 import { slidesAPI } from '../services/api';
+import { sanitizeHtml } from '../utils/htmlUtils';
 import { useSettings } from '../hooks/useSettings';
 
 const TVDisplay = () => {
@@ -129,7 +130,7 @@ const TVDisplay = () => {
         {renderDefaultBackground()}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-black/80 p-12 rounded-3xl backdrop-blur-lg text-center">
-            <img src="/ppyc-logo.png" alt="PPYC Logo" className="w-48 h-48 mb-8 mx-auto object-contain" />
+            <img src="/ppyc-logo.png" alt="PPYC Logo" className="w-48 h-48 mb-8 mx-auto object-contain" loading="lazy" decoding="async" />
             <div className="text-6xl text-white">Welcome to {siteTitle}</div>
             <div className="text-3xl text-gray-400 mt-4">Please add slides in the admin panel</div>
           </div>
@@ -170,6 +171,7 @@ const TVDisplay = () => {
               src={slides[currentSlideIndex].image_url}
               alt={slides[currentSlideIndex].title}
               className="absolute inset-0 w-full h-full object-cover"
+              decoding="async"
             />
           ) : (
             renderDefaultBackground()
@@ -189,7 +191,7 @@ const TVDisplay = () => {
             {/* Header */}
             <div className="p-4 md:p-6 flex justify-between items-start flex-shrink-0">
                           <div className="flex items-center">
-              <img src="/ppyc-logo.png" alt="PPYC Logo" className="h-16 mr-6 object-contain" />
+              <img src="/ppyc-logo.png" alt="PPYC Logo" className="h-16 mr-6 object-contain" loading="lazy" decoding="async" />
               <div>
                 {enableTime && (
                   <>
@@ -223,7 +225,7 @@ const TVDisplay = () => {
                     {slides[currentSlideIndex].content && (
                       <div
                         className="mt-8 text-3xl text-gray-100 leading-relaxed prose prose-invert max-w-none"
-                        dangerouslySetInnerHTML={{ __html: slides[currentSlideIndex].content }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(slides[currentSlideIndex].content) }}
                       />
                     )}
                   </>
@@ -238,7 +240,7 @@ const TVDisplay = () => {
                     {slides[currentSlideIndex].content && (
                       <div
                         className="mt-8 text-3xl text-gray-100 leading-relaxed prose prose-invert max-w-none"
-                        dangerouslySetInnerHTML={{ __html: slides[currentSlideIndex].content }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(slides[currentSlideIndex].content) }}
                       />
                     )}
                   </>
@@ -254,7 +256,7 @@ const TVDisplay = () => {
                     </h1>
                     <div
                       className="text-4xl text-gray-100 leading-relaxed prose prose-invert prose-lg max-w-none"
-                      dangerouslySetInnerHTML={{ __html: slides[currentSlideIndex].content }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(slides[currentSlideIndex].content) }}
                     />
                   </>
                 )}

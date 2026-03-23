@@ -14,12 +14,11 @@ const CloudinaryVideo = ({
   playsInline = true,
   generatePoster = true,
   quality = 'auto',
-  preload = 'auto',
+  preload = 'none',
   ...props
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [videoStarted, setVideoStarted] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 
   // Build Cloudinary URLs directly
@@ -31,84 +30,52 @@ const CloudinaryVideo = ({
     ? `https://res.cloudinary.com/${cloudName}/video/upload/${posterParams}/${publicId}.jpg`
     : undefined;
 
-  // Handle video loading and playback
+  // Defer video loading — don't call video.load() eagerly
   useEffect(() => {
-    if (videoRef.current) {
-      const video = videoRef.current;
+    const timer = setTimeout(() => {
+      if (videoRef.current) {
+        const video = videoRef.current;
 
-      const handleCanPlay = () => {
-        setIsLoading(false);
-        if (autoPlay && !isPlaying) {
-          video.play().catch((e) => logError('Video play failed:', e));
-        }
-      };
+        video.addEventListener('playing', () => setVideoStarted(true), { once: true });
+        video.addEventListener('error', (e) => {
+          logError('Video loading error:', e);
+          setHasError(true);
+        }, { once: true });
 
-      const handlePlay = () => {
-        setIsPlaying(true);
-        setIsLoading(false);
-      };
+        // Now trigger the load + play
+        video.load();
+        video.play().catch(() => {});
+      }
+    }, 200);
 
-      const handlePause = () => {
-        setIsPlaying(false);
-      };
-
-      const handleError = (error) => {
-        logError('Video loading error:', error);
-        setHasError(true);
-        setIsLoading(false);
-      };
-
-      video.addEventListener('canplay', handleCanPlay);
-      video.addEventListener('play', handlePlay);
-      video.addEventListener('pause', handlePause);
-      video.addEventListener('error', handleError);
-
-      // Start loading the video
-      video.load();
-
-      return () => {
-        video.removeEventListener('canplay', handleCanPlay);
-        video.removeEventListener('play', handlePlay);
-        video.removeEventListener('pause', handlePause);
-        video.removeEventListener('error', handleError);
-        video.pause();
-      };
-    }
-  }, [videoUrl, autoPlay, isPlaying]);
+    return () => clearTimeout(timer);
+  }, [videoUrl]);
 
   return (
     <div className={`relative ${className}`}>
-      {/* Poster Image (shown until video is ready) */}
-      {posterUrl && isLoading && (
+      {/* Poster image — high priority since it's often the LCP element */}
+      {posterUrl && !videoStarted && (
         <img
           src={posterUrl}
           alt="Video thumbnail"
           className="absolute inset-0 w-full h-full object-cover"
+          fetchpriority="high"
         />
       )}
 
       <video
         ref={videoRef}
-        autoPlay={autoPlay}
-        loop={loop}
         muted={muted}
+        loop={loop}
         playsInline={playsInline}
-        poster={posterUrl}
-        preload={preload}
-        className={`w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        preload="none"
+        className={`w-full h-full object-cover ${videoStarted ? 'opacity-100' : 'opacity-0'}`}
         style={{ transition: 'opacity 0.5s ease-in-out' }}
         {...props}
       >
         <source src={videoUrl} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-
-      {/* Loading indicator */}
-      {isLoading && !isPlaying && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-        </div>
-      )}
 
       {/* Error message */}
       {hasError && (
@@ -132,4 +99,4 @@ CloudinaryVideo.propTypes = {
   preload: PropTypes.oneOf(['auto', 'metadata', 'none']),
 };
 
-export default CloudinaryVideo; 
+export default CloudinaryVideo;

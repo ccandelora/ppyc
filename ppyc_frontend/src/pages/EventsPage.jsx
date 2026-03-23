@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ICON_NAMES } from '../config/fontawesome';
 import SEOHelmet from '../components/SEOHelmet';
-import { YACHT_CLUB_ASSETS } from '../config/cloudinary';
+import { YACHT_CLUB_ASSETS, optimizeCloudinaryUrl } from '../config/cloudinary';
 import LocalVideo from '../components/LocalVideo';
 import { eventsAPI } from '../services/api';
 import { sanitizeHtml } from '../utils/htmlUtils';
@@ -112,7 +112,7 @@ const EventsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Video Background */}
-      <div className="relative h-[60vh] overflow-hidden">
+      <div className="relative h-[60vh] overflow-hidden bg-slate-900">
         <div className="absolute inset-0">
           <LocalVideo
             src={YACHT_CLUB_ASSETS.videos.eventsHero}
@@ -175,11 +175,13 @@ const EventsPage = () => {
                             className="relative bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer"
                             onClick={(e) => handleImageClick(e, event.image_url, event.title, event.description)}
                           >
-                            <img 
-                              src={event.image_url} 
+                            <img
+                              src={optimizeCloudinaryUrl(event.image_url, { width: 640, height: 480 })}
                               alt={event.title}
                               className="w-full h-auto object-contain max-h-[500px] transition-transform duration-200 group-hover:scale-105"
                               style={{ maxWidth: '100%', display: 'block' }}
+                              loading="lazy"
+                              decoding="async"
                             />
                             {/* Hover overlay hint */}
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
@@ -248,7 +250,7 @@ const EventsPage = () => {
           <div className="mb-6">
             <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-5xl text-blue-300" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
             Stay Connected with PPYC
           </h2>
           <div className="w-20 h-1 bg-blue-400 mx-auto mb-8"></div>
@@ -287,27 +289,15 @@ const EventsPage = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <img 
-                  src="/assets/images/ppyc-images/matches.jpg" 
-                  alt="Racing at PPYC" 
+                <img
+                  src="/assets/images/ppyc-images/float2.webp"
+                  alt="Club Facilities"
                   className="w-full h-32 object-cover"
-                />
-                <div className="p-4">
-                  <FontAwesomeIcon icon={ICON_NAMES.TROPHY} className="text-blue-600 text-xl mb-2" />
-                  <h3 className="font-semibold text-slate-800 text-sm">Racing Program</h3>
-                </div>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <img 
-                  src="/assets/images/ppyc-images/float2.jpg" 
-                  alt="Club Facilities" 
-                  className="w-full h-32 object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="p-4">
                   <FontAwesomeIcon icon={ICON_NAMES.ANCHOR} className="text-blue-600 text-xl mb-2" />
@@ -318,10 +308,12 @@ const EventsPage = () => {
             
             <div className="text-center">
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <img 
-                  src="/assets/images/ppyc-images/deck.jpg" 
-                  alt="Deck Life" 
+                <img
+                  src="/assets/images/ppyc-images/deck.webp"
+                  alt="Deck Life"
                   className="w-full h-32 object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="p-4">
                   <FontAwesomeIcon icon={ICON_NAMES.USERS} className="text-blue-600 text-xl mb-2" />
@@ -332,10 +324,12 @@ const EventsPage = () => {
             
             <div className="text-center">
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <img 
-                  src="/assets/images/ppyc-images/middaysun.jpg" 
-                  alt="Perfect Day" 
+                <img
+                  src="/assets/images/ppyc-images/middaysun.webp"
+                  alt="Perfect Day"
                   className="w-full h-32 object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="p-4">
                   <FontAwesomeIcon icon={ICON_NAMES.SUN} className="text-blue-600 text-xl mb-2" />

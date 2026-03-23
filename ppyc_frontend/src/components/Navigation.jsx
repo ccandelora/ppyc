@@ -54,10 +54,12 @@ function Navigation() {
         <div className="flex items-center justify-between h-20">
           {/* Professional Logo */}
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-            <img 
-              src="/assets/images/ppyclogo.png"
+            <img
+              src="/assets/images/ppyclogo.webp"
               alt="Pleasant Park Yacht Club"
               className="h-12 w-auto"
+              width="48"
+              height="48"
               loading="eager"
             />
           </Link>
