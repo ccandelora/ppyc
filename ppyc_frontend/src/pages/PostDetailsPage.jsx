@@ -105,11 +105,11 @@ const PostDetailsPage = () => {
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Featured Image */}
             {post?.featured_image_url && (
-              <div className="w-full h-96 overflow-hidden">
+              <div className="w-full">
                 <img
-                  src={optimizeCloudinaryUrl(post.featured_image_url, { width: 800, height: 600 })}
+                  src={post.featured_image_url}
                   alt={post.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto"
                   loading="lazy"
                   decoding="async"
                 />
