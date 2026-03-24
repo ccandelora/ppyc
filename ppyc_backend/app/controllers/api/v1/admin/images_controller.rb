@@ -36,9 +36,9 @@ class Api::V1::Admin::ImagesController < Api::V1::Admin::BaseController
         return
       end
 
-      # Create folder structure
+      # Create folder structure with world-readable permissions
       upload_folder = UPLOAD_DIR.join(folder)
-      FileUtils.mkdir_p(upload_folder)
+      FileUtils.mkdir_p(upload_folder, mode: 0755)
 
       # Generate unique filename
       ext = File.extname(file.original_filename)
@@ -52,6 +52,7 @@ class Api::V1::Admin::ImagesController < Api::V1::Admin::BaseController
         final_filename = "#{unique_name}#{final_ext}"
         final_path = upload_folder.join(final_filename)
         File.open(final_path, 'wb') { |f| f.write(file.read) }
+        FileUtils.chmod(0644, final_path)
 
         resource_type = 'video'
         width = nil
@@ -74,6 +75,7 @@ class Api::V1::Admin::ImagesController < Api::V1::Admin::BaseController
         final_path = upload_folder.join(final_filename)
         image.format 'webp'
         image.write(final_path)
+        FileUtils.chmod(0644, final_path)
 
         resource_type = 'image'
         width = image.width
