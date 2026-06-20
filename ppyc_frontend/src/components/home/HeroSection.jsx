@@ -63,7 +63,7 @@ const HeroSection = () => {
         </p>
 
         <p className="text-lg md:text-xl font-light mb-12 max-w-2xl mx-auto leading-relaxed opacity-90">
-          A tradition of excellence in navigation, seamanship, and fellowship on the Great Lakes
+          A tradition of excellence in navigation, seamanship, and fellowship in and around Boston Harbor.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
